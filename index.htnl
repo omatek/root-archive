@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>root/archive — Academic Resource Index</title>
+
+  <!-- Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Tailwind CSS Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            base: "#0a0a0a",
+            surface: "#111111",
+            line: "#262626",
+            primary: "#ededed",
+            muted: "#888888",
+            emerald: {
+              DEFAULT: "#10b981",
+              dim: "rgba(16, 185, 129, 0.12)",
+            },
+          },
+          fontFamily: {
+            sans: ["Inter", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
+            mono: ["JetBrains Mono", "monospace"],
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- Cloudflare Turnstile -->
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    html,
+    body {
+      background-color: #0a0a0a;
+      color: #ededed;
+      font-family: "Inter", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    ::selection {
+      background-color: #10b981;
+      color: #0a0a0a;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0a0a0a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #262626;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #10b981;
+    }
+    input:focus,
+    select:focus,
+    button:focus-visible {
+      outline: 1px solid #10b981;
+      outline-offset: -1px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-base text-primary selection:bg-emerald selection:text-base">
+
+  <!-- 1. TOP COMMAND BAR -->
+  <header class="sticky top-0 z-30 bg-base border-b border-line">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3 min-w-0">
+        <a
+          href="#"
+          id="brand-reset"
+          class="font-mono text-sm sm:text-base font-semibold text-emerald tracking-tight shrink-0 hover:opacity-90 transition-opacity"
+        >
+          root@archive:~#
+        </a>
+        <span
+          id="resource-counter"
+          class="font-mono text-xs px-2 py-0.5 bg-surface border border-line text-muted shrink-0"
+        >
+          [0 indexed]
+        </span>
+      </div>
+
+      <div class="flex items-center gap-3 shrink-0">
+        <button
+          type="button"
+          id="shortcut-search-btn"
+          title="Press / to focus search"
+          class="hidden sm:inline-flex items-center gap-2 font-mono text-xs text-muted hover:text-primary px-2.5 py-1.5 bg-surface border border-line transition-colors"
+        >
+          <span class="text-emerald">[/]</span>
+          <span>search</span>
+        </button>
+
+        <button
+          type="button"
+          id="open-modal-btn"
+          class="font-mono text-xs font-medium px-3 py-1.5 bg-surface text-emerald border border-emerald hover:bg-emerald hover:text-base transition-colors"
+        >
+          + Submit Resource
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN WORKSPACE -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 space-y-5">
+
+    <!-- 2. FILTER & SEARCH CONTROLS -->
+    <section aria-label="Search and Filter Controls" class="bg-surface border border-line p-4 space-y-4">
+      <!-- Search Bar -->
+      <div class="relative flex items-center">
+        <span
+          class="font-mono text-xs text-emerald pl-3 pr-2 select-none pointer-events-none"
+          aria-hidden="true"
+        >
+          grep -i
+        </span>
+        <input
+          id="search-input"
+          type="text"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="Filter by resource title, course code (e.g. SEC 310), or course name..."
+          class="w-full bg-base border border-line text-sm text-primary placeholder-muted px-3 py-2 font-mono focus:border-emerald transition-colors"
+        />
+        <button
+          type="button"
+          id="clear-search-btn"
+          class="hidden absolute right-2 font-mono text-[11px] text-muted hover:text-primary px-1.5 py-0.5 bg-surface border border-line"
+        >
+          ESC
+        </button>
+      </div>
+
+      <!-- Filter Pill Rows -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+        <!-- Track Filters -->
+        <div class="flex flex-wrap items-center gap-1.5">
+          <span class="font-mono text-[11px] uppercase tracking-wider text-muted mr-1.5">
+            Track:
+          </span>
+          <div id="track-filter-container" class="flex flex-wrap items-center gap-1.5"></div>
+        </div>
+
+        <!-- Material Type Filters -->
+        <div class="flex flex-wrap items-center gap-1.5 md:justify-end">
+          <span class="font-mono text-[11px] uppercase tracking-wider text-muted mr-1.5">
+            Type:
+          </span>
+          <div id="type-filter-container" class="flex flex-wrap items-center gap-1.5"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. HIGH-DENSITY TABULAR RESOURCE VIEW -->
+    <section aria-label="Resource Directory" class="bg-surface border border-line overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-line bg-base font-mono text-[11px] uppercase tracking-wider text-muted select-none">
+              <th class="py-2.5 px-3.5 border-r border-line w-28">Code</th>
+              <th class="py-2.5 px-3.5 border-r border-line w-32">Type</th>
+              <th class="py-2.5 px-3.5 border-r border-line">Resource &amp; Course</th>
+              <th class="py-2.5 px-3.5 border-r border-line w-32">Semester</th>
+              <th class="py-2.5 px-3.5 border-r border-line w-36">Contributor</th>
+              <th class="py-2.5 px-3.5 w-28 text-right">Action</th>
+            </tr>
+          </thead>
+          <tbody id="resource-table-body" class="divide-y divide-line text-sm"></tbody>
+        </table>
+      </div>
+
+      <!-- Empty / Status State -->
+      <div
+        id="empty-state"
+        class="hidden py-12 px-4 text-center font-mono text-xs text-muted border-t border-line bg-base"
+      >
+        <p id="empty-state-text">0 matching records found in index.</p>
+        <button
+          type="button"
+          id="reset-filters-btn"
+          class="mt-3 font-mono text-xs text-emerald border border-line bg-surface px-3 py-1 hover:border-emerald transition-colors"
+        >
+          [Reset active filters]
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER STATUS LINE -->
+  <footer class="border-t border-line bg-base mt-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-10 flex items-center justify-between font-mono text-[11px] text-muted">
+      <div class="flex items-center gap-3">
+        <span class="inline-block w-2 h-2 bg-emerald" aria-hidden="true"></span>
+        <span id="footer-status">SYSTEM READY // STATIC INDEX</span>
+      </div>
+      <div>
+        <span>SHORTCUTS: [/] SEARCH · [ESC] RESET</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 4. SUBMISSION MODAL -->
+  <div
+    id="submission-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modal-title"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80"
+  >
+    <div class="bg-surface border border-line w-full max-w-xl overflow-hidden">
+      <!-- Modal Top Bar -->
+      <div class="flex items-center justify-between px-4 py-3 bg-base border-b border-line">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs text-emerald font-semibold" id="modal-title">
+            root@archive:~/submit#
+          </span>
+          <span class="font-mono text-[11px] text-muted">[PR Dispatch Pipeline]</span>
+        </div>
+        <button
+          type="button"
+          id="close-modal-btn"
+          class="font-mono text-xs text-muted hover:text-primary px-2 py-0.5 border border-line bg-surface"
+        >
+          [ESC]
+        </button>
+      </div>
+
+      <!-- Modal Form -->
+      <form id="submission-form" class="p-4 space-y-4" novalidate>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Course Dropdown -->
+          <div>
+            <label
+              for="input-course"
+              class="block font-mono text-[11px] uppercase tracking-wider text-muted mb-1.5"
+            >
+              Course *
+            </label>
+            <select
+              id="input-course"
+              name="course_id"
+              required
+              class="w-full bg-base border border-line px-3 py-2 text-xs font-mono text-primary focus:border-emerald"
+            >
+              <option value="">-- Select Course --</option>
+            </select>
+          </div>
+
+          <!-- Material Type Dropdown -->
+          <div>
+            <label
+              for="input-type"
+              class="block font-mono text-[11px] uppercase tracking-wider text-muted mb-1.5"
+            >
+              Material Type *
+            </label>
+            <select
+              id="input-type"
+              name="type"
+              required
+              class="w-full bg-base border border-line px-3 py-2 text-xs font-mono text-primary focus:border-emerald"
+            >
+              <option value="Past Paper">Past Paper</option>
+              <option value="Summary">Summary</option>
+              <option value="Notes">Notes</option>
+              <option value="Lab">Lab</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Semester -->
+          <div>
+            <label
+              for="input-semester"
+              class="block font-mono text-[11px] uppercase tracking-wider text-muted mb-1.5"
+            >
+              Semester (4-20 chars) *
+            </label>
+            <input
+              id="input-semester"
+              name="semester"
+              type="text"
+              required
+              minlength="4"
+              maxlength="20"
+              placeholder="e.g. Fall 2024"
+              class="w-full bg-base border border-line px-3 py-2 text-xs font-mono text-primary placeholder-muted focus:border-emerald"
+            />
+          </div>
+
+          <!-- Contributor Handle -->
+          <div>
+            <label
+              for="input-contributor"
+              class="block font-mono text-[11px] uppercase tracking-wider text-muted mb-1.5"
+            >
+              Contributor Handle (Optional)
+            </label>
+            <input
+              id="input-contributor"
+              name="contributor"
+              type="text"
+              maxlength="40"
+              placeholder="e.g. 0x_handle (or leave blank)"
+              class="w-full bg-base border border-line px-3 py-2 text-xs font-mono text-primary placeholder-muted focus:border-emerald"
+            />
+          </div>
+        </div>
+
+        <!-- Resource Title -->
+        <div>
+          <label
+            for="input-title"
+            class="block font-mono text-[11px] uppercase tracking-wider text-muted mb-1.5"
+          >
+            Resource Title (3-120 chars) *
+          </label>
+          <input
+            id="input-title"
+            name="title"
+            type="text"
+            required
+            minlength="3"
+            maxlength="120"
+            placeholder="e.g. Midterm Exam With Worked Solutions"
+            class="w-full bg-base border border-line px-3 py-2 text-xs font-mono text-primary placeholder-muted focus:border-emerald"
+          />
+        </div>
+
+        <!-- Asset URL -->
+        <div>
+          <label
+            for="input-asset-url"
+            class="block font-mono text-[11px] uppercase tracking-wider text-muted mb-1.5"
+          >
+            Direct HTTPS Asset URL *
+          </label>
+          <input
+            id="input-asset-url"
+            name="asset_url"
+            type="url"
+            required
+            placeholder="https://..."
+            class="w-full bg-base border border-line px-3 py-2 text-xs font-mono text-primary placeholder-muted focus:border-emerald"
+          />
+        </div>
+
+        <!-- Cloudflare Turnstile -->
+        <div class="pt-1">
+          <div
+            class="cf-turnstile"
+            data-sitekey="YOUR_TURNSTILE_SITE_KEY"
+            data-theme="dark"
+          ></div>
+        </div>
+
+        <!-- Terminal Log Output Area -->
+        <div class="border border-line bg-base">
+          <div class="px-3 py-1 border-b border-line flex items-center justify-between">
+            <span class="font-mono text-[10px] uppercase tracking-wider text-muted">
+              stdout / submission.log
+            </span>
+            <button
+              type="button"
+              id="clear-log-btn"
+              class="font-mono text-[10px] text-muted hover:text-primary"
+            >
+              [clear]
+            </button>
+          </div>
+          <div
+            id="modal-terminal-log"
+            class="p-3 h-28 overflow-y-auto font-mono text-xs space-y-1 text-muted"
+          ></div>
+        </div>
+
+        <!-- Modal Actions -->
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-line">
+          <button
+            type="button"
+            id="cancel-modal-btn"
+            class="font-mono text-xs px-3 py-1.5 bg-base text-muted border border-line hover:text-primary transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            id="submit-form-btn"
+            class="font-mono text-xs font-medium px-4 py-1.5 bg-emerald text-base border border-emerald hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Dispatch PR -&gt;
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- APPLICATION LOGIC -->
+  <script>
+    (function () {
+      "use strict";
+
+      // Configuration
+      const WORKER_ENDPOINT = "/api/submit";
+      const COURSES_URL = "./courses.json";
+      const RESOURCES_URL = "./resources.json";
+
+      const TRACK_OPTIONS = [
+        "All",
+        "Cybersecurity",
+        "CS / Software",
+        "AI & Data",
+        "Networking",
+      ];
+
+      const TYPE_OPTIONS = [
+        "All",
+        "Past Paper",
+        "Summary",
+        "Notes",
+        "Lab",
+      ];
+
+      // Application State
+      const state = {
+        courses: [],
+        courseMap: new Map(),
+        resources: [],
+        searchQuery: "",
+        activeTrack: "All",
+        activeType: "All",
+        isModalOpen: false,
+        isSubmitting: false,
+      };
+
+      // DOM Elements
+      const resourceCounterEl = document.getElementById("resource-counter");
+      const searchInputEl = document.getElementById("search-input");
+      const clearSearchBtn = document.getElementById("clear-search-btn");
+      const shortcutSearchBtn = document.getElementById("shortcut-search-btn");
+      const brandResetEl = document.getElementById("brand-reset");
+      const trackFilterContainer = document.getElementById("track-filter-container");
+      const typeFilterContainer = document.getElementById("type-filter-container");
+      const resourceTableBody = document.getElementById("resource-table-body");
+      const emptyStateEl = document.getElementById("empty-state");
+      const emptyStateTextEl = document.getElementById("empty-state-text");
+      const resetFiltersBtn = document.getElementById("reset-filters-btn");
+      const footerStatusEl = document.getElementById("footer-status");
+
+      // Modal DOM Elements
+      const modalEl = document.getElementById("submission-modal");
+      const openModalBtn = document.getElementById("open-modal-btn");
+      const closeModalBtn = document.getElementById("close-modal-btn");
+      const cancelModalBtn = document.getElementById("cancel-modal-btn");
+      const submissionForm = document.getElementById("submission-form");
+      const inputCourse = document.getElementById("input-course");
+      const inputType = document.getElementById("input-type");
+      const inputSemester = document.getElementById("input-semester");
+      const inputContributor = document.getElementById("input-contributor");
+      const inputTitle = document.getElementById("input-title");
+      const inputAssetUrl = document.getElementById("input-asset-url");
+      const submitFormBtn = document.getElementById("submit-form-btn");
+      const terminalLogEl = document.getElementById("modal-terminal-log");
+      const clearLogBtn = document.getElementById("clear-log-btn");
+
+      /**
+       * Strictly validates that a URL string parses cleanly and uses https://
+       */
+      function sanitizeHttpsUrl(rawUrl) {
+        if (typeof rawUrl !== "string") {
+          return null;
+        }
+        const trimmed = rawUrl.trim();
+        if (!trimmed.toLowerCase().startsWith("https://")) {
+          return null;
+        }
+        try {
+          const parsed = new URL(trimmed);
+          if (parsed.protocol !== "https:") {
+            return null;
+          }
+          if (parsed.username || parsed.password) {
+            return null;
+          }
+          return parsed.toString();
+        } catch {
+          return null;
+        }
+      }
+
+      /**
+       * Removes all child nodes from an element without using innerHTML
+       */
+      function clearChildren(element) {
+        while (element.firstChild) {
+          element.removeChild(element.firstChild);
+        }
+      }
+
+      /**
+       * Formats current time as HH:MM:SS for modal terminal logs
+       */
+      function getTimestampString() {
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, "0");
+        const mm = String(now.getMinutes()).padStart(2, "0");
+        const ss = String(now.getSeconds()).padStart(2, "0");
+        return "[" + hh + ":" + mm + ":" + ss + "]";
+      }
+
+      /**
+       * Appends a single line to the modal terminal log using safe DOM methods
+       */
+      function appendTerminalLog(message, level, optionalSafeUrl) {
+        const line = document.createElement("div");
+        line.className = "leading-relaxed break-all";
+
+        const timeSpan = document.createElement("span");
+        timeSpan.className = "text-muted mr-2 select-none";
+        timeSpan.textContent = getTimestampString();
+        line.appendChild(timeSpan);
+
+        const textSpan = document.createElement("span");
+        if (level === "error") {
+          textSpan.className = "text-red-400";
+        } else if (level === "success") {
+          textSpan.className = "text-emerald";
+        } else {
+          textSpan.className = "text-primary";
+        }
+        textSpan.textContent = message;
+        line.appendChild(textSpan);
+
+        if (optionalSafeUrl) {
+          const safeHref = sanitizeHttpsUrl(optionalSafeUrl);
+          if (safeHref) {
+            const space = document.createTextNode(" ");
+            line.appendChild(space);
+
+            const link = document.createElement("a");
+            link.setAttribute("href", safeHref);
+            link.setAttribute("target", "_blank");
+            link.setAttribute("rel", "noopener noreferrer");
+            link.className = "underline text-emerald hover:opacity-80";
+            link.textContent = safeHref;
+            line.appendChild(link);
+          }
+        }
+
+        terminalLogEl.appendChild(line);
+        terminalLogEl.scrollTop = terminalLogEl.scrollHeight;
+      }
+
+      function resetTerminalLog() {
+        clearChildren(terminalLogEl);
+        appendTerminalLog("Ready. Awaiting resource submission payload...", "info");
+      }
+
+      /**
+       * Renders Track and Type filter pills dynamically
+       */
+      function renderFilterPills() {
+        clearChildren(trackFilterContainer);
+        TRACK_OPTIONS.forEach(function (track) {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          const isActive = state.activeTrack === track;
+          btn.className =
+            "font-mono text-xs px-2.5 py-1 border transition-colors " +
+            (isActive
+              ? "border-emerald bg-emerald-dim text-emerald font-medium"
+              : "border-line bg-base text-muted hover:text-primary");
+          btn.textContent = track;
+          btn.addEventListener("click", function () {
+            state.activeTrack = track;
+            renderFilterPills();
+            renderTable();
+          });
+          trackFilterContainer.appendChild(btn);
+        });
+
+        clearChildren(typeFilterContainer);
+        TYPE_OPTIONS.forEach(function (type) {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          const isActive = state.activeType === type;
+          btn.className =
+            "font-mono text-xs px-2.5 py-1 border transition-colors " +
+            (isActive
+              ? "border-emerald bg-emerald-dim text-emerald font-medium"
+              : "border-line bg-base text-muted hover:text-primary");
+          btn.textContent = type;
+          btn.addEventListener("click", function () {
+            state.activeType = type;
+            renderFilterPills();
+            renderTable();
+          });
+          typeFilterContainer.appendChild(btn);
+        });
+      }
+
+      /**
+       * Populates the course dropdown in the submission modal sorted by course code
+       */
+      function populateCourseDropdown() {
+        clearChildren(inputCourse);
+
+        const defaultOpt = document.createElement("option");
+        defaultOpt.value = "";
+        defaultOpt.textContent = "-- Select Course --";
+        inputCourse.appendChild(defaultOpt);
+
+        const sortedCourses = state.courses.slice().sort(function (a, b) {
+          return String(a.code || "").localeCompare(String(b.code || ""));
+        });
+
+        sortedCourses.forEach(function (course) {
+          const option = document.createElement("option");
+          option.value = String(course.id || "");
+          option.textContent =
+            String(course.code || course.id) + " — " + String(course.title || "");
+          inputCourse.appendChild(option);
+        });
+      }
+
+      /**
+       * Filters state.resources based on search query, track, and material type
+       */
+      function getFilteredResources() {
+        const query = state.searchQuery.trim().toLowerCase();
+
+        return state.resources.filter(function (resource) {
+          const course = state.courseMap.get(resource.course_id) || {
+            id: resource.course_id,
+            code: resource.course_id,
+            title: "Unmapped Course",
+            track: "Unmapped",
+          };
+
+          if (state.activeTrack !== "All" && course.track !== state.activeTrack) {
+            return false;
+          }
+
+          if (state.activeType !== "All" && resource.type !== state.activeType) {
+            return false;
+          }
+
+          if (query.length > 0) {
+            const titleMatch = String(resource.title || "")
+              .toLowerCase()
+              .includes(query);
+            const codeMatch = String(course.code || "")
+              .toLowerCase()
+              .includes(query);
+            const idMatch = String(course.id || "")
+              .toLowerCase()
+              .includes(query);
+            const courseTitleMatch = String(course.title || "")
+              .toLowerCase()
+              .includes(query);
+
+            if (!titleMatch && !codeMatch && !idMatch && !courseTitleMatch) {
+              return false;
+            }
+          }
+
+          return true;
+        });
+      }
+
+      /**
+       * Renders the high-density resource table using exclusively safe DOM APIs
+       */
+      function renderTable() {
+        clearChildren(resourceTableBody);
+
+        const filtered = getFilteredResources();
+        const totalCount = state.resources.length;
+
+        if (
+          state.searchQuery.trim() === "" &&
+          state.activeTrack === "All" &&
+          state.activeType === "All"
+        ) {
+          resourceCounterEl.textContent = "[" + totalCount + " indexed]";
+        } else {
+          resourceCounterEl.textContent =
+            "[" + filtered.length + " / " + totalCount + " indexed]";
+        }
+
+        if (filtered.length === 0) {
+          emptyStateEl.classList.remove("hidden");
+          emptyStateTextEl.textContent =
+            totalCount === 0
+              ? "0 records loaded in archive."
+              : "0 matching records for current filter parameters.";
+          return;
+        }
+
+        emptyStateEl.classList.add("hidden");
+
+        filtered.forEach(function (item) {
+          const course = state.courseMap.get(item.course_id) || {
+            id: item.course_id,
+            code: item.course_id,
+            title: "Unknown Course",
+            track: "General",
+          };
+
+          const tr = document.createElement("tr");
+          tr.className = "hover:bg-base/60 transition-colors";
+
+          // 1. Course Code Cell
+          const tdCode = document.createElement("td");
+          tdCode.className =
+            "py-3 px-3.5 border-r border-line font-mono text-xs font-medium text-emerald whitespace-nowrap align-top";
+          tdCode.textContent = String(course.code || item.course_id);
+          tr.appendChild(tdCode);
+
+          // 2. Type Badge Cell
+          const tdType = document.createElement("td");
+          tdType.className =
+            "py-3 px-3.5 border-r border-line whitespace-nowrap align-top";
+          const badge = document.createElement("span");
+          badge.className =
+            "inline-block font-mono text-[11px] px-2 py-0.5 bg-base border border-line text-primary";
+          badge.textContent = String(item.type || "Resource");
+          tdType.appendChild(badge);
+          tr.appendChild(tdType);
+
+          // 3. Title + Muted Course Title Cell
+          const tdTitle = document.createElement("td");
+          tdTitle.className = "py-3 px-3.5 border-r border-line align-top";
+
+          const resourceTitleDiv = document.createElement("div");
+          resourceTitleDiv.className = "text-sm font-medium text-primary leading-snug";
+          resourceTitleDiv.textContent = String(item.title || "Untitled Resource");
+
+          const courseSubtitleDiv = document.createElement("div");
+          courseSubtitleDiv.className = "text-xs text-muted mt-0.5 font-mono";
+          courseSubtitleDiv.textContent =
+            String(course.title || "") +
+            (course.track ? " · [" + String(course.track) + "]" : "");
+
+          tdTitle.appendChild(resourceTitleDiv);
+          tdTitle.appendChild(courseSubtitleDiv);
+          tr.appendChild(tdTitle);
+
+          // 4. Semester Cell
+          const tdSemester = document.createElement("td");
+          tdSemester.className =
+            "py-3 px-3.5 border-r border-line font-mono text-xs text-muted whitespace-nowrap align-top";
+          tdSemester.textContent = String(item.semester || "—");
+          tr.appendChild(tdSemester);
+
+          // 5. Contributor Cell
+          const tdContributor = document.createElement("td");
+          tdContributor.className =
+            "py-3 px-3.5 border-r border-line font-mono text-xs whitespace-nowrap align-top";
+          if (item.contributor && String(item.contributor).trim().length > 0) {
+            tdContributor.className += " text-primary";
+            tdContributor.textContent = "@" + String(item.contributor).trim();
+          } else {
+            tdContributor.className += " text-muted";
+            tdContributor.textContent = "anonymous";
+          }
+          tr.appendChild(tdContributor);
+
+          // 6. Action Cell
+          const tdAction = document.createElement("td");
+          tdAction.className =
+            "py-3 px-3.5 font-mono text-xs text-right whitespace-nowrap align-top";
+
+          const safeUrl = sanitizeHttpsUrl(item.asset_url);
+          if (safeUrl) {
+            const link = document.createElement("a");
+            link.setAttribute("href", safeUrl);
+            link.setAttribute("target", "_blank");
+            link.setAttribute("rel", "noopener noreferrer");
+            link.className =
+              "inline-block text-emerald hover:bg-emerald hover:text-base px-2 py-0.5 border border-transparent hover:border-emerald transition-colors";
+            link.textContent = "[Fetch ->]";
+            tdAction.appendChild(link);
+          } else {
+            const invalidSpan = document.createElement("span");
+            invalidSpan.className = "text-muted select-none";
+            invalidSpan.textContent = "[Invalid URL]";
+            tdAction.appendChild(invalidSpan);
+          }
+
+          tr.appendChild(tdAction);
+          resourceTableBody.appendChild(tr);
+        });
+      }
+
+      /**
+       * Resets search query and filter pills back to default
+       */
+      function resetAllFilters() {
+        state.searchQuery = "";
+        state.activeTrack = "All";
+        state.activeType = "All";
+        searchInputEl.value = "";
+        clearSearchBtn.classList.add("hidden");
+        renderFilterPills();
+        renderTable();
+      }
+
+      /**
+       * Modal open / close controls
+       */
+      function openModal() {
+        state.isModalOpen = true;
+        modalEl.classList.remove("hidden");
+        if (terminalLogEl.childNodes.length === 0) {
+          resetTerminalLog();
+        }
+        inputCourse.focus();
+      }
+
+      function closeModal() {
+        state.isModalOpen = false;
+        modalEl.classList.add("hidden");
+      }
+
+      /**
+       * Loads courses.json and resources.json via fetch
+       */
+      async function loadArchiveData() {
+        footerStatusEl.textContent = "SYNCING INDEX // FETCHING JSON SCHEMAS...";
+        try {
+          const [coursesRes, resourcesRes] = await Promise.all([
+            fetch(COURSES_URL, { headers: { Accept: "application/json" } }),
+            fetch(RESOURCES_URL, { headers: { Accept: "application/json" } }),
+          ]);
+
+          if (!coursesRes.ok) {
+            throw new Error("Failed to load courses.json (HTTP " + coursesRes.status + ")");
+          }
+          if (!resourcesRes.ok) {
+            throw new Error(
+              "Failed to load resources.json (HTTP " + resourcesRes.status + ")"
+            );
+          }
+
+          const coursesData = await coursesRes.json();
+          const resourcesData = await resourcesRes.json();
+
+          if (!Array.isArray(coursesData) || !Array.isArray(resourcesData)) {
+            throw new Error("Invalid schema: expected JSON arrays.");
+          }
+
+          state.courses = coursesData;
+          state.courseMap.clear();
+          coursesData.forEach(function (c) {
+            if (c && typeof c.id === "string") {
+              state.courseMap.set(c.id, c);
+            }
+          });
+
+          // Sort resources newest first
+          state.resources = resourcesData.slice().sort(function (a, b) {
+            const dateA = Date.parse(a.created_at || "") || 0;
+            const dateB = Date.parse(b.created_at || "") || 0;
+            return dateB - dateA;
+          });
+
+          populateCourseDropdown();
+          renderFilterPills();
+          renderTable();
+
+          footerStatusEl.textContent =
+            "INDEX ONLINE // " +
+            state.courses.length +
+            " COURSES · " +
+            state.resources.length +
+            " RESOURCES";
+        } catch (err) {
+          renderFilterPills();
+          clearChildren(resourceTableBody);
+          emptyStateEl.classList.remove("hidden");
+          const msg = err instanceof Error ? err.message : "Unknown fetch error";
+          emptyStateTextEl.textContent = "ERROR LOADING ARCHIVE DATA: " + msg;
+          footerStatusEl.textContent = "INDEX DEGRADED // DATA FETCH FAILED";
+        }
+      }
+
+      /**
+       * Retrieves Cloudflare Turnstile token cleanly
+       */
+      function getTurnstileToken() {
+        if (
+          typeof window.turnstile !== "undefined" &&
+          typeof window.turnstile.getResponse === "function"
+        ) {
+          const token = window.turnstile.getResponse();
+          if (token) {
+            return token;
+          }
+        }
+        const hiddenInput = submissionForm.querySelector(
+          'input[name="cf-turnstile-response"]'
+        );
+        return hiddenInput ? hiddenInput.value : "";
+      }
+
+      /**
+       * Handles form submission to the Cloudflare Worker proxy
+       */
+      async function handleFormSubmit(event) {
+        event.preventDefault();
+        if (state.isSubmitting) {
+          return;
+        }
+
+        const courseId = inputCourse.value.trim();
+        const type = inputType.value.trim();
+        const semester = inputSemester.value.trim();
+        const title = inputTitle.value.trim();
+        const rawAssetUrl = inputAssetUrl.value.trim();
+        const rawContributor = inputContributor.value.trim();
+
+        appendTerminalLog("Validating submission fields...", "info");
+
+        if (!courseId) {
+          appendTerminalLog("Validation error: Please select a course.", "error");
+          return;
+        }
+
+        if ( TYPE_OPTIONS.indexOf(type) === -1 || type === "All" ) {
+          appendTerminalLog("Validation error: Invalid material type.", "error");
+          return;
+        }
+
+        if (semester.length < 4 || semester.length > 20) {
+          appendTerminalLog(
+            "Validation error: Semester must be between 4 and 20 characters.",
+            "error"
+          );
+          return;
+        }
+
+        if (title.length < 3 || title.length > 120) {
+          appendTerminalLog(
+            "Validation error: Title must be between 3 and 120 characters.",
+            "error"
+          );
+          return;
+        }
+
+        if (rawContributor.length > 40) {
+          appendTerminalLog(
+            "Validation error: Contributor handle cannot exceed 40 characters.",
+            "error"
+          );
+          return;
+        }
+
+        const validatedAssetUrl = sanitizeHttpsUrl(rawAssetUrl);
+        if (!validatedAssetUrl) {
+          appendTerminalLog(
+            "Validation error: Asset URL must be a valid https:// URL.",
+            "error"
+          );
+          return;
+        }
+
+        const turnstileToken = getTurnstileToken();
+        if (!turnstileToken) {
+          appendTerminalLog(
+            "Security check required: Complete the Cloudflare Turnstile challenge.",
+            "error"
+          );
+          return;
+        }
+
+        const payload = {
+          course_id: courseId,
+          type: type,
+          title: title,
+          semester: semester,
+          asset_url: validatedAssetUrl,
+          contributor: rawContributor.length > 0 ? rawContributor : null,
+          turnstile_token: turnstileToken,
+        };
+
+        state.isSubmitting = true;
+        submitFormBtn.disabled = true;
+        submitFormBtn.textContent = "Dispatching...";
+
+        appendTerminalLog(
+          "POST " + WORKER_ENDPOINT + " (" + courseId + " / " + type + ")...",
+          "info"
+        );
+
+        try {
+          const response = await fetch(WORKER_ENDPOINT, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+
+          let result = null;
+          try {
+            result = await response.json();
+          } catch {
+            result = null;
+          }
+
+          if (!response.ok || !result || result.success !== true) {
+            const errorMessage =
+              result && typeof result.error === "string"
+                ? result.error
+                : "HTTP " + response.status + " dispatch failure.";
+            appendTerminalLog("Submission rejected: " + errorMessage, "error");
+          } else {
+            appendTerminalLog(
+              "Pull request opened successfully:",
+              "success",
+              result.pr_url
+            );
+            submissionForm.reset();
+            if (
+              typeof window.turnstile !== "undefined" &&
+              typeof window.turnstile.reset === "function"
+            ) {
+              window.turnstile.reset();
+            }
+          }
+        } catch (networkErr) {
+          const msg =
+            networkErr instanceof Error
+              ? networkErr.message
+              : "Network error contacting worker endpoint.";
+          appendTerminalLog("Network exception: " + msg, "error");
+        } finally {
+          state.isSubmitting = false;
+          submitFormBtn.disabled = false;
+          submitFormBtn.textContent = "Dispatch PR ->";
+        }
+      }
+
+      // Event Listeners: Search Input
+      searchInputEl.addEventListener("input", function (e) {
+        state.searchQuery = e.target.value;
+        if (state.searchQuery.length > 0) {
+          clearSearchBtn.classList.remove("hidden");
+        } else {
+          clearSearchBtn.classList.add("hidden");
+        }
+        renderTable();
+      });
+
+      clearSearchBtn.addEventListener("click", function () {
+        state.searchQuery = "";
+        searchInputEl.value = "";
+        clearSearchBtn.classList.add("hidden");
+        renderTable();
+        searchInputEl.blur();
+      });
+
+      shortcutSearchBtn.addEventListener("click", function () {
+        searchInputEl.focus();
+        searchInputEl.select();
+      });
+
+      brandResetEl.addEventListener("click", function (e) {
+        e.preventDefault();
+        resetAllFilters();
+      });
+
+      resetFiltersBtn.addEventListener("click", function () {
+        resetAllFilters();
+      });
+
+      // Event Listeners: Modal
+      openModalBtn.addEventListener("click", openModal);
+      closeModalBtn.addEventListener("click", closeModal);
+      cancelModalBtn.addEventListener("click", closeModal);
+
+      modalEl.addEventListener("click", function (e) {
+        if (e.target === modalEl) {
+          closeModal();
+        }
+      });
+
+      clearLogBtn.addEventListener("click", resetTerminalLog);
+      submissionForm.addEventListener("submit", handleFormSubmit);
+
+      // Global Keyboard Shortcuts ("/" and "Escape")
+      document.addEventListener("keydown", function (e) {
+        const activeTag = document.activeElement
+          ? document.activeElement.tagName.toLowerCase()
+          : "";
+        const isTypingInField =
+          activeTag === "input" ||
+          activeTag === "textarea" ||
+          activeTag === "select" ||
+          (document.activeElement && document.activeElement.isContentEditable);
+
+        if (e.key === "/" && !state.isModalOpen && !isTypingInField) {
+          e.preventDefault();
+          searchInputEl.focus();
+          searchInputEl.select();
+          return;
+        }
+
+        if (e.key === "Escape") {
+          if (state.isModalOpen) {
+            e.preventDefault();
+            closeModal();
+            return;
+          }
+          if (document.activeElement === searchInputEl) {
+            searchInputEl.blur();
+          }
+        }
+      });
+
+      // Initialize Archive
+      resetTerminalLog();
+      loadArchiveData();
+    })();
+  </script>
+</body>
+</html>
