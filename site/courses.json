@@ -1,0 +1,931 @@
+[
+  {
+    "id": "0401111",
+    "name": "Discrete Structures",
+    "tracks": [
+      "Cybersecurity",
+      "CS",
+      "AI"
+    ]
+  },
+  {
+    "id": "0401120",
+    "name": "Programming Fundamentals Lab",
+    "tracks": [
+      "Cybersecurity",
+      "CS",
+      "AI"
+    ]
+  },
+  {
+    "id": "0401121",
+    "name": "Programming Fundamentals",
+    "tracks": [
+      "Cybersecurity",
+      "CS",
+      "AI"
+    ]
+  },
+  {
+    "id": "0401122",
+    "name": "Object Oriented Programming Language",
+    "tracks": [
+      "Cybersecurity",
+      "CS",
+      "AI"
+    ]
+  },
+  {
+    "id": "0401123",
+    "name": "Object Oriented Programming Language Lab",
+    "tracks": [
+      "Cybersecurity",
+      "CS",
+      "AI"
+    ]
+  },
+  {
+    "id": "0401151",
+    "name": "Introduction to Information Systems",
+    "tracks": [
+      "Cybersecurity",
+      "CS",
+      "AI"
+    ]
+  },
+  {
+    "id": "0401211",
+    "name": "Theory of Computation",
+    "tracks": [
+      "CS"
+    ]
+  },
+  {
+    "id": "0401212",
+    "name": "Data Structures",
+    "tracks": [
+      "Cybersecurity",
+      "CS",
+      "AI"
+    ]
+  },
+  {
+    "id": "0401221",
+    "name": "Data Science Programming",
+    "tracks": [
+      "CS"
+    ]
+  },
+  {
+    "id": "0401223",
+    "name": "Advanced Object Oriented Programming and GUI",
+    "tracks": [
+      "CS"
+    ]
+  },
+  {
+    "id": "0401224",
+    "name": "OO and GUI Laboratory",
+    "tracks": [
+      "CS"
+    ]
+  },
+  {
+    "id": "0401231",
+    "name": "Digital Logic Design",
+    "tracks": [
+      "CS"
+    ]
+  },
+  {
+    "id": "0401232",
+    "name": "Computer Design and Organization",
+    "tracks": [
+      "CS"
+    ]
+  },
+  {
+    "id": "0401240",
+    "name": "Computer networks and security",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0401241",
+    "name": "Networks and Data Communications",
+    "tracks": [
+      "Cybersecurity",
+      "CS"
+    ]
+  },
+  {
+    "id": "0401251",
+    "name": "Database Fundamentals",
+    "tracks": [
+      "Cybersecurity",
+      "CS",
+      "AI"
+    ]
+  },
+  {
+    "id": "0401252",
+    "name": "Database Lab",
+    "tracks": [
+      "Cybersecurity",
+      "CS",
+      "AI"
+    ]
+  },
+  {
+    "id": "0401313",
+    "name": "Principles of Computer Algorithms",
+    "tracks": [
+      "Cybersecurity",
+      "CS",
+      "AI"
+    ]
+  },
+  {
+    "id": "0401314",
+    "name": "Fundamentals of Artificial Intelligence",
+    "tracks": [
+      "Cybersecurity",
+      "CS",
+      "AI"
+    ]
+  },
+  {
+    "id": "0401315",
+    "name": "Principles of Computer Graphics",
+    "tracks": [
+      "CS"
+    ]
+  },
+  {
+    "id": "0401321",
+    "name": "Web-Based Programming and Applications",
+    "tracks": [
+      "Cybersecurity",
+      "CS",
+      "AI"
+    ]
+  },
+  {
+    "id": "0401322",
+    "name": "Web-Based Programming and Applications Lab",
+    "tracks": [
+      "Cybersecurity",
+      "CS",
+      "AI"
+    ]
+  },
+  {
+    "id": "0401324",
+    "name": "Programming Languages Concepts",
+    "tracks": [
+      "CS"
+    ]
+  },
+  {
+    "id": "0401331",
+    "name": "Computer Architecture",
+    "tracks": [
+      "CS"
+    ]
+  },
+  {
+    "id": "0401332",
+    "name": "Operating Systems Concepts",
+    "tracks": [
+      "Cybersecurity",
+      "CS",
+      "AI"
+    ]
+  },
+  {
+    "id": "0401333",
+    "name": "Introduction to Distributed Systems",
+    "tracks": [
+      "CS"
+    ]
+  },
+  {
+    "id": "0401335",
+    "name": "Machine Learning",
+    "tracks": [
+      "CS"
+    ]
+  },
+  {
+    "id": "0401336",
+    "name": "Neural Networks and Deep Learning",
+    "tracks": [
+      "CS"
+    ]
+  },
+  {
+    "id": "0401342",
+    "name": "Computer Security",
+    "tracks": [
+      "CS"
+    ]
+  },
+  {
+    "id": "0401343",
+    "name": "Wireless Networks",
+    "tracks": [
+      "CS"
+    ]
+  },
+  {
+    "id": "0401355",
+    "name": "System Analysis and Design",
+    "tracks": [
+      "CS"
+    ]
+  },
+  {
+    "id": "0401361",
+    "name": "Cloud Computing",
+    "tracks": [
+      "CS"
+    ]
+  },
+  {
+    "id": "0401423",
+    "name": "Computer Networking Programming",
+    "tracks": [
+      "CS"
+    ]
+  },
+  {
+    "id": "0401425",
+    "name": "Advanced Programming Languages",
+    "tracks": [
+      "CS"
+    ]
+  },
+  {
+    "id": "0401426",
+    "name": "Advanced Web Programming",
+    "tracks": [
+      "CS"
+    ]
+  },
+  {
+    "id": "0401431",
+    "name": "Computer Design and Organization",
+    "tracks": [
+      "CS"
+    ]
+  },
+  {
+    "id": "0401443",
+    "name": "Wireless Networks",
+    "tracks": [
+      "CS"
+    ]
+  },
+  {
+    "id": "0401451",
+    "name": "Software Engineering Concepts",
+    "tracks": [
+      "CS"
+    ]
+  },
+  {
+    "id": "0401452",
+    "name": "Special Topics in Computer Science-1",
+    "tracks": [
+      "CS"
+    ]
+  },
+  {
+    "id": "0401453",
+    "name": "Database Management Systems",
+    "tracks": [
+      "CS"
+    ]
+  },
+  {
+    "id": "0401454",
+    "name": "Special Topics in Computer Science",
+    "tracks": [
+      "CS"
+    ]
+  },
+  {
+    "id": "0401457",
+    "name": "Advanced Database Systems",
+    "tracks": [
+      "CS"
+    ]
+  },
+  {
+    "id": "0401458",
+    "name": "Special Topics in Computer Science-2",
+    "tracks": [
+      "CS"
+    ]
+  },
+  {
+    "id": "0401459",
+    "name": "Special Topics in Computer Science-3",
+    "tracks": [
+      "CS"
+    ]
+  },
+  {
+    "id": "0401491",
+    "name": "Graduation Project",
+    "tracks": [
+      "CS"
+    ]
+  },
+  {
+    "id": "0401492",
+    "name": "Practical Training",
+    "tracks": [
+      "CS"
+    ]
+  },
+  {
+    "id": "0401493",
+    "name": "Graduation Project-1",
+    "tracks": [
+      "CS"
+    ]
+  },
+  {
+    "id": "0401494",
+    "name": "Graduation Project-2",
+    "tracks": [
+      "CS"
+    ]
+  },
+  {
+    "id": "0401499",
+    "name": "Practical Training",
+    "tracks": [
+      "CS"
+    ]
+  },
+  {
+    "id": "0402101",
+    "name": "Data Science Concepts",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402112",
+    "name": "Statistical Methods for Data Science",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402201",
+    "name": "Data Engineering",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402202",
+    "name": "Data Engineering Lab",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402213",
+    "name": "Linear Algebra",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402221",
+    "name": "Data Science Programming",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402222",
+    "name": "Data Science Programming Lab",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402251",
+    "name": "Data Exploration and Visualization",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402311",
+    "name": "Time Series Analysis",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402321",
+    "name": "Advanced Data Science Programming",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402331",
+    "name": "Machine Learning",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402332",
+    "name": "Neural Networks and Deep Learning",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402333",
+    "name": "Applied Data Mining",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402335",
+    "name": "Machine learning lab",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402341",
+    "name": "Data Security",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402342",
+    "name": "Pattern Recognition",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402351",
+    "name": "Data Modelling and Simulations",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402372",
+    "name": "IoT and robotics programming",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402400",
+    "name": "AI Applications",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402421",
+    "name": "Social Media and Behavioral Analysis",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402431",
+    "name": "Special Topics in Data Science",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402432",
+    "name": "Data Regression",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402433",
+    "name": "Expert Systems",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402434",
+    "name": "Introduction to Robotics",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402435",
+    "name": "Special Topics in Data Science (1)",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402436",
+    "name": "Special Topics in Data Science (2)",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402437",
+    "name": "Special Topics in Data Science (3)",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402441",
+    "name": "Natural Language Processing and Text Mining",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402442",
+    "name": "Natural Language Processing and Text Mining Lab",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402443",
+    "name": "High performance computing and Big Data",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402451",
+    "name": "Big Data",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402452",
+    "name": "Information Retrieval",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402453",
+    "name": "Computer Vision",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402454",
+    "name": "Computer Vision lab",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402471",
+    "name": "Software Tools for Data Science",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402491",
+    "name": "Graduation Project",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402492",
+    "name": "Practical Training",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402493",
+    "name": "Graduation Project-1",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0402494",
+    "name": "Graduation Project-2",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "0403171",
+    "name": "Cybersecurity Fundamentals",
+    "tracks": [
+      "Cybersecurity"
+    ]
+  },
+  {
+    "id": "0403221",
+    "name": "Cybersecurity Programing",
+    "tracks": [
+      "Cybersecurity"
+    ]
+  },
+  {
+    "id": "0403222",
+    "name": "Cybersecurity Programing Lab",
+    "tracks": [
+      "Cybersecurity"
+    ]
+  },
+  {
+    "id": "0403241",
+    "name": "Cloud Computing",
+    "tracks": [
+      "Cybersecurity"
+    ]
+  },
+  {
+    "id": "0403242",
+    "name": "Network Security and Defense",
+    "tracks": [
+      "Cybersecurity"
+    ]
+  },
+  {
+    "id": "0403251",
+    "name": "Data and Software Security",
+    "tracks": [
+      "Cybersecurity"
+    ]
+  },
+  {
+    "id": "0403271",
+    "name": "Cryptography Theory",
+    "tracks": [
+      "Cybersecurity"
+    ]
+  },
+  {
+    "id": "0403272",
+    "name": "Data and Security Analytics",
+    "tracks": [
+      "Cybersecurity"
+    ]
+  },
+  {
+    "id": "0403341",
+    "name": "Cloud Computing Security",
+    "tracks": [
+      "Cybersecurity"
+    ]
+  },
+  {
+    "id": "0403371",
+    "name": "Infrastructure Security in Linux",
+    "tracks": [
+      "Cybersecurity"
+    ]
+  },
+  {
+    "id": "0403372",
+    "name": "Infrastructure Security Using Linux",
+    "tracks": [
+      "Cybersecurity"
+    ]
+  },
+  {
+    "id": "0403373",
+    "name": "Infrastructure Security Using Linux lab",
+    "tracks": [
+      "Cybersecurity"
+    ]
+  },
+  {
+    "id": "0403375",
+    "name": "Cybersecurity Ethics and Ethical Hacking",
+    "tracks": [
+      "Cybersecurity"
+    ]
+  },
+  {
+    "id": "0403421",
+    "name": "Reverse Software Engineering",
+    "tracks": [
+      "Cybersecurity"
+    ]
+  },
+  {
+    "id": "0403431",
+    "name": "Data Science Applications in Cybersecurity",
+    "tracks": [
+      "Cybersecurity"
+    ]
+  },
+  {
+    "id": "0403432",
+    "name": "Block Chain and Crypto Currencies",
+    "tracks": [
+      "Cybersecurity"
+    ]
+  },
+  {
+    "id": "0403433",
+    "name": "Malicious Software",
+    "tracks": [
+      "Cybersecurity"
+    ]
+  },
+  {
+    "id": "0403451",
+    "name": "Digital Forensic",
+    "tracks": [
+      "Cybersecurity"
+    ]
+  },
+  {
+    "id": "0403452",
+    "name": "Secure Systems Development and Design",
+    "tracks": [
+      "Cybersecurity"
+    ]
+  },
+  {
+    "id": "0403453",
+    "name": "Principles of Digital Forensics",
+    "tracks": [
+      "Cybersecurity"
+    ]
+  },
+  {
+    "id": "0403454",
+    "name": "Principles of Digital Forensics lab",
+    "tracks": [
+      "Cybersecurity"
+    ]
+  },
+  {
+    "id": "0403471",
+    "name": "Secure Communications Protocols",
+    "tracks": [
+      "Cybersecurity"
+    ]
+  },
+  {
+    "id": "0403472",
+    "name": "Data Integrity and Authentication",
+    "tracks": [
+      "Cybersecurity"
+    ]
+  },
+  {
+    "id": "0403474",
+    "name": "Cryptoanalysis",
+    "tracks": [
+      "Cybersecurity"
+    ]
+  },
+  {
+    "id": "0403476",
+    "name": "Special Topics in Cybersecurity I",
+    "tracks": [
+      "Cybersecurity"
+    ]
+  },
+  {
+    "id": "0403477",
+    "name": "Special Topics in Cybersecurity II",
+    "tracks": [
+      "Cybersecurity"
+    ]
+  },
+  {
+    "id": "0403478",
+    "name": "Special Topics in Cybersecurity III",
+    "tracks": [
+      "Cybersecurity"
+    ]
+  },
+  {
+    "id": "0403491",
+    "name": "Graduation Project (1)",
+    "tracks": [
+      "Cybersecurity"
+    ]
+  },
+  {
+    "id": "0403492",
+    "name": "Graduation Project (2)",
+    "tracks": [
+      "Cybersecurity"
+    ]
+  },
+  {
+    "id": "0403499",
+    "name": "Practical Training",
+    "tracks": [
+      "Cybersecurity"
+    ]
+  },
+  {
+    "id": "0900213",
+    "name": "Technical Writing and Documentation",
+    "tracks": [
+      "Cybersecurity",
+      "CS",
+      "AI"
+    ]
+  },
+  {
+    "id": "0903101",
+    "name": "Calculus (1)",
+    "tracks": [
+      "Cybersecurity",
+      "CS",
+      "AI"
+    ]
+  },
+  {
+    "id": "0903102",
+    "name": "Calculus (2)",
+    "tracks": [
+      "Cybersecurity",
+      "CS",
+      "AI"
+    ]
+  },
+  {
+    "id": "0903281",
+    "name": "Probability and Statistics",
+    "tracks": [
+      "Cybersecurity",
+      "CS",
+      "AI"
+    ]
+  },
+  {
+    "id": "0903381",
+    "name": "Numerical Analysis",
+    "tracks": [
+      "Cybersecurity",
+      "CS"
+    ]
+  },
+  {
+    "id": "0904101",
+    "name": "General Physics (1)",
+    "tracks": [
+      "Cybersecurity",
+      "CS",
+      "AI"
+    ]
+  },
+  {
+    "id": "0904102",
+    "name": "General Physics (2)",
+    "tracks": [
+      "CS"
+    ]
+  },
+  {
+    "id": "401342",
+    "name": "Computer Security",
+    "tracks": [
+      "AI"
+    ]
+  },
+  {
+    "id": "904102",
+    "name": "General Physics (2)",
+    "tracks": [
+      "AI"
+    ]
+  }
+]

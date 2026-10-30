@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+worker/node_modules/
+
+# Local Worker secrets & Wrangler state (NEVER commit)
+.dev.vars
+.dev.vars.*
+worker/.dev.vars
+worker/.dev.vars.*
+.wrangler/
+worker/.wrangler/
+
+# Build / temporary artifacts
+dist/
+worker/dist/
+*.log
+.DS_Store
+README.md
