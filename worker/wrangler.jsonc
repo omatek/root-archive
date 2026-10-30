@@ -8,11 +8,11 @@
   // Public non-sensitive configuration variables.
   // Replace these placeholders with your actual values before deploying.
   "vars": {
-    "GITHUB_OWNER": "YOUR_GITHUB_USERNAME_OR_ORG",
-    "GITHUB_REPO": "YOUR_GITHUB_REPO_NAME",
-    "ALLOWED_ORIGIN": "https://YOUR_FRONTEND_DOMAIN_OR_PAGES_URL",
-    "R2_PUBLIC_BASE_URL": "https://YOUR_R2_PUBLIC_DOMAIN",
-    "GOOGLE_CLIENT_ID": "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com"
+    "GITHUB_OWNER": "omatek",
+    "GITHUB_REPO": "root-archive",
+    "ALLOWED_ORIGIN": "https://root-archive.pages.dev",
+    "R2_PUBLIC_BASE_URL": "https://pub-7a7ae5ec96bb46c7829a25b4b06407eb.r2.dev",
+    "GOOGLE_CLIENT_ID": "451085424306-tll56iseq0qd9lcofeb1nkiqiaq0opvh.apps.googleusercontent.com"
   },
 
   // Cloudflare R2 bucket binding (must be named "BUCKET" to match Env in worker.ts)
