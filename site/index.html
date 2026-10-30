@@ -83,6 +83,11 @@
   ></script>
 
   <style>
+    /* Native hidden must override Tailwind display utilities such as flex. */
+    [hidden] {
+      display: none !important;
+    }
+
     :root {
       color-scheme: dark;
       --bg-obsidian: #05080f;
