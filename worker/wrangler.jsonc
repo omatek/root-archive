@@ -12,7 +12,10 @@
     "GITHUB_REPO": "root-archive",
     "ALLOWED_ORIGIN": "https://root-archive.pages.dev",
     "R2_PUBLIC_BASE_URL": "https://pub-7a7ae5ec96bb46c7829a25b4b06407eb.r2.dev",
-    "GOOGLE_CLIENT_ID": "451085424306-tll56iseq0qd9lcofeb1nkiqiaq0opvh.apps.googleusercontent.com"
+    "GOOGLE_CLIENT_ID": "451085424306-tll56iseq0qd9lcofeb1nkiqiaq0opvh.apps.googleusercontent.com",
+    "CLEANUP_MODE": "off",
+    "CLEANUP_ORPHAN_DAYS": "7",
+    "CLEANUP_REJECTED_HOURS": "12"
   },
 
   // Cloudflare R2 bucket binding (must be named "BUCKET" to match Env in worker.ts)

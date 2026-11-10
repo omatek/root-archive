@@ -22,24 +22,19 @@ on independent branches if their file scopes remain separate.
 
 The README lists exact local commands. CI requires no Cloudflare/Google/GitHub
 production secrets. Worker checks install from the lockfile, typecheck, dry-run
-bundle, and test boundary responses. Repository checks validate catalogs, test
-validators and local measurement, and generate/analyze synthetic records.
-These are not full submission-to-publication or cleanup tests.
+bundle, and test signed-token submissions, rollback, cleanup and local
+workerd/emulated R2. Repository checks validate catalogs, trusted publication
+policy/concurrent Git histories, workflows and local measurement, and
+generate/analyze synthetic records. These do not verify production integration.
 
-After merging the workflow through human review, configure branch protection
-manually on `main`: require PR review and the **Repository checks** and **Worker
-checks** jobs; require current branches if suitable for submission concurrency;
-block direct pushes, force pushes and bypasses according to owner policy.
-Select the actual check names shown in GitHub. Do not make a planned,
-nonexistent publication check required until it is implemented and observed.
-Branch protection/ruleset settings were not inspected or changed by this task.
-
-General CI executes PR code with read-only repository permissions and no secrets,
-using pinned Actions and checkout with persisted credentials disabled. It is
-not a trusted publication authorization gate: a contributor can modify their
-own validators in a PR. Recovery work must validate submission diffs with
-trusted base code and enforce allowed paths and catalog append-only behavior.
-Do not run untrusted scripts under a privileged `pull_request_target` workflow.
+For moderation rollout, follow [moderation](moderation.md): require **Submission
+policy** on the exact PR head from GitHub Actions, **Repository checks** and
+**Worker checks**, current branches and maintainer approval; block main bypasses.
+The publication workflow uses protected-base code with a narrowly scoped status
+writer and never executes PR code. General read-only CI still executes PR code
+and is not the publication authorization gate. Required checks must be observed
+before configuring protection; do not allow submission merges during bootstrap.
+Branch rules/live settings were not inspected or changed by this task.
 
 Weekly Dependabot PRs cover `/worker` npm and GitHub Actions. Review lockfile,
 release notes and passing checks; no auto-merge exists. Use the Actions page
@@ -59,21 +54,24 @@ local copy/config before browser testing authenticated flows.
 
 Worker bindings: `GITHUB_TOKEN`, `TURNSTILE_SECRET`, `GOOGLE_CLIENT_ID`,
 `GITHUB_OWNER`, `GITHUB_REPO`, `ALLOWED_ORIGIN`, `R2_PUBLIC_BASE_URL`, and
-`BUCKET`. Put secrets in ignored `worker/.dev.vars` locally or approved
-Cloudflare secret storage for a human-controlled deployment. Never commit them.
+`BUCKET`. Moderation also uses the reviewed root `moderation.config.json`,
+`CLEANUP_MODE`, `CLEANUP_ORPHAN_DAYS` and `CLEANUP_REJECTED_HOURS`; defaults leave
+cleanup off with no Cron. Put secrets in ignored `worker/.dev.vars` locally or
+approved Cloudflare secret storage for a human-controlled deployment. Never commit them.
 The existing public client/site identifiers are not secrets.
 
-For a future submission token, restrict access to this repository and only
-required contents/PR operations; exclude administration/workflow permissions
-unless a separately reviewed requirement proves necessary. Cloudflare write
-credentials must be restricted to intended resources. Public-read R2 does not
+Restrict the submission token to this repository with Contents/PR read-write
+permissions, no administration/workflow permissions or main bypass. Verify its
+identity matches `submission_author`; use a distinct bot identity or another
+reviewer when required approvals would otherwise be self-approval. Cloudflare
+write credentials must be restricted to intended resources. Public-read R2 does not
 permit anonymous writes, and unlisted uploads must never be called private.
 
 ## Deployment and rollback (human-controlled)
 
-This task does not deploy. Before any later release: resolve P0 publication and
-cleanup, review the diff, run CI, record the approved SHA and prior deployment
-IDs, verify OAuth origins/client, Turnstile hostnames/secret, CORS, R2 binding
+This task does not deploy. Before any later release: review the moderation
+implementation and staging evidence, run CI, record the approved SHA and prior
+deployment IDs, verify OAuth origins/client, Turnstile hostnames/secret, CORS, R2 binding
 and public-read/write policy, GitHub token permissions, and logging privacy.
 Source configuration and existing PRs do not prove those live settings.
 
@@ -89,12 +87,14 @@ SHA/deployment IDs. Use approved Cloudflare rollback controls after confirming
 the previous version's bindings/contracts. Revert repository changes through a
 PR; do not rewrite history. Code rollback does not roll back R2 objects,
 published catalogs or open moderation PRs. Reconcile those separately; never
-bulk-delete resources. Cleanup recovery/monitoring is blocked until cleanup exists.
+bulk-delete resources. Keep approval receipts permanent. Cleanup decisions,
+throughput, dry-run rollout, monitoring and per-key removal/reset are documented
+in [moderation](moderation.md). Code rollback does not restore deleted files.
 
 ## Approval boundaries
 
-Mandatory before launch: resolve P0 moderation/security, owner verification of
-production settings, full lifecycle testing and human release approval. Legal,
+Mandatory before launch: owner acceptance of moderation/security and staging,
+verification of production settings, full lifecycle testing and human release approval. Legal,
 privacy/contact/takedown work needs qualified Jordanian lawyer review. Real
 telemetry or academic staging experiments need explicit privacy/ethics and owner
 approval. Course requirements/rubrics are still needed for final academic reports.

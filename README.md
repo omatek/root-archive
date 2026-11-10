@@ -4,8 +4,9 @@ Independent student-led resource sharing: a static catalog, a Cloudflare Worker,
 public-read R2 assets, and GitHub submission review. No database.
 
 Start with [AGENTS.md](AGENTS.md), the [verified baseline](docs/audit.md), and
-the [owner guide](docs/operations.md). The current submission PR does not publish
-a resource to the catalog; moderation recovery remains P0.
+the [owner guide](docs/operations.md), and [moderation](docs/moderation.md).
+Each submission proposes its catalog addition in one review PR. Cleanup is
+implemented but disabled pending owner-approved staging and configuration.
 
 ## Local checks
 

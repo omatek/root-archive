@@ -3,7 +3,7 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [main, feat/development-foundations]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -29,6 +29,12 @@ jobs:
         with:
           python-version: '3.12'
       - run: node scripts/catalogs.mjs
+      - name: Validate GitHub workflows
+        run: |
+          curl -fsSL --retry 3 --max-time 60 https://github.com/rhysd/actionlint/releases/download/v1.7.7/actionlint_1.7.7_linux_amd64.tar.gz -o "$RUNNER_TEMP/actionlint.tar.gz"
+          printf '%s  %s\n' '023070a287cd8cccd71515fedc843f1985bf96c436b7effaecce67290e7e0757' "$RUNNER_TEMP/actionlint.tar.gz" | sha256sum -c
+          tar -xzf "$RUNNER_TEMP/actionlint.tar.gz" -C "$RUNNER_TEMP" actionlint
+          "$RUNNER_TEMP/actionlint"
       - run: node --test scripts/*.test.mjs
       - run: python3 -m unittest discover -s scripts/tests -v
       - run: python3 -m unittest discover -s analytics/tests -v
