@@ -26,7 +26,7 @@ No production integration claim is made. Commands from the repository root:
 | Command | Actual result |
 | --- | --- |
 | `npm ci --prefix worker` | Lockfile installation successful (local sandbox needed `--cache /tmp/root-archive-npm-cache`) |
-| `npm --prefix worker run check` | TypeScript passed; Wrangler dry-run bundled; 42 Worker tests passed, zero skipped |
+| `npm --prefix worker run check` | TypeScript passed; Wrangler dry-run bundled; 50 Worker tests passed, zero skipped |
 | `node --test scripts/*.test.mjs` | 20 repository tests passed |
 | `python3 -m unittest discover -s scripts/tests -v` | 3 passed |
 | `python3 -m unittest discover -s analytics/tests -v` | 5 passed |
@@ -73,8 +73,8 @@ That correction introduced stable conditional R2 PR associations; those remain.
 Five regressions failed against `4c43f7f0`: rename-closed deletion at the 12-hour
 boundary; modification of an unrelated reused branch; authorization from stale
 labels; label removal during validation; and revoked permission on an old rerun.
-All five now pass. Current total: **70 tests** (42 Worker, 20 repository, 3
-measurement, 5 analytics), with no skipped tests in the full runs.
+All five passed at `5b443a2b`, with **70 tests** (42 Worker, 20 repository, 3
+measurement, 5 analytics), and no skipped tests in the full runs.
 
 - GitHub ruleset `26518493` was inspected read-only: PR requirement, zero required
   reviews, deletion/non-fast-forward guards, no required checks. Legacy protection
@@ -97,6 +97,43 @@ The hosted spoof acceptance test has **not** been executed; ordinary hosted CI
 cannot establish App/environment/ruleset enforcement. No App, credential,
 environment, branch protection, cleanup trigger or live PR was modified. Work is
 exported only by committing/pushing the existing implementation branch.
+
+## Third security review corrections
+
+Three new regressions failed against `5b443a2b`: an identical-ETag replacement
+was deleted; a failed association save returned 502 despite a created PR; and a
+catalog larger than 1 MB could not be retrieved. All three now pass. The focused
+command `node --test --test-name-pattern='regression:'
+worker/tests/{cleanup,submission}.test.mjs` passes all five selected regressions,
+including the earlier rename-closure and branch-reuse cases.
+
+Current full total: **78 tests** (50 Worker, 20 repository, 3 measurement,
+5 analytics), zero skipped. The verification table above records the current
+run. Added tests also cover each upload identity field, the final age check,
+inclusive 4 MiB retrieval/cancellation, invalid raw JSON/UTF-8 and unavailable or
+mismatched PR confirmation. Real emulated R2 confirms identical bytes can have
+equal ETags but distinct upload versions. No test claims atomic R2 deletion.
+
+- R2 cleanup compares version/timestamp/size/ETag/provenance and rechecks age
+  before deletion. Workers R2 has no conditional delete; the remaining
+  HEAD/DELETE race and pause/drain requirement for restores are documented.
+- Failed association persistence returns the PR URL only after a matching live
+  PR is confirmed; durable intent protects the file and sanitized logs support
+  repair. Uncertain creation or failed confirmation still cannot claim success.
+- Commit-pinned raw Contents reads avoid GitHub's default 1 MB content omission;
+  declared and streamed bytes are capped at 4 MiB, failing closed on errors.
+- Existing Cloudflare check records confirm preview builds for legacy PRs
+  #1–#3 and engineering PR #22. Anonymous URL probes could not establish public
+  reachability: the workspace proxy denied the shell probe, and web retrieval
+  failed. No complete Cloudflare inventory/configuration was available.
+  [Pages guidance](pages-previews.md) records the exact exclusions, old-deployment
+  audit and reproducible owner-run no-preview acceptance test. These live
+  settings and tests are outstanding; no repository-only setting can enforce
+  the project's Git preview exclusions.
+- Post-validation revocation remains a human approval/hold boundary, with fresh
+  validation/SHA required after revocation. No permission-monitoring service was
+  added. Dedicated App/environment/required-check ruleset configuration and the
+  hosted spoof test remain unconfigured/unverified owner steps.
 
 ## Complete changed-file inventory
 
@@ -125,7 +162,7 @@ exported only by committing/pushing the existing implementation branch.
 | `worker/tests/workerd.test.mjs` | Real local workerd/R2 lifecycle and public-read fixture |
 | `site/index.html` | Waiting-for-review success text and PR link only |
 | `AGENTS.md`, `README.md`, `docs/operations.md` | Update actual architecture/checks and human rollout boundaries |
-| `docs/moderation.md`, `docs/moderation-evidence.md`, `docs/publication-enforcement.md` | Implemented lifecycle, operating/acceptance plan and evidence |
+| `docs/moderation.md`, `docs/moderation-evidence.md`, `docs/publication-enforcement.md`, `docs/pages-previews.md` | Implemented lifecycle, publication/preview operating and acceptance plans, and evidence |
 
 Configuration requirements, retention conditions, concurrency procedure, legacy
 resubmission, manual per-key reset/removal, monitoring, staging acceptance and

@@ -145,3 +145,78 @@ test('security regression: a reused submission branch must never be modified by 
   assert.equal(github.requests.some(r => r.method !== 'GET'), false);
   assert.ok(await bucket.head(key));
 });
+
+test('regression: identical ETag cannot identify a replacement upload version or timestamp', async () => {
+  let reads = 0;
+  github.before = path => {
+    if (path === '/git/ref/heads/main' && ++reads === 2) {
+      const original = bucket.values.get(key);
+      const uploaded = new Date();
+      bucket.values.set(key, {...original, version: 'restored-version', uploaded,
+        customMetadata: {...original.customMetadata, created_at: uploaded.toISOString()}});
+    }
+  };
+  await run();
+  assert.ok(await bucket.head(key), 'replacement with identical bytes must be retained');
+  assert.equal(bucket.deleted.length, 0);
+});
+
+test('each upload identity component must still match even when ETag is unchanged', async () => {
+  for (const patch of [o => ({...o, version: 'another-upload'}), o => ({...o, uploaded: new Date(o.uploaded.getTime() + 1000)}),
+    o => ({...o, version: ''}), o => ({...o, size: o.size + 1})]) {
+    await bucket.seed(); let reads = 0;
+    github.before = path => {if (path === '/git/ref/heads/main' && ++reads === 2) bucket.values.set(key, patch(bucket.values.get(key)));};
+    await run(); assert.ok(await bucket.head(key));
+  }
+  assert.equal(bucket.deleted.length, 0);
+});
+test('final deletion rechecks age against the current clock, not the scan-start clock', async () => {
+  await bucket.seed(id, 0);
+  const realNow = Date.now;
+  const future = realNow() + 8 * day;
+  Date.now = () => future;
+  let reads = 0;
+  github.before = path => {if (path === '/git/ref/heads/main' && ++reads === 2) Date.now = realNow;};
+  try { await run(); assert.ok(await bucket.head(key)); }
+  finally { Date.now = realNow; }
+  assert.equal(bucket.deleted.length, 0);
+});
+test('raw catalog retrieval accepts the 4 MiB boundary and aborts oversized bodies', async () => {
+  const maximum = 4 * 1024 * 1024;
+  const delegate = github.fetch.bind(github);
+  for (const {size, declared, accepted} of [
+    {size: maximum, accepted: true},
+    {size: 2, declared: maximum + 1, accepted: false},
+    {size: maximum + 2 * 1024 * 1024, accepted: false},
+    {size: maximum + 2 * 1024 * 1024, declared: 1, accepted: false},
+  ]) {
+    await bucket.seed(); let cancelled = false; let produced = 0;
+    globalThis.fetch = (input, init) => {
+      const request = input instanceof Request ? input : new Request(input, init);
+      if (!new URL(request.url).pathname.endsWith('/contents/site/resources.json')) return delegate(request);
+      assert.equal(request.headers.get('Accept'), 'application/vnd.github.raw+json');
+      let sent = 0;
+      const body = new ReadableStream({pull(controller) {
+        if (sent === size) { controller.close(); return; }
+        const chunk = new Uint8Array(Math.min(64 * 1024, size - sent)).fill(32);
+        if (!sent) { chunk[0] = 91; chunk[1] = 93; }
+        sent += chunk.length; produced += chunk.length; controller.enqueue(chunk);
+      }, cancel() {cancelled = true;}});
+      return new Response(body, {headers: declared === undefined ? {} : {'Content-Length': String(declared)}});
+    };
+    await run();
+    assert.equal((await bucket.head(key)) === null, accepted);
+    if (!accepted) { assert.equal(cancelled, true); assert.ok(produced < size || declared > maximum); }
+  }
+});
+test('invalid raw JSON or UTF-8 keeps the object', async () => {
+  const delegate = github.fetch.bind(github);
+  for (const bytes of ['{invalid', new Uint8Array([0xc3, 0x28])]) {
+    globalThis.fetch = (input, init) => {
+      const request = input instanceof Request ? input : new Request(input, init);
+      return new URL(request.url).pathname.endsWith('/contents/site/resources.json') ? new Response(bytes) : delegate(request);
+    };
+    await run(); assert.ok(await bucket.head(key));
+  }
+  assert.equal(bucket.deleted.length, 0);
+});

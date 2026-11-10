@@ -75,5 +75,9 @@ test('workerd signed-token submission, emulated R2 storage, public asset read an
     assert.equal(await bucket.put('moderation-control/test.json', 'overwrite', {onlyIf: {etagDoesNotMatch: '*'}}), null);
     assert.equal(await bucket.put('moderation-control/test.json', 'overwrite', {onlyIf: {etagMatches: 'wrong'}}), null);
     assert.ok(await bucket.put('moderation-control/test.json', '{"cursor":"next"}', {onlyIf: {etagMatches: cursor.etag}}));
+    const firstUpload = await bucket.put('moderation-control/identity-fixture', 'identical bytes');
+    const restored = await bucket.put('moderation-control/identity-fixture', 'identical bytes');
+    assert.equal(firstUpload.etag, restored.etag);
+    assert.notEqual(firstUpload.version, restored.version);
   } finally { await mf.dispose(); }
 });

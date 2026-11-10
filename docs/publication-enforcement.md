@@ -82,13 +82,30 @@ validation it fetches the live PR again, rejects changed authorization inputs,
 rechecks writer permission and revalidates policy immediately before completing
 the App check. A past labeled event or past permission result is never reused.
 
-Checks are commit-scoped, not transactional merge-time authorization. On label or
-permission removal, require fresh validation and verify the latest dedicated-App
-result before merging. If reporting is unavailable, hold the PR; a new commit
-ensures no prior green result can be reused. No automatic merge is enabled.
-There remains a final authorization-read/report/merge interval; independent
-maintainer review must consider current authorization. These instructions do not
-claim instantaneous revocation of every previously emitted check.
+Checks are commit-scoped, not transactional merge-time authorization. Permission
+revocation after a successful validation does not rewrite that completed check
+or necessarily trigger a PR event. No continuous permission monitor, webhook
+service or new infrastructure is warranted at this prelaunch scale.
+
+Owner procedure:
+
+1. Configure the dedicated App/environment and App-ID-bound rule exactly as
+   above; require current branches, independent approval, stale-approval dismissal,
+   approval of the latest push, and no bypass. **These remain unconfigured and
+   unverified.** Existing name-based CI is not a substitute.
+2. Before merging maintenance, the moderator verifies the current author still
+   has write/maintain/admin permission, the maintenance label remains, and the
+   head/base match the fresh App check and independent approval. Do not merge
+   while any invalidation/revalidation is pending or unavailable.
+3. After label removal or permission revocation, hold the PR, dismiss obsolete
+   human approvals as appropriate, and rerun trusted validation against current
+   data. If a prior green result could remain eligible (or reporting is down),
+   require a fresh head commit and new checks/review; never reuse that old green
+   SHA to merge. A new SHA with no App result is blocked once the rule exists.
+4. The local stale-event/revocation tests prove reruns read current state, not
+   immediate revocation of every old check. There remains a final read/report/
+   merge interval. Human approval and the explicit hold handle that boundary;
+   branch protection alone does not continuously monitor collaborator rights.
 
 ## Reproducible hosted spoof test — not executed here
 

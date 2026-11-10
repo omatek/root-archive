@@ -13,6 +13,9 @@ R2 remains public-read, including pending uploads. Anyone knowing an asset URL
 can download it directly without Google, a Worker proxy, GitHub lookups or signed
 URLs. Public access must never allow writes/deletes. Bucket permissions and the
 existing Pages main→`site/` Git integration require owner verification.
+Exclude `submission/*` and legacy `submission-*` from previews, audit old
+deployments, and run the [Pages acceptance test](pages-previews.md) before
+submissions are enabled; required GitHub checks do not suppress Pages previews.
 
 The Worker reads main at an exact commit and creates one atomic Git commit/PR on
 `submission/<uuid>` containing exactly:
@@ -32,7 +35,18 @@ PR number. Conditional R2 writes record `not-created` before GitHub work,
 POST restores `not-created`; ambiguous responses or failed link persistence keep
 `creating`. Definite submission failure attempts rollback; failed rollback is
 logged. A known-created PR's file is never rolled back on link persistence failure.
-No database or new service is used. Control records are public nonstudent data.
+If saving `linked` fails after a successful PR response, the Worker reads that
+exact PR once and verifies its repository/author/branch/commit/base and open
+state. On confirmation it returns 201 with the verified PR URL, avoiding a
+retry prompted solely by a storage failure. It emits
+`submission_association_repair_needed` with generated ID, PR number and
+verification outcome; no token or student metadata is logged. The durable
+`creating` marker (or a link write whose outcome was unknown) retains the object.
+If PR creation/verification is uncertain, no success is claimed and no rollback
+of a possibly created PR's asset occurs. The owner should verify the PR/receipt/
+key, inspect the actual association, and conditionally repair it to `linked`
+with that PR number, preserving any newer state. No repair endpoint/retry service
+was added. No database or new service is used. Control records are public data.
 
 ## Trusted validation and enforcement
 
@@ -116,7 +130,20 @@ Only a proven never-created orphan can be automatically deleted:
 5. The original submission branch does not exist. Any remaining/reused/diverged
    branch is a hold, regardless of its contents. Cleanup performs no branch writes.
 6. Association, PR/branch absence and main approval are checked again, and the
-   R2 object identity/provenance is unchanged immediately before deletion.
+   R2 upload version, timestamp, ETag, size and provenance still match the scan,
+   and its age is checked again against the current clock immediately before
+   deletion. Missing identity or a replacement/restoration with identical bytes
+   retains the object and starts its age from the replacement upload.
+
+The [R2 Workers API](https://developers.cloudflare.com/r2/api/workers/workers-api-reference/)
+provides a unique `version` per upload; ETag alone identifies content and may be
+unchanged on restoration. Its `delete(key)` has no version/ETag condition. The
+final HEAD and DELETE are **not atomic**: a replacement after the final check
+could still be deleted. No atomic-delete guarantee is claimed. Backend UUID keys
+are immutable/conditionally created; operators must stop and drain in-flight
+cleanup before restoring/replacing objects, preferably using a fresh key. Do
+not enable cleanup during a restore or other writer activity outside this
+protocol. Extra observations or locks would not make this API conditional.
 
 This handles failed rollback before branch creation. A definite failed PR POST
 may leave a branch, so its object is intentionally held for owner cleanup.
@@ -141,13 +168,17 @@ minutes plus failures/overlap. There is no automatic rejected-upload deletion SL
 time. ETag compare-and-swap prevents overlapping writers from overwriting newer
 progress. Object failures advance the cursor and retry next sweep; end-of-list
 wraps, so retained/failing first keys do not starve later keys. Delete and retry
-are idempotent. Catalog files over 4 MiB and incomplete PR listings fail closed.
+are idempotent. Catalog/course/receipt reads use GitHub's supported raw Contents media type at
+an exact commit SHA, not its default base64 JSON representation (which omits
+content over 1 MB). Both declared length and streamed bytes are bounded to
+**4 MiB inclusive**; oversized reads are cancelled, and invalid JSON/UTF-8 or
+incomplete PR listings fail closed. See [GitHub Contents limits](https://docs.github.com/en/rest/repos/contents#get-repository-content).
 Control records are outside the asset scan and remain as small audit markers.
 
 Monitor `cleanup_scan_advanced`/wrap/last scan time, `cleanup_scan_overlap`,
 `cleanup_retry`, `cleanup_scan_failed`, `cleanup_retain_submission`,
 `cleanup_retain_branch`, `cleanup_would_delete`, `cleanup_deleted` and
-`rollback_failed`. Logs contain fixed outcomes/status codes/generated IDs, not
+`rollback_failed` and `submission_association_repair_needed`. Logs contain fixed outcomes/status codes/generated IDs, not
 content/emails/tokens. Compare object counts/ages with sweep duration; alert on
 stopped progress, growing retries or incoming objects approaching scan capacity.
 Do not increase batch size without revisiting the subrequest budget.
@@ -200,7 +231,8 @@ SHA, check App identity, ruleset/environment settings, deployment IDs, quotas an
 rollback plan before requesting a production release.
 
 Accepted limits: pending content is public and not malware-scanned; trusted
-writer/admin or App credential compromise can defeat protection; outages and
+writer/admin or App credential compromise can defeat protection; object restoration between
+HEAD/DELETE remains a documented storage race; outages and
 backlogs delay orphan cleanup; manual rejected/abandoned cleanup is now required;
 checks have a final authorization/merge interval and are not a merge-time
 transaction. Local mocks/workerd do not establish production correctness.

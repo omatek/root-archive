@@ -72,7 +72,15 @@ async function processObject(env: Env, object: R2Object, now: number): Promise<v
   if (await published(github, id, object.key)) { log('cleanup_retain_racing_publication', {id}); return; }
   const current = await env.BUCKET.head(object.key);
   if (!current) { log('cleanup_already_deleted', {id}); return; }
-  if (current.etag !== object.etag || provenance(current) !== id) throw new Error('object_changed_during_cleanup');
+  // ETags identify bytes, not a particular upload. Restoring identical bytes
+  // changes R2's upload version/timestamp and must restart the grace period.
+  if (typeof object.version !== 'string' || !object.version || current.version !== object.version || current.etag !== object.etag
+    || current.size !== object.size || current.uploaded.getTime() !== object.uploaded.getTime()
+    || provenance(current) !== id || Date.now() - current.uploaded.getTime() < orphanGrace) {
+    throw new Error('object_changed_or_young_during_cleanup');
+  }
+  // R2's Workers delete has no version/ETag condition. This final HEAD is not
+  // atomic with DELETE: operators must pause/drain cleanup before restores.
   await env.BUCKET.delete(object.key);
   log('cleanup_deleted', {id, reason: 'orphan', github_calls: github.calls});
 }

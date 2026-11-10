@@ -33,7 +33,9 @@ Require `Submission policy` from a DISTINCT publication App's integration ID,
 existing CI, current branches, independent approval and no main bypass. A check
 name sourced from GitHub Actions does not identify a trusted workflow. Owner App,
 main-only secret environment and ruleset setup plus hosted spoof testing are
-outstanding; do not allow submission merges during bootstrap. The reviewed
+outstanding; do not allow submission merges during bootstrap. Follow the
+[Pages preview exclusions and old-deployment audit](pages-previews.md) before
+enabling submission publication; GitHub checks do not gate Pages previews. The reviewed
 ruleset currently requires a PR but no checks/approvals; legacy protection reads
 were denied by the integration. No live configuration was modified.
 

@@ -9,6 +9,7 @@ Each submission proposes its catalog addition in one review PR. Automatic
 cleanup covers proven branchless orphans; PR-associated files require owner
 reviewed removal. Cleanup is off. The publication gate requires owner App/ruleset
 setup and the [hosted spoof acceptance test](docs/publication-enforcement.md).
+Pages also needs [submission preview exclusions](docs/pages-previews.md).
 
 ## Local checks
 

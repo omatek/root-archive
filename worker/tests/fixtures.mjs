@@ -31,13 +31,14 @@ export class MemoryBucket {
   deleted = [];
   failDelete = false;
   failPut = false;
+  nextVersion = 0;
   async put(key, value, options = {}) {
     if (this.failPut) throw new Error('mock_put_failure');
     const old = this.values.get(key);
     if (options.onlyIf?.etagMatches && old?.etag !== options.onlyIf.etagMatches) return null;
     if (options.onlyIf?.etagDoesNotMatch === '*' && old) return null;
     const bytes = typeof value === 'string' ? value : Buffer.from(value);
-    const item = {key, etag: hash(bytes), version: '1', size: bytes.length, uploaded: new Date(),
+    const item = {key, etag: hash(bytes), version: String(++this.nextVersion), size: bytes.length, uploaded: new Date(),
       customMetadata: options.customMetadata, value: bytes};
     this.values.set(key, item);
     return item;
@@ -54,7 +55,7 @@ export class MemoryBucket {
   async list({prefix, limit, cursor}) {
     const values = [...this.values.values()].filter(o => o.key.startsWith(prefix) && (!cursor || o.key > cursor))
       .sort((a, b) => a.key.localeCompare(b.key));
-    const objects = values.slice(0, limit).map(o => ({...o, customMetadata: {...o.customMetadata}}));
+    const objects = values.slice(0, limit).map(o => ({...o, uploaded: new Date(o.uploaded), customMetadata: {...o.customMetadata}}));
     return {objects, truncated: values.length > limit, cursor: objects.at(-1)?.key};
   }
   async seed(submissionId = id, age = 8 * day, metadata = true) {
@@ -136,8 +137,13 @@ export class GitHubMock {
       const ref = url.searchParams.get('ref');
       const files = this.trees.get(this.commits.get(ref)?.tree.sha);
       if (!files || !(p in files)) return response({}, 404);
-      const content = Buffer.from(JSON.stringify(files[p])).toString('base64');
-      return response({type: 'file', encoding: 'base64', size: content.length, content});
+      const raw = JSON.stringify(files[p]);
+      const size = Buffer.byteLength(raw);
+      if (request.headers.get('Accept') === 'application/vnd.github.raw+json') {
+        return new Response(raw, {headers: {'Content-Type': 'application/json', 'Content-Length': String(size)}});
+      }
+      const content = size > 1024 * 1024 ? '' : Buffer.from(raw).toString('base64');
+      return response({type: 'file', encoding: size > 1024 * 1024 ? 'none' : 'base64', size, content});
     }
     if (path.startsWith('/git/commits/') && method === 'GET') return response(this.commits.get(path.split('/').at(-1)));
     if (path === '/git/trees') {

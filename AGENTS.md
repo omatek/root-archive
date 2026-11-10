@@ -20,6 +20,8 @@
 - Publication enforcement requires a distinct GitHub App and App-bound required
   check (or native organization required-workflow rule), not a GitHub Actions
   check name. See `docs/publication-enforcement.md`; owner setup is outstanding.
+- Pages must exclude `submission/*` and legacy `submission-*` from previews;
+  owner configuration and old-deployment audit are in `docs/pages-previews.md`.
 - Historical `535b2ce` remains unavailable after a bounded recovery check;
   reconstruction was explicitly authorized. See `docs/moderation-evidence.md`.
 - Production configuration/deployment is unverified. `analytics/` is synthetic

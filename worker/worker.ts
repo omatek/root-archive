@@ -1215,9 +1215,21 @@ async function orchestrateGitHubPullRequest(
   try {
     await writeSubmissionAssociation(env, {...association, phase: 'linked', pr_number: result.number}, associationEtag);
   } catch {
-    // The PR already exists. Leave the durable intent and uploaded file intact
-    // if its number cannot be saved; cleanup must retain this uncertain state.
-    throw new GitHubError(201, true);
+    // A confirmed creation should not invite a duplicate upload/retry solely
+    // because saving its local association failed. Verify the actual PR once.
+    let verified = false;
+    try {
+      const pr = await github.request('GET', `/pulls/${result.number}`);
+      verified = pr?.number === result.number && pr.html_url === result.html_url
+        && pr.state === 'open' && pr.merged === false
+        && pr.user?.login === moderationConfig.submission_author
+        && pr.base?.ref === 'main' && pr.base?.repo?.full_name === `${env.GITHUB_OWNER}/${env.GITHUB_REPO}`
+        && pr.head?.ref === branch && pr.head?.sha === commit
+        && pr.head?.repo?.full_name === `${env.GITHUB_OWNER}/${env.GITHUB_REPO}`;
+    } catch { /* Unknown status retains the durable intent and never succeeds. */ }
+    console.warn(JSON.stringify({event: 'submission_association_repair_needed',
+      id: resource.id, pr_number: result.number, verified}));
+    if (!verified) throw new GitHubError(201, true);
   }
   return result.html_url;
 }

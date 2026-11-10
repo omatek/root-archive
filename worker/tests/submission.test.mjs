@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { generateKeyPair, exportJWK, SignJWT } from 'jose';
 import worker from '../.wrangler/dist/worker.js';
-import { GitHubMock, MemoryBucket, envFor, courses, origin, assets, associationKey } from './fixtures.mjs';
+import { GitHubMock, MemoryBucket, envFor, courses, origin, assets, associationKey, resource } from './fixtures.mjs';
 
 const {privateKey, publicKey} = await generateKeyPair('RS256');
 const jwk = {...await exportJWK(publicKey), kid: 'synthetic', alg: 'RS256', use: 'sig'};
@@ -142,16 +142,27 @@ test('lost PR creation response retains durable intent even after remote branch 
   await worker.scheduled({}, env);
   assert.ok(await bucket.head(asset.key)); assert.equal(bucket.deleted.length, 0);
 });
-test('failed association persistence after successful PR creation never rolls back its asset', async () => {
+test('regression: failed association persistence returns a verified existing PR URL', async () => {
   const put = bucket.put.bind(bucket);
   bucket.put = async (key, value, options) => {
     if (key.startsWith('moderation-control/submissions/') && JSON.parse(value).phase === 'linked') throw new Error('mock_link_write_failure');
     return put(key, value, options);
   };
-  assert.equal((await submit()).status, 502);
+  const originalWarn = console.warn; const warnings = [];
+  console.warn = message => warnings.push(JSON.parse(message));
+  let response;
+  try { response = await submit(); } finally { console.warn = originalWarn; }
+  assert.equal(response.status, 201);
+  assert.equal((await response.json()).pr_url, github.prs[0].html_url);
   const asset = assets(bucket)[0];
   assert.equal(github.prs.length, 1); assert.equal(bucket.deleted.length, 0);
   assert.equal((await (await bucket.get(associationKey(asset.customMetadata.submission_id))).json()).phase, 'creating');
+  const repair = warnings.find(w => w.event === 'submission_association_repair_needed');
+  assert.deepEqual(repair, {event: 'submission_association_repair_needed',
+    id: asset.customMetadata.submission_id, pr_number: github.prs[0].number, verified: true});
+  assert.equal(JSON.stringify(warnings).includes(env.GITHUB_TOKEN), false);
+  const uploaded = new Date(Date.now() - 8 * 86400000);
+  asset.uploaded = uploaded; asset.customMetadata.created_at = uploaded.toISOString();
   await worker.scheduled({}, env); assert.ok(await bucket.head(asset.key));
 });
 test('failure to durably record creation intent prevents the PR POST and permits safe rollback', async () => {
@@ -173,4 +184,39 @@ test('pre-branch GitHub failure with failed rollback still cleans a proven orpha
   asset.uploaded = created; asset.customMetadata.created_at = created.toISOString();
   bucket.failDelete = false; github.fail = undefined;
   await worker.scheduled({}, env); assert.equal(await bucket.head(asset.key), null);
+});
+
+
+test('regression: catalog larger than 1 MB is retrieved raw at the pinned commit', async () => {
+  const catalog = Array.from({length: 4000}, (_, i) => ({...resource(), id: `published-${i}`,
+    title: 'X'.repeat(120), asset_url: `https://assets.example.invalid/${i}.pdf`}));
+  const bytes = Buffer.byteLength(JSON.stringify(catalog));
+  assert.ok(bytes > 1024 * 1024 && bytes < 4 * 1024 * 1024);
+  github.setCatalog(catalog); const base = github.main;
+  const response = await submit(); assert.equal(response.status, 201);
+  assert.ok(github.requests.some(r => r.path === `/contents/site/resources.json?ref=${base}`));
+  const files = github.trees.get(github.commits.get(github.prs[0].head.sha).tree.sha);
+  assert.equal(files['site/resources.json'].length, catalog.length + 1);
+});
+
+test('association recovery does not return success when PR verification is unavailable', async () => {
+  const put = bucket.put.bind(bucket);
+  bucket.put = async (key, value, options) => {
+    if (key.startsWith('moderation-control/submissions/') && JSON.parse(value).phase === 'linked') throw new Error('mock_link_write_failure');
+    return put(key, value, options);
+  };
+  github.fail = (path, method) => path === '/pulls/1' && method === 'GET' ? 503 : 0;
+  assert.equal((await submit()).status, 502);
+  assert.equal(github.prs.length, 1); assert.equal(bucket.deleted.length, 0);
+  assert.ok(assets(bucket)[0]);
+});
+test('association recovery rejects a PR that no longer matches the submitted commit', async () => {
+  const put = bucket.put.bind(bucket);
+  bucket.put = async (key, value, options) => {
+    if (key.startsWith('moderation-control/submissions/') && JSON.parse(value).phase === 'linked') throw new Error('mock_link_write_failure');
+    return put(key, value, options);
+  };
+  github.before = (path, method) => {if (path === '/pulls/1' && method === 'GET') github.prs[0].head.sha = 'a'.repeat(40);};
+  assert.equal((await submit()).status, 502);
+  assert.equal(bucket.deleted.length, 0); assert.ok(assets(bucket)[0]);
 });
