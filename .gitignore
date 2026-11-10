@@ -15,4 +15,8 @@ dist/
 worker/dist/
 *.log
 .DS_Store
-README.md
+# Reproducible experiment outputs (regenerate; never add production data)
+analytics/output/
+__pycache__/
+*.pyc
+work/

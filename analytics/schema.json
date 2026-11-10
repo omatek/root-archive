@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "root/archive synthetic security event v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "event_id", "timestamp", "route", "method", "status", "request_size", "duration_ms", "auth", "authorization", "turnstile", "file_validation", "classification", "source_environment", "provenance", "simulation_label"],
+  "properties": {
+    "schema_version": {"type": "integer", "const": 1},
+    "event_id": {"type": "string", "pattern": "^synthetic-[0-9]{8}$", "description": "Generated event ordinal; never a user/session identifier."},
+    "timestamp": {"type": "string", "format": "date-time", "description": "Generated UTC time; not an observed request time."},
+    "route": {"type": "string", "enum": ["submit", "auth_verify"]},
+    "method": {"type": "string", "enum": ["POST"]},
+    "status": {"type": "integer", "enum": [200, 201, 400, 401, 403, 413, 415, 503]},
+    "request_size": {"type": "string", "enum": ["none", "small", "medium", "oversized"]},
+    "duration_ms": {"type": "number", "minimum": 0, "maximum": 60000},
+    "auth": {"type": "string", "enum": ["missing", "invalid", "verified"]},
+    "authorization": {"type": "string", "enum": ["not_checked", "allowed", "rejected"]},
+    "turnstile": {"type": "string", "enum": ["not_checked", "passed", "failed"]},
+    "file_validation": {"type": "string", "enum": ["not_checked", "passed", "failed", "oversized"]},
+    "classification": {"type": "string", "enum": ["normal", "suspicious", "dependency_failure"]},
+    "source_environment": {"type": "string", "const": "offline_simulation"},
+    "provenance": {"type": "string", "const": "synthetic"},
+    "simulation_label": {"type": "string", "enum": ["normal", "missing_auth", "invalid_token", "unauthorized_domain", "turnstile_rejected", "malformed_multipart", "invalid_metadata", "unsupported_file", "oversized_upload", "duplicate_id", "suspicious_input", "request_burst", "dependency_failure"], "description": "Generated ground truth; never a detection feature or claim about production behavior."}
+  }
+}
