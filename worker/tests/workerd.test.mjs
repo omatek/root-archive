@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { Miniflare, convertV4MiniflareOptions, Response as MiniflareResponse } from 'miniflare';
 import { SignJWT, generateKeyPair, exportJWK } from 'jose';
-import { GitHubMock, envFor, courses, origin, id, day } from './fixtures.mjs';
+import { GitHubMock, envFor, courses, origin, id, day, associate, associationKey } from './fixtures.mjs';
 
 // Real local workerd + emulated R2. All external hosts use this in-process mock.
 test('workerd signed-token submission, emulated R2 storage, public asset read and conditional cursor writes', async () => {
@@ -40,6 +40,8 @@ test('workerd signed-token submission, emulated R2 storage, public asset read an
     const objects = await bucket.list({prefix: 'assets/v1/', include: ['customMetadata']});
     assert.equal(objects.objects.length, 1);
     const object = objects.objects[0]; assert.equal(object.customMetadata.moderation_schema, '1');
+    const linked = await (await bucket.get(associationKey(object.customMetadata.submission_id))).json();
+    assert.equal(linked.phase, 'linked'); assert.equal(linked.pr_number, github.prs[0].number);
     assert.equal(await (await bucket.get(object.key)).text(), '%PDF-workerd');
     // Local public-host fixture shares the actual uploaded bucket. Anonymous
     // reads bypass the submission Worker, Google and GitHub entirely. This is
@@ -56,7 +58,10 @@ test('workerd signed-token submission, emulated R2 storage, public asset read an
     const rejectedKey = `assets/v1/${id}.pdf`;
     await bucket.put(rejectedKey, '%PDF-rejected', {customMetadata: {moderation_schema: '1', submission_id: id,
       created_at: new Date().toISOString()}});
-    github.closed(2 * day, id);
+    const rejectedPR = github.closed(2 * day, id);
+    await associate(bucket, id, 'linked', rejectedPR.number);
+    github.refs.set('review/workerd-renamed-rejection', rejectedPR.head.sha);
+    github.refs.delete(rejectedPR.head.ref); rejectedPR.head.ref = 'review/workerd-renamed-rejection';
     // Miniflare's local-only trigger dispatches the actual scheduled handler.
     for (let i = 0; i < 2; i++) {
       const scheduled = await mf.dispatchFetch('http://worker.invalid/cdn-cgi/local/scheduled');

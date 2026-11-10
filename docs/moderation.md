@@ -32,9 +32,23 @@ exists. Closing an unmerged PR publishes nothing.
 A definite GitHub failure attempts immediate R2 rollback. Failed rollback is
 logged and the object retains recoverable provenance. Network failures, 5xx, or
 malformed successful mutation responses are ambiguous: the object is retained
-because GitHub may have created the PR. Cron reconciles it later. A student
-retry can create another submission; UUIDs prevent replacement, not duplicates
-of identical file bytes. Empty/dangling Git branches are harmless and may remain.
+because GitHub may have created the PR. A student retry can create another
+submission; UUIDs prevent replacement, not duplicates of identical file bytes.
+Empty/dangling Git branches are harmless and may remain.
+
+The backend keeps `moderation-control/submissions/<uuid>.json` in the same R2
+bucket, binding repository, submission ID and object key to a **stable PR
+number**. Conditional writes record `not-created` before GitHub work, `creating`
+**before** issuing the PR POST, and `linked` with the number after success. A
+definite rejected POST restores `not-created`; a timeout, ambiguous response or
+failed link write leaves `creating` and retains the asset for owner resolution.
+Failure to save the intent prevents the POST. No database or new service is used.
+
+Cleanup fetches linked PRs by number even after branch rename/deletion or title/
+body edits. Branch queries only corroborate absence or detect multiple PRs;
+an empty branch query cannot override a linked PR. Missing, malformed or pending
+association state, or a failed/404 PR lookup, retains the file. The publication
+gate still requires the canonical submission branch name before merge.
 
 ## Trusted publication gate
 
@@ -123,9 +137,9 @@ A later owner-approved rollout may use `dry-run`, then `active`.
 | --- | --- |
 | Current main catalog references the ID/key, or a receipt exists on main | Retain permanently |
 | Original PR was merged, even if catalog later removed | Retain permanently |
-| Missing/malformed provenance, legacy prefix, ambiguous/multiple PRs, unexpected state, unavailable verification | Retain and report/retry |
+| Missing/malformed provenance or association, legacy prefix, uncertain creation, ambiguous/multiple PRs, unexpected state, unavailable verification | Retain and report/retry |
 | Closed, unmerged PR | Eligible 12 hours after its actual latest close, if still unpublished |
-| No PR exists for the generated branch | Eligible 7 days after R2 upload, if still unpublished |
+| Durable `not-created` state and no contradicting PR found | Eligible 7 days after R2 upload, if still unpublished |
 | Open PR | Retain; may expire only after 30 days of genuine inactivity |
 
 Rejection grace is configurable with `CLEANUP_REJECTED_HOURS` (1–168; default
@@ -144,11 +158,12 @@ creation age alone is insufficient. Maintainers can reopen during the grace.
 GitHub has no atomic “close only if no new activity” transaction: an event in the
 last read/close interval may need maintainer reopening during that grace.
 
-Before deleting, retire any submission branch by appending an intentionally
-invalid `submissions/retired/<uuid>.json` marker commit using a non-force update.
+Before deleting, retire the associated PR's current branch (including a renamed
+branch), or the original orphan branch, by appending an intentionally invalid
+`submissions/retired/<uuid>.json` marker commit using a non-force update.
 If a rejected branch was deleted, recreate it at an invalid terminal head.
-Confirm the ref, PR set and closed/unmerged state again. Reopening now cannot
-merge its former green proposal: protected main requires checks on the current
+Re-read the association and confirm the ref, stable PR number, branch name and
+closed/unmerged state again. Reopening cannot merge its former green proposal: protected main requires checks on the current
 head, which fails the allowed-path policy. Retired submissions must be resubmitted;
 do not restore an earlier valid head or bypass the required checks.
 
@@ -165,7 +180,7 @@ compiled/cached catalog for destruction.
 
 Proposed schedule after separate approval: `* * * * *` (once per minute, UTC).
 One R2 key is scanned per invocation, with at most **32 GitHub requests** plus
-at most five R2 operations (37 subrequests, below the Free limit of 50). Normal
+at most seven R2 operations (39 subrequests, below the Free limit of 50). Normal
 rejected cleanup uses 19 GitHub calls in the workerd test. Activity pagination
 allows at most four pages of 100 reviews; 100 recent issue comments or an
 incomplete review history retain for manual attention rather than guessing.
@@ -179,6 +194,9 @@ Deletion/ref retirement are idempotent; rate limits/outages never trigger a
 blind delete. A failed cursor write repeats work. End-of-list wraps to the start,
 so an approved or failing first key does not starve later keys. Control metadata
 is public, contains no student information, and is outside the asset scan prefix.
+Per-submission association records remain as small audit markers after deletion;
+include them in an owner-approved prelaunch reset rather than erasing evidence
+needed to distinguish an interrupted PR creation from an orphan.
 
 At one-minute scheduling the maximum is **1,440 scanned keys/day**, including
 approved/young objects; deletion throughput is no greater than that. A stable
@@ -222,7 +240,13 @@ Legacy record-only PRs (#1–#3 and old `submission-...` branches) are intention
 blocked with a resubmission instruction; they cannot silently publish. After
 owner approval, close disposable tests and resubmit needed material through the
 new flow. Leave legacy objects alone until the owner approves an explicit reset.
-No migration or legacy automatic deletion exists.
+No migration or legacy automatic deletion exists. Pre-fix v1 assets without an
+association are also retained. For missing/`creating` records, the owner must
+verify the UUID/key/repository and actual PR, then restore the verified `linked`
+record with its PR number through admin tools, or approve explicit per-key
+removal. Never declare such a file orphaned from branch absence alone. Failed
+submissions should be resubmitted, not manually given another PR without updating
+the verified association.
 
 For an intentionally removed published asset: open a separate maintainer catalog
 removal PR with `catalog-maintenance`, retain its permanent receipt, review and

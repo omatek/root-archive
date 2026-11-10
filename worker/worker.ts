@@ -19,7 +19,7 @@ import { createRemoteJWKSet, errors as joseErrors, jwtVerify } from "jose";
 import rawCoursesCatalog from "../site/courses.json";
 import moderationConfig from '../moderation.config.json';
 import { validateRecord } from '../scripts/moderation-policy.mjs';
-import { GitHub, GitHubError } from './github';
+import { GitHub, GitHubError, writeSubmissionAssociation } from './github';
 import { runCleanup } from './cleanup';
 
 export interface R2HTTPMetadata {
@@ -1178,6 +1178,8 @@ async function orchestrateGitHubPullRequest(
   objectKey: string
 ): Promise<string> {
   const github = new GitHub(env);
+  const association = {submission_id: resource.id, object_key: objectKey};
+  let associationEtag = await writeSubmissionAssociation(env, {...association, phase: 'not-created'});
   const base = await github.main();
   const catalog = await github.catalog(base);
   const record = {schema: 1, object_key: objectKey, resource};
@@ -1193,13 +1195,29 @@ async function orchestrateGitHubPullRequest(
   const branch = `submission/${resource.id}`;
   const created = await github.request('POST', '/git/refs', {ref: `refs/heads/${branch}`, sha: commit});
   if (created?.ref !== `refs/heads/${branch}`) throw new GitHubError(201, true);
-  const result = await github.request('POST', '/pulls', {
-    title: `[Submission] ${resource.course_id}: ${resource.title} (${resource.type})`,
-    head: branch, base: 'main', body: buildPullRequestBody(resource),
-  });
+  associationEtag = await writeSubmissionAssociation(env, {...association, phase: 'creating'}, associationEtag);
+  let result: any;
+  try {
+    result = await github.request('POST', '/pulls', {
+      title: `[Submission] ${resource.course_id}: ${resource.title} (${resource.type})`,
+      head: branch, base: 'main', body: buildPullRequestBody(resource),
+    });
+  } catch (error) {
+    if (error instanceof GitHubError && !error.uncertain) {
+      await writeSubmissionAssociation(env, {...association, phase: 'not-created'}, associationEtag);
+    }
+    throw error;
+  }
   const expected = `https://github.com/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/pull/`;
   if (!Number.isSafeInteger(result?.number) || result.number <= 0 || result.html_url !== `${expected}${result.number}`) {
     // Malformed success after creation is ambiguous, so do not roll back R2.
+    throw new GitHubError(201, true);
+  }
+  try {
+    await writeSubmissionAssociation(env, {...association, phase: 'linked', pr_number: result.number}, associationEtag);
+  } catch {
+    // The PR already exists. Leave the durable intent and uploaded file intact
+    // if its number cannot be saved; cleanup must retain this uncertain state.
     throw new GitHubError(201, true);
   }
   return result.html_url;

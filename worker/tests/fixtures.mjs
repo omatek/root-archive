@@ -18,6 +18,14 @@ export const envFor = BUCKET => ({BUCKET, GITHUB_TOKEN: 'synthetic', GITHUB_OWNE
   TURNSTILE_SECRET: 'synthetic', ALLOWED_ORIGIN: origin, GOOGLE_CLIENT_ID: 'synthetic-client',
   R2_PUBLIC_BASE_URL: config.asset_base_url, CLEANUP_MODE: 'active'});
 
+export const associationKey = submissionId => `moderation-control/submissions/${submissionId}.json`;
+export const association = (submissionId = id, phase = 'not-created', prNumber) => ({schema: 1,
+  repository: 'omatek/root-archive', submission_id: submissionId, object_key: `assets/v1/${submissionId}.pdf`,
+  phase, ...(prNumber === undefined ? {} : {pr_number: prNumber})});
+export const associate = (bucket, submissionId = id, phase = 'not-created', prNumber) =>
+  bucket.put(associationKey(submissionId), JSON.stringify(association(submissionId, phase, prNumber)));
+export const assets = bucket => [...bucket.values.values()].filter(o => o.key.startsWith('assets/'));
+
 export class MemoryBucket {
   values = new Map();
   deleted = [];
@@ -55,6 +63,7 @@ export class MemoryBucket {
     await this.put(key, '%PDF-synthetic', {customMetadata: metadata ? {moderation_schema: '1', submission_id: submissionId,
       created_at: created.toISOString()} : {}});
     this.values.get(key).uploaded = created;
+    await associate(this, submissionId);
     return key;
   }
 }
@@ -152,7 +161,7 @@ export class GitHubMock {
     if (/^\/pulls\/\d+$/.test(path)) {
       const pr = this.prs.find(p => p.number === Number(path.split('/').at(-1)));
       if (body?.state === 'closed') { pr.state = 'closed'; pr.closed_at = new Date().toISOString(); }
-      return response(pr);
+      return pr ? response(pr) : response({}, 404);
     }
     if (/^\/issues\/\d+\/comments/.test(path)) {
       if (method === 'POST') {

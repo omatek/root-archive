@@ -26,7 +26,7 @@ No production integration claim is made. Commands from the repository root:
 | Command | Actual result |
 | --- | --- |
 | `npm ci --prefix worker` | Lockfile installation successful (local sandbox needed `--cache /tmp/root-archive-npm-cache`) |
-| `npm --prefix worker run check` | TypeScript passed; Wrangler dry-run bundled; 38 Worker tests passed, zero skipped |
+| `npm --prefix worker run check` | TypeScript passed; Wrangler dry-run bundled; 52 Worker tests passed, zero skipped |
 | `node --test scripts/*.test.mjs` | 13 repository tests passed |
 | `python3 -m unittest discover -s scripts/tests -v` | 3 passed |
 | `python3 -m unittest discover -s analytics/tests -v` | 5 passed |
@@ -56,6 +56,24 @@ Cleanup tests cover grace periods, current catalog/permanent receipt/merged-PR
 protection, activity and expiry retry, pagination/cursor wrap, repeated failures,
 overlaps/non-force updates, missing/legacy provenance, object mutation, deleted
 branches, URL aliases, rate limits and simulated merge/reopen/publication races.
+
+## P2 branch-rename regression correction
+
+Before the correction, `renamed active submission is found by its stable PR
+number, never treated as an orphan` failed: cleanup logged `cleanup_deleted`
+with reason `orphan` for an eight-day-old asset despite its renamed open PR.
+The same test now passes. Fourteen additional tests bring the total to 73:
+52 Worker, 13 repository, 3 measurement and 5 analytics tests.
+
+The focused correction stores a conditional R2 association/creation-intent
+record and reads linked PRs by number. It retains missing/ambiguous linkage and
+failed/404 PR lookups, preserves definite-failure orphan cleanup, and retires a
+rejected PR's actual current branch. Tests cover renamed/deleted branches,
+approval preservation, multiple PRs, API failures, creation/link-write failure
+windows, failed rollback followed by orphan cleanup, and real local workerd/R2.
+Changed in this correction: `worker/github.ts`, `worker/worker.ts`,
+`worker/cleanup.ts`, the four Worker test/fixture files, and these two moderation
+documents. Cleanup remains off; no trigger, infrastructure or live data changed.
 
 ## Complete changed-file inventory
 

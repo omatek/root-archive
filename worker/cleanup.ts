@@ -26,12 +26,12 @@ function provenance(object: R2Object): string | null {
     || Math.abs(Date.parse(m.created_at) - object.uploaded.getTime()) > HOUR) return null;
   return match[1];
 }
-function verifyPR(pr: any, id: string, env: Env) {
+function verifyPR(pr: any, env: Env) {
   if (!pr || !Number.isSafeInteger(pr.number) || pr.number <= 0 || !['open', 'closed'].includes(pr.state)
     || typeof pr.merged !== 'boolean' || !shaPattern.test(pr.head?.sha)
     || pr.base?.ref !== 'main' || pr.base?.repo?.full_name !== `${env.GITHUB_OWNER}/${env.GITHUB_REPO}`
     || pr.user?.login !== config.submission_author
-    || pr.head?.ref !== `submission/${id}`
+    || typeof pr.head?.ref !== 'string' || !pr.head.ref || pr.head.ref === 'main'
     || pr.head?.repo?.full_name !== `${env.GITHUB_OWNER}/${env.GITHUB_REPO}`) throw new Error('untrusted_pr_state');
 }
 async function published(github: GitHub, id: string, key: string): Promise<boolean> {
@@ -76,13 +76,14 @@ async function activity(github: GitHub, pr: any, now: number): Promise<{active: 
 // Advance the rejected/orphan branch to a deliberately invalid publication
 // head before deleting. Required current-head checks now block reopening and
 // merging an old successful proposal. This is idempotent across Cron overlap.
-async function retire(github: GitHub, id: string, closedHead?: string): Promise<string | null> {
-  const refPath = `/git/ref/heads/submission/${id}`;
+async function retire(github: GitHub, id: string, closedHead?: string, branch = `submission/${id}`): Promise<string | null> {
+  const encodedBranch = branch.split('/').map(encodeURIComponent).join('/');
+  const refPath = `/git/ref/heads/${encodedBranch}`;
   const ref = await github.request('GET', refPath, undefined, true);
   if (ref === null && !closedHead) return null;
   const parent = ref === null ? closedHead : ref?.object?.sha;
   if (!shaPattern.test(parent) || (ref && (ref.object.type !== 'commit'
-    || ref.ref !== `refs/heads/submission/${id}`))) throw new Error('invalid_submission_ref');
+    || ref.ref !== `refs/heads/${branch}`))) throw new Error('invalid_submission_ref');
   const path = `submissions/retired/${id}.json`;
   const marker = await github.json(path, parent, true);
   if (marker !== null) {
@@ -93,9 +94,9 @@ async function retire(github: GitHub, id: string, closedHead?: string): Promise<
   // Non-force update rejects diverged concurrent edits. Never alter main.
   if (ref === null) {
     // A deleted rejected branch must also become terminal before deletion.
-    await github.request('POST', '/git/refs', {ref: `refs/heads/submission/${id}`, sha: commit});
+    await github.request('POST', '/git/refs', {ref: `refs/heads/${branch}`, sha: commit});
   } else {
-    await github.request('PATCH', `/git/refs/heads/submission/${id}`, {sha: commit, force: false});
+    await github.request('PATCH', `/git/refs/heads/${encodedBranch}`, {sha: commit, force: false});
   }
   const confirmed = await github.request('GET', refPath);
   if (confirmed?.object?.sha !== commit) throw new Error('retirement_not_confirmed');
@@ -109,12 +110,9 @@ async function processObject(env: Env, object: R2Object, now: number): Promise<v
   const rejectionGrace = setting(env.CLEANUP_REJECTED_HOURS, 12, 1, 168) * HOUR;
   const github = new GitHub(env);
   if (await published(github, id, object.key)) { log('cleanup_retain_approved', {id}); return; }
-  const pulls = await github.branchPulls(id);
-  if (pulls.length > 1) throw new Error('multiple_submission_prs');
-  let pr = pulls.length ? await github.request('GET', `/pulls/${pulls[0].number}`) : null;
+  const pr = await github.submissionPull(id, object.key);
   if (pr) {
-    verifyPR(pr, id, env);
-    if (pr.number !== pulls[0].number) throw new Error('unexpected_pr_number');
+    verifyPR(pr, env);
     if (pr.merged || pr.merged_at !== null) { log('cleanup_retain_merged', {id}); return; }
     if (pr.state === 'open') {
       const inactivity = await activity(github, pr, now);
@@ -125,14 +123,14 @@ async function processObject(env: Env, object: R2Object, now: number): Promise<v
       });
       if (!Number.isSafeInteger(comment?.id)) throw new Error('expiration_comment_unconfirmed');
       const fresh = await github.request('GET', `/pulls/${pr.number}`);
-      verifyPR(fresh, id, env);
-      if (fresh.state !== 'open' || fresh.merged || fresh.head.sha !== pr.head.sha
+      verifyPR(fresh, env);
+      if (fresh.state !== 'open' || fresh.merged || fresh.head.sha !== pr.head.sha || fresh.head.ref !== pr.head.ref
         || date(fresh.updated_at) > date(comment.created_at) || (await activity(github, fresh, now)).active) {
         log('cleanup_expiration_cancelled', {id}); return;
       }
       await github.request('PATCH', `/pulls/${pr.number}`, {state: 'closed'});
       const closed = await github.request('GET', `/pulls/${pr.number}`);
-      verifyPR(closed, id, env);
+      verifyPR(closed, env);
       if (closed.state !== 'closed' || closed.merged || closed.merged_at !== null) throw new Error('expiration_close_unconfirmed');
       log('cleanup_expired', {id});
       return; // Always begin a new rejection grace after a confirmed close.
@@ -143,14 +141,13 @@ async function processObject(env: Env, object: R2Object, now: number): Promise<v
   }
   if (env.CLEANUP_MODE !== 'active') { log('cleanup_would_delete', {id, reason: pr ? 'rejected' : 'orphan'}); return; }
 
-  const retiredHead = await retire(github, id, pr?.head.sha);
-  const finalPulls = await github.branchPulls(id);
-  if (finalPulls.length !== pulls.length || finalPulls.some((p, i) => p.number !== pulls[i].number)) throw new Error('submission_prs_changed');
+  const retiredHead = await retire(github, id, pr?.head.sha, pr?.head.ref);
+  const final = await github.submissionPull(id, object.key);
+  if ((pr?.number ?? null) !== (final?.number ?? null)) throw new Error('submission_prs_changed');
   if (pr) {
-    const final = await github.request('GET', `/pulls/${pr.number}`);
-    verifyPR(final, id, env);
+    verifyPR(final, env);
     if (final.state !== 'closed' || final.merged || final.merged_at !== null
-      || final.closed_at !== pr.closed_at
+      || final.closed_at !== pr.closed_at || final.head.ref !== pr.head.ref
       // GitHub may keep the closed PR's old head snapshot until reopening.
       || ![pr.head.sha, retiredHead].includes(final.head.sha)) throw new Error('submission_state_changed');
   }
