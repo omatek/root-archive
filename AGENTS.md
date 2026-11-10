@@ -13,9 +13,13 @@
 - New submissions open one `submission/<uuid>` PR that appends to the catalog
   and adds an immutable v1 receipt. Trusted base-branch validation governs
   publication; current-main reconciliation preserves concurrent additions.
-- Scheduled cleanup uses authoritative GitHub state, branch retirement and R2
-  provenance; it is disabled by default, with no Cron configured. Approved
+- Cleanup automatically deletes only proven never-created, branchless orphans.
+  Every PR-associated upload is held for owner-reviewed removal; Cron never
+  modifies GitHub PRs/refs. It is off by default, with no trigger. Approval
   receipts are permanent. See `docs/moderation.md` before editing this boundary.
+- Publication enforcement requires a distinct GitHub App and App-bound required
+  check (or native organization required-workflow rule), not a GitHub Actions
+  check name. See `docs/publication-enforcement.md`; owner setup is outstanding.
 - Historical `535b2ce` remains unavailable after a bounded recovery check;
   reconstruction was explicitly authorized. See `docs/moderation-evidence.md`.
 - Production configuration/deployment is unverified. `analytics/` is synthetic

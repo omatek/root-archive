@@ -5,8 +5,10 @@ public-read R2 assets, and GitHub submission review. No database.
 
 Start with [AGENTS.md](AGENTS.md), the [verified baseline](docs/audit.md), and
 the [owner guide](docs/operations.md), and [moderation](docs/moderation.md).
-Each submission proposes its catalog addition in one review PR. Cleanup is
-implemented but disabled pending owner-approved staging and configuration.
+Each submission proposes its catalog addition in one review PR. Automatic
+cleanup covers proven branchless orphans; PR-associated files require owner
+reviewed removal. Cleanup is off. The publication gate requires owner App/ruleset
+setup and the [hosted spoof acceptance test](docs/publication-enforcement.md).
 
 ## Local checks
 

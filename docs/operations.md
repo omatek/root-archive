@@ -20,21 +20,22 @@ on independent branches if their file scopes remain separate.
 
 ## Checks and maintenance
 
-The README lists exact local commands. CI requires no Cloudflare/Google/GitHub
-production secrets. Worker checks install from the lockfile, typecheck, dry-run
+The README lists exact local commands. Ordinary CI requires no production
+secrets. The separate protected-base publication reporter requires its own
+environment-isolated Checks-only GitHub App credential. Worker checks install from the lockfile, typecheck, dry-run
 bundle, and test signed-token submissions, rollback, cleanup and local
 workerd/emulated R2. Repository checks validate catalogs, trusted publication
 policy/concurrent Git histories, workflows and local measurement, and
 generate/analyze synthetic records. These do not verify production integration.
 
-For moderation rollout, follow [moderation](moderation.md): require **Submission
-policy** on the exact PR head from GitHub Actions, **Repository checks** and
-**Worker checks**, current branches and maintainer approval; block main bypasses.
-The publication workflow uses protected-base code with a narrowly scoped status
-writer and never executes PR code. General read-only CI still executes PR code
-and is not the publication authorization gate. Required checks must be observed
-before configuring protection; do not allow submission merges during bootstrap.
-Branch rules/live settings were not inspected or changed by this task.
+For rollout follow [moderation](moderation.md) and [publication enforcement](publication-enforcement.md).
+Require `Submission policy` from a DISTINCT publication App's integration ID,
+existing CI, current branches, independent approval and no main bypass. A check
+name sourced from GitHub Actions does not identify a trusted workflow. Owner App,
+main-only secret environment and ruleset setup plus hosted spoof testing are
+outstanding; do not allow submission merges during bootstrap. The reviewed
+ruleset currently requires a PR but no checks/approvals; legacy protection reads
+were denied by the integration. No live configuration was modified.
 
 Weekly Dependabot PRs cover `/worker` npm and GitHub Actions. Review lockfile,
 release notes and passing checks; no auto-merge exists. Use the Actions page
@@ -55,7 +56,7 @@ local copy/config before browser testing authenticated flows.
 Worker bindings: `GITHUB_TOKEN`, `TURNSTILE_SECRET`, `GOOGLE_CLIENT_ID`,
 `GITHUB_OWNER`, `GITHUB_REPO`, `ALLOWED_ORIGIN`, `R2_PUBLIC_BASE_URL`, and
 `BUCKET`. Moderation also uses the reviewed root `moderation.config.json`,
-`CLEANUP_MODE`, `CLEANUP_ORPHAN_DAYS` and `CLEANUP_REJECTED_HOURS`; defaults leave
+`CLEANUP_MODE` and `CLEANUP_ORPHAN_DAYS`; defaults leave
 cleanup off with no Cron. Put secrets in ignored `worker/.dev.vars` locally or
 approved Cloudflare secret storage for a human-controlled deployment. Never commit them.
 The existing public client/site identifiers are not secrets.

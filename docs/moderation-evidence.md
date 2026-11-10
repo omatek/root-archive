@@ -26,8 +26,8 @@ No production integration claim is made. Commands from the repository root:
 | Command | Actual result |
 | --- | --- |
 | `npm ci --prefix worker` | Lockfile installation successful (local sandbox needed `--cache /tmp/root-archive-npm-cache`) |
-| `npm --prefix worker run check` | TypeScript passed; Wrangler dry-run bundled; 52 Worker tests passed, zero skipped |
-| `node --test scripts/*.test.mjs` | 13 repository tests passed |
+| `npm --prefix worker run check` | TypeScript passed; Wrangler dry-run bundled; 42 Worker tests passed, zero skipped |
+| `node --test scripts/*.test.mjs` | 20 repository tests passed |
 | `python3 -m unittest discover -s scripts/tests -v` | 3 passed |
 | `python3 -m unittest discover -s analytics/tests -v` | 5 passed |
 | `node scripts/catalogs.mjs` | 127 unique courses, 0 production resources |
@@ -52,46 +52,70 @@ pending/success/failure to exact head SHAs and never executes the PR's tampered
 validator. These tests cannot establish hosted Actions status-source enforcement
 or actual GitHub merge/Cloudflare permission semantics.
 
-Cleanup tests cover grace periods, current catalog/permanent receipt/merged-PR
-protection, activity and expiry retry, pagination/cursor wrap, repeated failures,
-overlaps/non-force updates, missing/legacy provenance, object mutation, deleted
-branches, URL aliases, rate limits and simulated merge/reopen/publication races.
+Cleanup tests cover never-created orphan grace, approval/receipt holds, API and
+storage failures, cursor wrap/overlap, missing/uncertain provenance/association,
+actual rename-closed PRs, reused branches, URL aliases and racing publication.
+Automatic PR expiry and retirement are deliberately removed by the second review.
 
 ## P2 branch-rename regression correction
 
 Before the correction, `renamed active submission is found by its stable PR
 number, never treated as an orphan` failed: cleanup logged `cleanup_deleted`
 with reason `orphan` for an eight-day-old asset despite its renamed open PR.
-The same test now passes. Fourteen additional tests bring the total to 73:
-52 Worker, 13 repository, 3 measurement and 5 analytics tests.
+At commit `4c43f7f0`, the same test passed, with 73 total tests (52 Worker,
+13 repository, 3 measurement and 5 analytics). That version was independently
+reviewed again; the corrections below supersede its deletion/enforcement model.
 
-The focused correction stores a conditional R2 association/creation-intent
-record and reads linked PRs by number. It retains missing/ambiguous linkage and
-failed/404 PR lookups, preserves definite-failure orphan cleanup, and retires a
-rejected PR's actual current branch. Tests cover renamed/deleted branches,
-approval preservation, multiple PRs, API failures, creation/link-write failure
-windows, failed rollback followed by orphan cleanup, and real local workerd/R2.
-Changed in this correction: `worker/github.ts`, `worker/worker.ts`,
-`worker/cleanup.ts`, the four Worker test/fixture files, and these two moderation
-documents. Cleanup remains off; no trigger, infrastructure or live data changed.
+That correction introduced stable conditional R2 PR associations; those remain.
+
+## Second security review corrections
+
+Five regressions failed against `4c43f7f0`: rename-closed deletion at the 12-hour
+boundary; modification of an unrelated reused branch; authorization from stale
+labels; label removal during validation; and revoked permission on an old rerun.
+All five now pass. Current total: **70 tests** (42 Worker, 20 repository, 3
+measurement, 5 analytics), with no skipped tests in the full runs.
+
+- GitHub ruleset `26518493` was inspected read-only: PR requirement, zero required
+  reviews, deletion/non-fast-forward guards, no required checks. Legacy protection
+  read returned 403. The current workflow/check enforcement is not live-verified.
+- A distinct Checks-only App now emits exact-head checks, with response App-ID
+  verification and no Actions-token fallback. The key is restricted to a main-only
+  environment. Native App-ID binding or an organization required-workflow rule
+  plus the spoof acceptance sequence are documented in
+  [publication enforcement](publication-enforcement.md). Owner setup is pending.
+- Live PR metadata and applicable collaborator permissions are re-read and policy
+  revalidated before success. Subprocess tests exercise stale event/revocation
+  cases and separate read/App-write credentials.
+- Cleanup is intentionally narrower: PR-associated uploads and remaining branches
+  are automatic holds. Only proven never-created, branchless seven-day orphans
+  can be deleted. Cron makes no GitHub mutations, so it cannot modify a reused
+  branch or infer rejection from automatic closure. Rejection/inactivity removal
+  requires affirmative owner review and explicit per-key approval.
+
+The hosted spoof acceptance test has **not** been executed; ordinary hosted CI
+cannot establish App/environment/ruleset enforcement. No App, credential,
+environment, branch protection, cleanup trigger or live PR was modified. Work is
+exported only by committing/pushing the existing implementation branch.
 
 ## Complete changed-file inventory
 
 | Files | Purpose |
 | --- | --- |
 | `.github/workflows/ci.yml` | Preserve existing CI and add pinned/checksummed workflow lint |
-| `.github/workflows/submission-policy.yml` | Protected-base publication policy with exact-head status |
+| `.github/workflows/submission-policy.yml` | Protected-base publication policy with exact-head App check |
 | `moderation.config.json` | Reviewed asset origin and backend PR identity |
 | `scripts/catalog-policy.mjs`, `scripts/catalogs.mjs` | Separate pure shared validation from Node CLI |
 | `scripts/moderation-policy.mjs` | Receipt, identity, metadata and append-only policy |
 | `scripts/submission-git.mjs` | Safe inert Git blob/diff inspection |
-| `scripts/validate-submission.mjs` | Trusted gate, identity/maintenance checks, head statuses |
+| `scripts/validate-submission.mjs` | Trusted gate, identity/maintenance checks, live authorization and App checks |
 | `scripts/reconcile-submission.mjs` | Preserve concurrent resources in a reviewed merge commit |
-| `scripts/moderation.test.mjs` | Adversarial policy, actual Git conflicts and trusted CLI tests |
+| `scripts/moderation.test.mjs`, `scripts/publication-authorization.test.mjs` | Adversarial diffs, Git histories, live authorization/revocation and distinct-App reporting |
+| `scripts/fixtures/spoof-publication-check.yml` | Inert malicious workflow fixture for owner-approved staging |
 | `worker/worker.ts` | Existing auth/validation plus immutable UUID upload, atomic catalog PR and safe rollback |
 | `worker/github.ts` | Bounded GitHub API/Git-object client and authoritative reads |
-| `worker/cleanup.ts` | Disabled-by-default scheduled cleanup, activity/retirement/protection/cursor |
-| `worker/wrangler.jsonc` | Off mode and retention defaults; no trigger activation |
+| `worker/cleanup.ts` | Disabled-by-default scheduled cleanup, conservative orphan/approval holds and cursor |
+| `worker/wrangler.jsonc` | Off mode and orphan retention defaults; no trigger activation |
 | `worker/tsconfig.json` | Include shared pure policy and new modules |
 | `worker/package.json`, `worker/package-lock.json` | Declare already-locked Miniflare version as direct test dependency |
 | `worker/tests/http.test.mjs` | Preserve boundary suite with reviewed asset configuration |
@@ -101,11 +125,10 @@ documents. Cleanup remains off; no trigger, infrastructure or live data changed.
 | `worker/tests/workerd.test.mjs` | Real local workerd/R2 lifecycle and public-read fixture |
 | `site/index.html` | Waiting-for-review success text and PR link only |
 | `AGENTS.md`, `README.md`, `docs/operations.md` | Update actual architecture/checks and human rollout boundaries |
-| `docs/moderation.md`, `docs/moderation-evidence.md` | Implemented lifecycle, operating/acceptance plan and evidence |
+| `docs/moderation.md`, `docs/moderation-evidence.md`, `docs/publication-enforcement.md` | Implemented lifecycle, operating/acceptance plan and evidence |
 
 Configuration requirements, retention conditions, concurrency procedure, legacy
 resubmission, manual per-key reset/removal, monitoring, staging acceptance and
-remaining risks are in [moderation](moderation.md). Required main protection,
-identity/review separation and owner-approved dry-run→active Cron rollout remain
-manual. No existing student PR was modified, no object was deleted outside
+remaining risks are in [moderation](moderation.md). Required distinct App/environment/main protection, independent review and
+owner-approved dry-run→active orphan cleanup remain manual. No existing student PR was modified, no object was deleted outside
 local fixtures, and no merge, deployment or live configuration change occurred.

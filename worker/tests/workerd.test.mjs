@@ -67,7 +67,8 @@ test('workerd signed-token submission, emulated R2 storage, public asset read an
       const scheduled = await mf.dispatchFetch('http://worker.invalid/cdn-cgi/local/scheduled');
       assert.equal(scheduled.status, 200, await scheduled.text());
     }
-    assert.equal(await bucket.head(rejectedKey), null);
+    assert.ok(await bucket.head(rejectedKey));
+    assert.equal(github.requests.some(r => r.method === 'PATCH'), false);
     assert.ok(await bucket.head(object.key));
     const cursor = await bucket.put('moderation-control/test.json', '{}', {onlyIf: {etagDoesNotMatch: '*'}});
     assert.ok(cursor);

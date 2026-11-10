@@ -1,0 +1,12 @@
+# Data fixture only. Copy into an OWNER-APPROVED disposable staging fork's
+# .github/workflows/ directory to execute the hosted spoof acceptance test.
+name: Untrusted lookalike publication check
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  spoof:
+    name: Submission policy
+    runs-on: ubuntu-latest
+    steps:
+      - run: 'true'

@@ -125,23 +125,26 @@ test('engineering PRs use normal review; catalog maintenance requires verified w
     await assert.rejects(validatePullRequest({repo, base, head, pr: engineering, config, maintainer: true}), /permanent/);
   } finally { rmSync(repo, {recursive: true, force: true}); }
 });
-test('trusted workflow always checks out base, never installs or executes head, and posts exact-head status', () => {
+test('trusted workflow uses protected base and a distinct environment-scoped App identity', () => {
   const workflow = readFileSync(new URL('../.github/workflows/submission-policy.yml', import.meta.url), 'utf8');
   assert.match(workflow, /pull_request_target:/);
   assert.match(workflow, /ref: \$\{\{ github.event.pull_request.base.sha \}\}/);
   assert.match(workflow, /persist-credentials: false/);
-  assert.doesNotMatch(workflow, /ref:.*head|npm |secrets\./);
-  assert.match(workflow, /statuses: write/);
+  assert.doesNotMatch(workflow, /ref:.*head|npm |statuses: write/);
+  assert.match(workflow, /environment: publication-validator/);
+  assert.match(workflow, /permission-checks: write/);
+  assert.match(workflow, /secrets\.PUBLICATION_APP_PRIVATE_KEY/);
+  assert.match(workflow, /PUBLICATION_CHECK_TOKEN: \$\{\{ steps.publication-app.outputs.token \}\}/);
 });
 
-test('trusted CLI fetches inert PR objects and posts pending/success/failure on exact head', () => {
+test('trusted CLI inspects inert PR objects and reports exact-head App checks', () => {
   const base = init();
   const external = mkdtempSync(join(tmpdir(), 'archive-status-'));
   try {
     git(repo, ['switch', '-qc', `submission/${id}`]); const head = submission();
     git(repo, ['update-ref', 'refs/pull/17/head', head]); git(repo, ['remote', 'add', 'origin', repo]);
     git(repo, ['switch', '-q', 'main']);
-    const event = {...pr(), number: 17, state: 'open'}; event.head.sha = head;
+    const event = {...pr(), number: 17, state: 'open'}; event.head.sha = head; event.base.sha = base;
     const eventPath = join(external, 'event.json'); const statuses = join(external, 'statuses.jsonl');
     writeFileSync(eventPath, JSON.stringify({pull_request: event}));
     const mock = join(external, 'mock.mjs');
@@ -150,9 +153,9 @@ test('trusted CLI fetches inert PR objects and posts pending/success/failure on 
         const url = new URL(input);
         if (url.origin === ${JSON.stringify(config.asset_base_url)}) return new Response(null, {status:200});
         if (url.hostname !== 'api.github.com') throw new Error('offline fixture');
-        if (options.method === 'POST') {
+        if (options.method === 'POST' || options.method === 'PATCH') {
           appendFileSync(${JSON.stringify(statuses)}, JSON.stringify({path:url.pathname, ...JSON.parse(options.body)})+'\\n');
-          return Response.json({});
+          return Response.json({id: 37, app: {id: 10001}});
         }
         if (url.pathname.endsWith('/pulls/17')) return Response.json(${JSON.stringify(event)});
         throw new Error('unexpected fixture request');
@@ -161,11 +164,13 @@ test('trusted CLI fetches inert PR objects and posts pending/success/failure on 
     // git() supplies a controlled subprocess environment and captures output.
     const invoke = () => execFileSync(process.execPath, ['--import', mock, runner], {cwd: repo,
       env: {...process.env, GITHUB_TOKEN: 'synthetic', GITHUB_EVENT_PATH: eventPath,
-        GITHUB_REPOSITORY: 'omatek/root-archive', GITHUB_RUN_ID: '123'}, stdio: 'pipe'});
+        GITHUB_REPOSITORY: 'omatek/root-archive', GITHUB_RUN_ID: '123', PUBLICATION_APP_ID: '10001',
+        PUBLICATION_CHECK_TOKEN: 'fixture-app'}, stdio: 'pipe'});
     invoke();
     let values = readFileSync(statuses, 'utf8').trim().split('\n').map(JSON.parse);
-    assert.deepEqual(values.map(s => s.state), ['pending', 'success']);
-    assert.ok(values.every(s => s.context === 'Submission policy' && s.path.endsWith(head)));
+    assert.deepEqual(values.map(s => s.status), ['in_progress', 'completed']);
+    assert.equal(values[0].name, 'Submission policy'); assert.equal(values[0].head_sha, head);
+    assert.equal(values[1].conclusion, 'success');
     assert.equal(git(repo, ['rev-parse', 'HEAD']), base);
     // Malicious code remains unexecuted and only base runner reports rejection.
     git(repo, ['switch', '-q', `submission/${id}`]);
@@ -175,8 +180,7 @@ test('trusted CLI fetches inert PR objects and posts pending/success/failure on 
     event.head.sha = bad; writeFileSync(eventPath, JSON.stringify({pull_request: event}));
     assert.throws(invoke);
     values = readFileSync(statuses, 'utf8').trim().split('\n').map(JSON.parse);
-    assert.deepEqual(values.slice(-2).map(s => s.state), ['pending', 'failure']);
-    assert.ok(values.slice(-2).every(s => s.path.endsWith(bad)));
+    assert.equal(values.at(-2).head_sha, bad); assert.equal(values.at(-1).conclusion, 'failure');
     assert.equal(git(repo, ['rev-parse', 'HEAD']), base);
   } finally { rmSync(repo, {recursive: true, force: true}); rmSync(external, {recursive: true, force: true}); }
 });

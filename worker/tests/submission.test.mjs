@@ -110,7 +110,7 @@ test('stable PR association is durable across branch rename and an old upload re
   await worker.scheduled({}, env);
   assert.ok(await bucket.head(asset.key)); assert.equal(bucket.deleted.length, 0);
 });
-test('definite PR failure with failed rollback remains eligible for genuine orphan cleanup', async () => {
+test('definite PR failure with failed rollback retains a remaining branch for owner cleanup', async () => {
   github.fail = (path, method) => path === '/pulls' && method === 'POST' ? 422 : 0;
   bucket.failDelete = true;
   assert.equal((await submit()).status, 502);
@@ -121,7 +121,8 @@ test('definite PR failure with failed rollback remains eligible for genuine orph
   asset.uploaded = created; asset.customMetadata.created_at = created.toISOString();
   bucket.failDelete = false; github.fail = undefined;
   await worker.scheduled({}, env);
-  assert.equal(await bucket.head(asset.key), null);
+  assert.ok(await bucket.head(asset.key));
+  assert.equal(github.requests.some(r => r.method === 'PATCH'), false);
 });
 test('lost PR creation response retains durable intent even after remote branch rename', async () => {
   github.before = (path, method, body) => {
@@ -162,4 +163,14 @@ test('failure to durably record creation intent prevents the PR POST and permits
   assert.equal((await submit()).status, 500);
   assert.equal(github.requests.some(r => r.path === '/pulls' && r.method === 'POST'), false);
   assert.equal(assets(bucket).length, 0);
+});
+
+
+test('pre-branch GitHub failure with failed rollback still cleans a proven orphan', async () => {
+  github.fail = (path, method) => path === '/git/trees' && method === 'POST' ? 422 : 0;
+  bucket.failDelete = true; assert.equal((await submit()).status, 502);
+  const asset = assets(bucket)[0]; const created = new Date(Date.now() - 8 * 86400000);
+  asset.uploaded = created; asset.customMetadata.created_at = created.toISOString();
+  bucket.failDelete = false; github.fail = undefined;
+  await worker.scheduled({}, env); assert.equal(await bucket.head(asset.key), null);
 });

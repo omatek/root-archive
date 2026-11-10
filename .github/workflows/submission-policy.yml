@@ -8,7 +8,6 @@ on:
 permissions:
   contents: read
   pull-requests: read
-  statuses: write
 
 concurrency:
   group: submission-policy-${{ github.event.pull_request.number }}
@@ -17,6 +16,7 @@ concurrency:
 jobs:
   policy:
     name: Trusted publication validation
+    environment: publication-validator
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -28,8 +28,20 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '24'
-      # Only base code executes. The script fetches head objects as inert data
-      # and posts the required status on the exact PR head (target jobs run on base).
+      # Owner configures an environment allowing only protected main, with this
+      # App key. Fork/same-name Actions jobs must never receive the App identity.
+      - uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2
+        id: publication-app
+        with:
+          app-id: ${{ vars.PUBLICATION_APP_ID }}
+          private-key: ${{ secrets.PUBLICATION_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ github.event.repository.name }}
+          permission-checks: write
+      # Only base code executes; head objects are inert data. The required check
+      # must be bound in the ruleset to this DISTINCT App, never github-actions.
       - run: node scripts/validate-submission.mjs
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          PUBLICATION_CHECK_TOKEN: ${{ steps.publication-app.outputs.token }}
+          PUBLICATION_APP_ID: ${{ vars.PUBLICATION_APP_ID }}

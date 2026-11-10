@@ -72,7 +72,6 @@ export interface Env {
   R2_PUBLIC_BASE_URL: string;
   CLEANUP_MODE?: string;
   CLEANUP_ORPHAN_DAYS?: string;
-  CLEANUP_REJECTED_HOURS?: string;
 }
 
 type ResourceType = "Test Bank" | "Past Paper" | "Summary" | "Other";

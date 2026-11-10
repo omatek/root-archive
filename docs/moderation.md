@@ -1,292 +1,206 @@
-# Submission moderation and cleanup
+# Submission moderation and conservative cleanup
 
-## Flow and storage
+## Submission and publication
 
 Google RS256 signature/issuer/audience/time/email verification and the exact
 `std.aum.edu.jo` email + hosted domain remain mandatory. Explicit CORS, Turnstile,
 25 MiB multipart limit, course/type/metadata/MIME/extension/signature checks run
-before upload. New metadata also rejects HTML delimiters and bidi overrides.
-The backend generates a full UUID v4 and conditionally creates
-`assets/v1/<uuid>.<extension>` in R2; an existing key cannot be overwritten.
-No email, Google identifier, token, or original filename enters the receipt.
+before upload. New metadata rejects HTML delimiters and bidi overrides. The
+backend generates a full UUID v4 and conditionally creates
+`assets/v1/<uuid>.<extension>`; an existing object cannot be overwritten.
 
-R2 remains **public-read**, including pending uploads. Anyone knowing an asset
-URL can download it directly, with no Google token, Worker proxy, GitHub lookup,
-or signed URL. Anonymous users must have no write/delete access. These bucket
-permissions require owner verification; source code does not establish them.
+R2 remains public-read, including pending uploads. Anyone knowing an asset URL
+can download it directly without Google, a Worker proxy, GitHub lookups or signed
+URLs. Public access must never allow writes/deletes. Bucket permissions and the
+existing Pages main→`site/` Git integration require owner verification.
 
-The Worker reads `main` at an exact Git commit, constructs one atomic Git tree
-and commit, creates `submission/<uuid>`, and opens one moderation PR containing:
+The Worker reads main at an exact commit and creates one atomic Git commit/PR on
+`submission/<uuid>` containing exactly:
 
-- One append to `site/resources.json`, preserving all existing entries in order.
-- `submissions/<uuid>.json`: `{schema: 1, object_key, resource}`; `resource` is the
-  exact public catalog entry with the existing frontend schema.
+- An append to `site/resources.json`, preserving existing entries/order.
+- `submissions/<uuid>.json`: `{schema:1, object_key, resource}`, with the exact
+  public catalog entry. No email, Google identifier or token is recorded.
 
-The PR includes an escaped metadata table and the public asset for moderator
-inspection. The student UI shows “Submission received. Your material is
-awaiting review.” and a PR link, with no immediate download link. Maintainers
-review content and approve/merge the same PR. Pages' existing Git integration
-publishes `site/` from `main`; no second publication PR or Actions deployment
-exists. Closing an unmerged PR publishes nothing.
+A moderator reviews the actual content and approves/merges this PR; Pages then
+publishes the catalog. No second publication PR exists. Rejection publishes
+nothing. The existing form/GIS/Turnstile design is preserved. Success shows
+“Submission received. Your material is awaiting review.” and a PR link only.
 
-A definite GitHub failure attempts immediate R2 rollback. Failed rollback is
-logged and the object retains recoverable provenance. Network failures, 5xx, or
-malformed successful mutation responses are ambiguous: the object is retained
-because GitHub may have created the PR. A student retry can create another
-submission; UUIDs prevent replacement, not duplicates of identical file bytes.
-Empty/dangling Git branches are harmless and may remain.
+`moderation-control/submissions/<uuid>.json` binds repository/UUID/key to a stable
+PR number. Conditional R2 writes record `not-created` before GitHub work,
+`creating` before the PR POST, and `linked` after success. A definite rejected
+POST restores `not-created`; ambiguous responses or failed link persistence keep
+`creating`. Definite submission failure attempts rollback; failed rollback is
+logged. A known-created PR's file is never rolled back on link persistence failure.
+No database or new service is used. Control records are public nonstudent data.
 
-The backend keeps `moderation-control/submissions/<uuid>.json` in the same R2
-bucket, binding repository, submission ID and object key to a **stable PR
-number**. Conditional writes record `not-created` before GitHub work, `creating`
-**before** issuing the PR POST, and `linked` with the number after success. A
-definite rejected POST restores `not-created`; a timeout, ambiguous response or
-failed link write leaves `creating` and retains the asset for owner resolution.
-Failure to save the intent prevents the POST. No database or new service is used.
+## Trusted validation and enforcement
 
-Cleanup fetches linked PRs by number even after branch rename/deletion or title/
-body edits. Branch queries only corroborate absence or detect multiple PRs;
-an empty branch query cannot override a linked PR. Missing, malformed or pending
-association state, or a failed/404 PR lookup, retains the file. The publication
-gate still requires the canonical submission branch name before merge.
+Read [publication enforcement](publication-enforcement.md) before rollout. A
+required name sourced from **GitHub Actions is insufficient**: fork workflows
+share that App identity. The implemented reporter uses a **distinct GitHub App**,
+a main-only secret environment, and a native required check bound to that App's
+integration ID. An organization/enterprise required-workflow ruleset is the
+preferred alternative when available. No live configuration was changed and
+hosted spoof enforcement has not been tested. Launch is blocked until owner
+configuration and the documented staging acceptance test succeed.
 
-## Trusted publication gate
+The target workflow checks out only the protected base and reads head blobs/diffs
+as inert data. No head checkout, import, installation or privileged execution
+occurs. Normal CI executes PR code with read-only permissions and no App key.
+The gate checks current-base ancestry, exactly two regular allowed files, exact
+schemas/receipt equality, safe metadata, generated UUID/key/managed URL binding,
+no duplicates, and no mutation/removal/reordering of existing catalog entries.
 
-`.github/workflows/submission-policy.yml` uses `pull_request_target` with pinned
-Actions and checks out only the protected event base SHA. It does **not** check
-out, import, install, or execute PR code. Trusted scripts fetch PR Git objects
-and read blobs/diffs as inert data. No production secrets are available. The
-job's token has `contents: read`, `pull-requests: read`, `statuses: write` only.
+Submission branches always receive strict validation. Other catalog/receipt PRs
+also do. Engineering PRs use normal maintainer review. The limited maintenance
+exception requires the **current** `catalog-maintenance` label and a current
+repository writer; it permits only catalog removals, preserving all receipts
+and remaining entries. Live author/head/base/labels and applicable permissions
+are read again before success; changed authorization fails. Old workflow event
+labels are never authorization. See enforcement docs for commit-scoped revocation
+limits and the need to hold merges while a fresh result is unavailable.
 
-The script posts the **Submission policy** status on the exact inspected PR
-head, rather than relying on a target workflow's base-commit check association.
-It verifies the fetched head and rechecks the open PR before reporting success.
-A failed API/status operation does not grant approval. The base configuration
-`moderation.config.json` pins the asset origin and Worker PR author. Worker
-configuration must use that same asset origin; staging needs its own reviewed
-configuration copy and credentials.
+The backend author remains configured in `moderation.config.json` (`omatek` at
+present). An author cannot approve their own PR; use another maintainer or a
+separately configured bot. Require independent approval/current branches and no
+main bypasses. This implementation does not support merge queues.
 
-Submission branches (including old `submission-...` names) always get strict
-validation. Other PRs touching catalog/receipts also get strict validation.
-The gate requires a current base ancestor and exactly two regular, nonexecutable
-files: catalog modification and one new UUID receipt. It validates the exact
-resource schema, managed key/ID/URL binding, catalog membership, safe metadata,
-no duplicate IDs/object references, exact receipt/catalog equality, and no
-change/removal/reordering of existing entries. Workflow/script/Worker changes,
-symlinks, extra fields and extra files fail. Only the configured backend author
-in the same repository may submit managed proposals.
+## Concurrent submissions
 
-Engineering PRs that do not touch catalog/receipts use normal maintainer review.
-A non-submission PR authored by a verified repository writer may use the
-`catalog-maintenance` label **only to remove catalog entries**, preserving the
-remaining entries and every receipt. This is the controlled removal exception;
-it does not authorize new assets or receipt deletion. Ordinary CI still applies.
-
-Owner setup after this workflow has landed through normal review:
-
-1. Observe the actual **Submission policy** status on a canary PR, then require
-   it on `main`, sourced from GitHub Actions. Also require **Repository checks**
-   and **Worker checks**. Do not leave submission merging enabled during bootstrap.
-2. Require branches to be up to date and at least one approving maintainer
-   review. Dismiss stale approvals on new commits; require approval of the latest
-   push. Block direct/force pushes, deletion, and bypasses on `main`, including
-   for the backend identity. Do not grant the Worker main bypass permissions.
-3. Restrict repository write access to trusted maintainers/backend. The status
-   namespace alone is not protection against a malicious repository writer.
-   Protect workflow/policy/config changes with normal security review.
-4. Do not use merge queues with this version: there is no `merge_group` gate.
-
-`submission_author` currently matches the existing `omatek` identity. GitHub
-cannot count an author's own approval. Use another authorized reviewer, or
-configure a dedicated bot/App identity and update the reviewed config before
-launch. A human must verify the token's actual author; it was not inspected.
-
-## Review and concurrent submissions
-
-Inspect the file itself for suitability, privacy, copyright and malware; a
-signature check is not a content review. Merge only green, current proposals
-with the required review. Two PRs can initially append to the same old catalog;
-after the first merges, the second is stale and must be reconciled. Never choose
-one complete catalog side in a merge conflict or disable up-to-date protection.
-
-Use a separate **trusted current-main checkout** to run the reconciler. In the
-submission checkout, fetch `origin/main`, select the intended submission branch,
-and ensure the working tree is clean. Then run, substituting actual paths:
+After PR A merges, PR B's old full-file catalog proposal is stale. Do not choose
+one side of the JSON conflict or weaken protection. From a separate trusted
+current-main checkout, run the reconciler against a clean submission checkout
+whose `origin/main` has been fetched:
 
 ```sh
 node /trusted-main/scripts/reconcile-submission.mjs --repo /submission-checkout
-# Prints a merge commit SHA, without moving refs or changing the working tree.
-# In /submission-checkout, after inspecting that commit:
+# Inspect the printed merge commit, then in the submission checkout:
 git merge --ff-only <printed-sha>
 git push origin HEAD
 ```
 
-The command validates the old proposal against its merge base, rejects arbitrary
-edits/duplicate or retired submissions, and builds a merge commit from latest
-main plus that one receipt/addition. Both resources survive. Required checks
-and review must run again. If main advances again, repeat. It never force-pushes
-or merges to main. The command expects the public repository's SHA-1 Git format.
+The command validates the old proposal, builds from latest main plus that one
+addition and preserves both resources. It moves no ref until the maintainer
+accepts it. Checks and independent review must run again. Repeat if main advances.
+It uses SHA-1 Git object IDs and rejects extra edits or duplicate resources.
 
-## Cleanup decisions
+## Conservative automatic deletion
 
-`scheduled` is the only cleanup entry point. There is no HTTP deletion route.
-The checked-in Worker sets `CLEANUP_MODE=off` and configures **no Cron trigger**.
-A later owner-approved rollout may use `dry-run`, then `active`.
+The security review replaces inferred rejection and branch retirement with a
+smaller model. **Any associated PR is a permanent automatic-cleanup hold**, whether
+open, closed, merged, old, renamed, or apparently inactive. Cron does not comment,
+expire, close or modify PRs and never creates/updates/deletes repository refs.
+It cannot distinguish intentional rejection from GitHub's automatic closure on
+head rename using closed state alone. It also cannot safely retire a name that
+may have been reused. Those actions have therefore been removed.
 
-| Evidence | Decision |
-| --- | --- |
-| Current main catalog references the ID/key, or a receipt exists on main | Retain permanently |
-| Original PR was merged, even if catalog later removed | Retain permanently |
-| Missing/malformed provenance or association, legacy prefix, uncertain creation, ambiguous/multiple PRs, unexpected state, unavailable verification | Retain and report/retry |
-| Closed, unmerged PR | Eligible 12 hours after its actual latest close, if still unpublished |
-| Durable `not-created` state and no contradicting PR found | Eligible 7 days after R2 upload, if still unpublished |
-| Open PR | Retain; may expire only after 30 days of genuine inactivity |
+Tradeoff: rejected/abandoned submissions and failed uploads with remaining
+branches require explicit owner-reviewed per-key cleanup. The former automatic
+12-hour rejection and 30-day expiry behavior is withdrawn. No label/comment or
+negative lookup silently grants deletion permission. Maintainers can still close
+inactive submissions manually after reviewing actual comments/reviews, without
+that closure authorizing file deletion.
 
-Rejection grace is configurable with `CLEANUP_REJECTED_HOURS` (1–168; default
-12). Orphan grace uses `CLEANUP_ORPHAN_DAYS` (1–365; default 7). Invalid settings
-retain objects. Provenance requires the v1 UUID key and backend metadata
-`moderation_schema`, `submission_id`, canonical `created_at` close to actual R2
-upload time. Legacy objects are not guessed into this contract.
+Only a proven never-created orphan can be automatically deleted:
 
-Before expiring a pending PR, inspect PR update/head state, recent issue comments,
-review submissions (including pending reviews), and inline review activity.
-Incomplete activity pagination retains the file. Explain expiration in a comment,
-recheck activity/head, close, verify closed/unmerged, then start the rejection
-grace. A marked explanation can be reused after a failed close without counting
-it as new human activity. Recent comments/reviews or changed head cancel expiry;
-creation age alone is insufficient. Maintainers can reopen during the grace.
-GitHub has no atomic “close only if no new activity” transaction: an event in the
-last read/close interval may need maintainer reopening during that grace.
+1. V1 UUID key and backend provenance match canonical creation time and actual
+   R2 upload time; missing/malformed/legacy provenance retains.
+2. Fresh authoritative main/catalog/course/receipt reads show no approval.
+   Any receipt or catalog ID/key/URL alias protects the object permanently.
+3. A valid R2 association explicitly says `not-created` for this repository,
+   UUID and key; `creating`, missing or malformed state retains. A contradictory
+   PR, multiple PRs, unknown status or API error retains. Linked PRs are fetched
+   by number, regardless of branch/title/body changes; a 404 never means orphan.
+4. R2 upload age is at least `CLEANUP_ORPHAN_DAYS` (default 7, allowed 1–365).
+5. The original submission branch does not exist. Any remaining/reused/diverged
+   branch is a hold, regardless of its contents. Cleanup performs no branch writes.
+6. Association, PR/branch absence and main approval are checked again, and the
+   R2 object identity/provenance is unchanged immediately before deletion.
 
-Before deleting, retire the associated PR's current branch (including a renamed
-branch), or the original orphan branch, by appending an intentionally invalid
-`submissions/retired/<uuid>.json` marker commit using a non-force update.
-If a rejected branch was deleted, recreate it at an invalid terminal head.
-Re-read the association and confirm the ref, stable PR number, branch name and
-closed/unmerged state again. Reopening cannot merge its former green proposal: protected main requires checks on the current
-head, which fails the allowed-path policy. Retired submissions must be resubmitted;
-do not restore an earlier valid head or bypass the required checks.
+This handles failed rollback before branch creation. A definite failed PR POST
+may leave a branch, so its object is intentionally held for owner cleanup.
+No object with an actual/uncertain PR creation can become an orphan through a
+rename, closure, elapsed grace period, or lookup failure. Do not manually create
+replacement PRs for failed uploads without restoring a verified association;
+resubmit through the supported flow instead.
 
-After retirement, read main, catalog, courses and receipt **again** directly from
-GitHub, with cache bypass. Any receipt protects the object, even if malformed;
-URL aliases/query fragments referring to the managed key also retain it. Verify
-unchanged R2 identity/provenance, then delete. Immutable generated keys and branch
-retirement avoid racing legitimate publication; this relies on GitHub enforcing
-current-head checks and maintainers preserving receipts. Publication and merged
-state observed at any step cancel deletion. Never use the Pages catalog or a
-compiled/cached catalog for destruction.
+`scheduled` is the only cleanup entry point. There is no HTTP deletion endpoint.
+Checked-in mode is `off`, with no Cron trigger configured. The obsolete
+`CLEANUP_REJECTED_HOURS` setting has been removed.
 
-## Scheduling, limits and recovery
+## Limits, monitoring and recovery
 
-Proposed schedule after separate approval: `* * * * *` (once per minute, UTC).
-One R2 key is scanned per invocation, with at most **32 GitHub requests** plus
-at most seven R2 operations (39 subrequests, below the Free limit of 50). Normal
-rejected cleanup uses 19 GitHub calls in the workerd test. Activity pagination
-allows at most four pages of 100 reviews; 100 recent issue comments or an
-incomplete review history retain for manual attention rather than guessing.
-Catalog files over 4 MiB also fail closed. This targets the existing small archive.
+After separate approval, a proposed once-per-minute UTC Cron scans one asset key
+per invocation. GitHub is bounded to 32 calls; at most seven R2 operations give a
+39-subrequest ceiling under the Free limit of 50. Maximum scan/deletion throughput
+is 1,440 keys/day, including retained assets. A stable N-key sweep takes about N
+minutes plus failures/overlap. There is no automatic rejected-upload deletion SLA.
 
-The durable R2 control object `moderation-control/scan-v1.json` stores the next
-opaque list cursor and last scan time. Conditional writes compare its ETag;
-overlapping runs may repeat work but cannot overwrite newer cursor progress.
-Each object failure advances the scan, then retries on the next full sweep.
-Deletion/ref retirement are idempotent; rate limits/outages never trigger a
-blind delete. A failed cursor write repeats work. End-of-list wraps to the start,
-so an approved or failing first key does not starve later keys. Control metadata
-is public, contains no student information, and is outside the asset scan prefix.
-Per-submission association records remain as small audit markers after deletion;
-include them in an owner-approved prelaunch reset rather than erasing evidence
-needed to distinguish an interrupted PR creation from an orphan.
+`moderation-control/scan-v1.json` persists an opaque list cursor and last scan
+time. ETag compare-and-swap prevents overlapping writers from overwriting newer
+progress. Object failures advance the cursor and retry next sweep; end-of-list
+wraps, so retained/failing first keys do not starve later keys. Delete and retry
+are idempotent. Catalog files over 4 MiB and incomplete PR listings fail closed.
+Control records are outside the asset scan and remain as small audit markers.
 
-At one-minute scheduling the maximum is **1,440 scanned keys/day**, including
-approved/young objects; deletion throughput is no greater than that. A stable
-N-key sweep takes about N minutes before retries/overlap. Rejection targets
-12 hours plus one sweep (approximately 24 hours while N ≤ 720 and services are
-healthy); expiry can require another sweep before rejection grace is revisited.
-This is bounded best-effort cleanup, not a 24-hour SLA for unlimited backlog.
+Monitor `cleanup_scan_advanced`/wrap/last scan time, `cleanup_scan_overlap`,
+`cleanup_retry`, `cleanup_scan_failed`, `cleanup_retain_submission`,
+`cleanup_retain_branch`, `cleanup_would_delete`, `cleanup_deleted` and
+`rollback_failed`. Logs contain fixed outcomes/status codes/generated IDs, not
+content/emails/tokens. Compare object counts/ages with sweep duration; alert on
+stopped progress, growing retries or incoming objects approaching scan capacity.
+Do not increase batch size without revisiting the subrequest budget.
 
-Monitor `cleanup_scan_advanced`, sweep wraps/last scan time, `cleanup_deleted`,
-`cleanup_would_delete`, `cleanup_would_expire`, `cleanup_retry`,
-`cleanup_scan_failed`, `cleanup_scan_overlap`, and `rollback_failed`. Logs contain
-fixed outcomes, HTTP status codes and generated IDs, not tokens/content/emails.
-Compare R2 v1 object count and age distribution with measured sweep duration.
-Alert if sweeps exceed 12 hours, scan progress stops, retry/error counts grow,
-or incoming objects approach scan capacity. Reduce intake or approve a tested
-capacity change before backlog grows indefinitely. Increasing a batch without
-reworking the subrequest budget is unsafe.
+Outages retain data and retry on subsequent sweeps. For a corrupt/invalid cursor,
+stop Cron, inspect inventory/errors, and after owner approval reset only the
+control object to `{schema:1}`. Never bulk-delete assets to repair progress.
+Turning mode off or disabling the trigger uses the approved deployment process;
+code rollback cannot restore deleted files. Keep backups as required by policy.
 
-On an outage, retain data and repair upstream access; subsequent sweeps retry.
-For corrupt/invalid cursor or stuck scan, stop Cron, inspect the sanitized error
-and inventory, and after approval reset only the control object to `{schema:1}`;
-never bulk-delete assets to repair a cursor. For deletion failures retry after
-storage recovery. To stop cleanup, set mode off/disable the trigger using the
-approved deployment procedure. Code rollback cannot restore a deleted object;
-keep approved backups/versioned copies where required by the owner's policy.
+## Owner-controlled removal, legacy data and rollout
 
-## Configuration, legacy data and controlled removal
+Before removing any PR-associated or previously published file, a maintainer
+must establish affirmative intent: review the exact UUID/key/PR and publication
+history, confirm intentional rejection or actual inactivity (including comments
+and reviews), or merge an intentional catalog removal PR through normal review.
+Record owner approval for the exact key and reason in an auditable place. A
+rename/automatic/unexplained closure or missing lookup is insufficient.
 
-Worker GitHub credential: scope to this repository, Contents read/write (Git
-objects/submission refs), Pull requests read/write (open/read/comment/close), and
-inherent Metadata read. No administration, workflow, Actions, or main-bypass
-permission. No production secret is needed by normal CI or the policy job.
-Cloudflare retains the existing R2 binding/public-read host and Worker secrets
-`GITHUB_TOKEN`, `TURNSTILE_SECRET`; existing OAuth client/origin bindings remain.
-Verify asset origin/config, token identity/scopes, Google client/origins,
-Turnstile hostnames, CORS, R2 write isolation and Pages main→`site/` integration.
-Never configure lifecycle expiration over all `assets/`: it would delete approved
-resources independently of this policy.
+Stop cleanup and submission merging for the removal window, check current
+main/receipts and every open PR for references, confirm independent approval,
+keep a backup if desired, then use R2 admin tools for only the approved key.
+Retain permanent approval receipts afterward. Coordinate restoration/reopening
+and catalog rollback separately; never restore a PR/catalog referencing a
+manually deleted object without restoring the file and revalidating. This is a
+manual owner operation, not a public or automated deletion API.
 
-Legacy record-only PRs (#1–#3 and old `submission-...` branches) are intentionally
-blocked with a resubmission instruction; they cannot silently publish. After
-owner approval, close disposable tests and resubmit needed material through the
-new flow. Leave legacy objects alone until the owner approves an explicit reset.
-No migration or legacy automatic deletion exists. Pre-fix v1 assets without an
-association are also retained. For missing/`creating` records, the owner must
-verify the UUID/key/repository and actual PR, then restore the verified `linked`
-record with its PR number through admin tools, or approve explicit per-key
-removal. Never declare such a file orphaned from branch absence alone. Failed
-submissions should be resubmitted, not manually given another PR without updating
-the verified association.
+Legacy record-only PRs remain blocked with resubmission guidance. Legacy assets,
+missing associations and interrupted `creating` records retain. The owner can
+verify and repair a stable PR association through admin tools or approve per-key
+removal; there is no automatic migration or inference from a missing branch.
+The same explicit procedure resets disposable prelaunch test data; no blanket
+bucket/prefix deletion is authorized.
 
-For an intentionally removed published asset: open a separate maintainer catalog
-removal PR with `catalog-maintenance`, retain its permanent receipt, review and
-merge normally. After Pages publication and any chosen rollback window, stop
-cleanup, inventory that exact key across current main/receipts and all open PRs,
-verify no other catalog references, save a backup if desired, and obtain owner
-approval for that explicit object deletion. Use the R2 dashboard/admin tools;
-there is no public maintenance endpoint. Retain the receipt/audit trail afterward.
-The same explicit per-key approved procedure resets disposable prelaunch data;
-never delete a bucket/prefix wholesale or rewrite submission history.
+Worker credentials remain repository-scoped Contents/PR read-write for upload
+PR creation, with no main bypass/admin/workflow permission. Cron now uses only
+GitHub reads. The publication App separately needs only Checks write/Metadata
+read, with its secret isolated as described in enforcement docs. Verify OAuth,
+Turnstile, exact CORS, R2 write isolation/public host, config origin and Pages
+integration. Never put blanket lifecycle expiration on `assets/`.
 
-## Staging acceptance and limitations
+Before launch, owner-approved isolated staging must exercise sign-in/rejections,
+one-PR upload, the unchanged form/waiting message, anonymous asset GET and denied
+anonymous writes/deletes, approval→Pages publication, concurrent reconciliation,
+API/rollback/storage failures, and the conservative cleanup holds. Prove rename
+closure survives 12 hours and seven days and reused branches are untouched. Start
+Cron in dry-run and approve active mode separately. Run the hosted spoof/rerun
+acceptance tests in [publication enforcement](publication-enforcement.md). Record
+SHA, check App identity, ruleset/environment settings, deployment IDs, quotas and
+rollback plan before requesting a production release.
 
-Run the commands in [the implementation evidence](moderation-evidence.md).
-Local mocks/workerd tests do not establish real permissions, branch rules,
-Cloudflare integration, or production correctness. Before launch, the owner must
-approve an isolated staging repository/bucket/Worker/Pages setup and identity.
-Then perform this acceptance sequence:
-
-1. Verify forbidden origin/domain/expired token, failed Turnstile, bad signature
-   and oversized file produce no stored object or PR. Sign in normally and
-   submit; confirm the unchanged form/GIS/Turnstile design and waiting message.
-2. Inspect exactly two PR files and the public pending asset. Verify anonymous
-   GET works and anonymous write/delete fails. Confirm real branch protection
-   blocks unreviewed, stale, tampered and retired proposals.
-3. Submit twice before either merge; approve/merge the first, reconcile and
-   reapprove the second. Verify both appear after the actual Pages deployment.
-4. Reject a staging submission; begin dry-run Cron and inspect a full sweep.
-   Explicitly approve active staging cleanup with shortened test-only retention
-   or age fixtures. Verify rejection, orphan rollback failure, inactivity/comment
-   cancellation, rate-limit/delete retry and overlap; prove approved assets survive.
-5. Record tested SHA, check/status source, service deployment IDs, inventory,
-   observed latency/quotas and rollback plan. Only then request production rollout
-   approval; keep production cleanup off until its dry-run evidence is reviewed.
-
-Accepted limits: pending files are public; upload content is not malware-scanned;
-compromised backend/maintainer credentials are trusted writers; administrators
-can defeat protection by bypassing checks/removing receipts. Availability outages,
-large activity histories, malformed data and excess backlog delay deletion.
-Student retries can duplicate content. Retired/dangling branches and permanent
-receipts require occasional maintainer housekeeping. No live service, student PR,
-object, bucket setting, secret, DNS, OAuth setting or production Cron was changed
-or tested by this implementation task.
+Accepted limits: pending content is public and not malware-scanned; trusted
+writer/admin or App credential compromise can defeat protection; outages and
+backlogs delay orphan cleanup; manual rejected/abandoned cleanup is now required;
+checks have a final authorization/merge interval and are not a merge-time
+transaction. Local mocks/workerd do not establish production correctness.
