@@ -51,6 +51,8 @@ p+p{margin-top:14px}
 .button-light:hover{background:#f5a58f;color:var(--ink)}
 .button-secondary{background:transparent;border-color:var(--rule);color:var(--ink)}
 .button-secondary:hover{background:var(--tint);color:var(--ink);border-color:var(--oxide)}
+.arrow-icon{width:18px;height:18px;display:inline-block;vertical-align:-3px;flex-shrink:0;margin-left:6px}
+.course-name .arrow-icon{color:var(--oxide);margin-left:10px;width:16px;height:16px}
 .text-button{padding:8px 0;min-height:44px;text-decoration:underline;text-underline-offset:.2em;color:var(--oxide)}
 .skip-link{position:fixed;left:16px;top:-100px;background:var(--paper);color:var(--ink);z-index:10;padding:12px}
 .skip-link:focus{top:12px}
@@ -61,7 +63,7 @@ main{flex:1;padding-block:38px 64px}
 .intro p:not(.eyebrow){color:var(--muted);margin-top:12px}
 .publisher-note{font-size:15px;color:var(--muted);border-left:1px solid var(--rule);padding-left:20px;max-width:210px;flex-shrink:0;margin-bottom:4px}
 .publisher-note strong{display:block;color:var(--ink);font-weight:600}
-.search-wrap{max-width:760px;margin-bottom:26px}
+.search-wrap{max-width:760px;margin-bottom:18px}
 .search-box{display:flex;align-items:center;background:var(--paper);border:1px solid var(--muted);padding-left:17px;gap:14px}
 .search-icon{width:20px;height:20px;flex:none}
 .search-box input{border:0;background:transparent;padding:15px 0;min-height:58px;font-size:20px}
@@ -74,7 +76,7 @@ main{flex:1;padding-block:38px 64px}
 .track-filters button[aria-pressed='true']{border-color:var(--oxide);font-weight:650}
 .track-filters button:hover{color:var(--oxide)}
 .result-count{font-size:15px;color:var(--muted);padding-block:12px;white-space:nowrap}
-.catalog-note{display:flex;justify-content:space-between;gap:20px;font-size:15px;color:var(--muted);padding:15px 0 22px}
+.catalog-note{display:flex;justify-content:space-between;gap:20px;font-size:15px;color:var(--muted);padding:12px 0 16px}
 .catalog-note button{font:inherit;color:var(--oxide);text-decoration:underline;text-underline-offset:.2em;padding:0;min-height:24px}
 .course-table{width:100%;border-collapse:collapse;text-align:left}
 .course-table th{font-size:14px;font-weight:450;color:var(--muted);padding:10px 14px;border-bottom:1px solid var(--rule)}
@@ -174,7 +176,7 @@ input[type='file']::file-selector-button{border:1px solid var(--muted);backgroun
 .success-panel p{color:var(--muted);margin-bottom:20px}
 .success-panel .button{margin-bottom:16px}
 
-@media(min-width:1400px){main{padding-top:46px}}
+@media(min-width:1400px){main{padding-top:36px}}
 @media(max-width:900px){
   .shell{width:calc(100% - 48px)}
   .publisher-note{display:none}
