@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "miniflare": "5.20261023.3-beta",
-    "typescript": "^5.7.3",
+    "typescript": "^7.0.2",
     "wrangler": "^4.156.0"
   }
 }
