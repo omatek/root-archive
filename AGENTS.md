@@ -10,11 +10,20 @@
   CORS, Turnstile, bounded multipart and file-signature validation, R2 uploads.
 - R2 resource storage is intentionally public-read. Unlisted files are public,
   not private. Writes/deletes belong to the backend. No database.
-- Current submissions create `submissions/*.json` on a GitHub branch and open
-  a PR. They do **not** update the public catalog. GitHub failure attempts R2
-  rollback, but deletion failure is swallowed. No scheduled cleanup exists.
-- Reported moderation commit `535b2ce` could not be recovered. Treat recovery
-  as P0; do not rebuild or edit moderation incidentally. See `docs/audit.md`.
+- New submissions open one `submission/<uuid>` PR that appends to the catalog
+  and adds an immutable v1 receipt. Trusted base-branch validation governs
+  publication; current-main reconciliation preserves concurrent additions.
+- Cleanup automatically deletes only proven never-created, branchless orphans.
+  Every PR-associated upload is held for owner-reviewed removal; Cron never
+  modifies GitHub PRs/refs. It is off by default, with no trigger. Approval
+  receipts are permanent. See `docs/moderation.md` before editing this boundary.
+- Publication enforcement requires a distinct GitHub App and App-bound required
+  check (or native organization required-workflow rule), not a GitHub Actions
+  check name. See `docs/publication-enforcement.md`; owner setup is outstanding.
+- Pages must exclude `submission/*` and legacy `submission-*` from previews;
+  owner configuration and old-deployment audit are in `docs/pages-previews.md`.
+- Historical `535b2ce` remains unavailable after a bounded recovery check;
+  reconstruction was explicitly authorized. See `docs/moderation-evidence.md`.
 - Production configuration/deployment is unverified. `analytics/` is synthetic
   and offline; it is not production telemetry.
 
@@ -37,8 +46,9 @@ python3 -m unittest discover -s analytics/tests -v
 python3 -m unittest discover -s scripts/tests -v
 ```
 
-`worker` checks run type checking, dry-run bundling, and HTTP boundary tests.
-These do not establish full JWT, R2, GitHub, publication, or cleanup coverage.
+`worker` checks run type checking, dry-run bundling, signed-token/lifecycle mocks,
+cleanup tests and real local workerd/emulated R2. Repository tests exercise
+trusted diff validation and concurrent Git histories. These are not live tests.
 Add meaningful tests for behavior changed and update relevant docs. No ordinary
 PR check needs production credentials. Never weaken authentication, validation,
 storage authorization, or workflow trust boundaries to make a test pass.

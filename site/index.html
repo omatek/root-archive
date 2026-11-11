@@ -636,14 +636,14 @@
           ></div>
         </div>
 
-        <!-- Verified Pull Request & R2 Asset Result Banner -->
+        <!-- Submission awaiting moderation -->
         <div
           id="submission-result-banner"
           hidden
           class="bg-obsidian border border-cyanbrand/60 rounded-sm p-3.5 font-mono text-xs space-y-2"
         >
           <p class="text-cyanbrand font-semibold">
-            [VERIFIED] Resource uploaded to R2 and queued for review via GitHub Pull Request.
+            Submission received. Your material is awaiting review.
           </p>
           <div id="submission-result-links" class="flex flex-wrap items-center gap-3 pt-1"></div>
         </div>
@@ -2389,14 +2389,13 @@
         }
 
         const prMatch = /\/pull\/(\d+)/.exec(safePrUrl);
-        const prDisplayIdentifier = prMatch ? "#" + prMatch[1] : safePrUrl;
 
         appendTerminalLog(
           "SUCCESS",
-          "Pull Request dispatched! PR: " + prDisplayIdentifier,
+          "Submission received. Your material is awaiting review.",
           "success"
         );
-        setPipelineStatus("[DISPATCHED]", "text-emerald-400");
+        setPipelineStatus("[AWAITING_REVIEW]", "text-emerald-400");
 
         const linkNodes = [];
 
@@ -2408,18 +2407,6 @@
           "inline-block bg-cyanbrand text-obsidian font-semibold px-3 py-1.5 rounded-sm hover:opacity-90";
         prAnchor.textContent = "[View GitHub Pull Request " + (prMatch ? "#" + prMatch[1] : "") + " ->]";
         linkNodes.push(prAnchor);
-
-        const safeAssetUrl = validateHttpsUrl(responseData.asset_url);
-        if (safeAssetUrl) {
-          const assetAnchor = document.createElement("a");
-          assetAnchor.setAttribute("href", safeAssetUrl);
-          assetAnchor.setAttribute("target", "_blank");
-          assetAnchor.setAttribute("rel", "noopener noreferrer");
-          assetAnchor.className =
-            "inline-block border border-cyanbrand/50 text-cyanbrand px-3 py-1.5 rounded-sm hover:bg-cyanbrand/10";
-          assetAnchor.textContent = "[Verify R2 Asset URL ->]";
-          linkNodes.push(assetAnchor);
-        }
 
         dom.submissionResultLinks.replaceChildren(...linkNodes);
         dom.submissionResultBanner.hidden = false;

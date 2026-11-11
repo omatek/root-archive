@@ -17,6 +17,10 @@
 
 import { createRemoteJWKSet, errors as joseErrors, jwtVerify } from "jose";
 import rawCoursesCatalog from "../site/courses.json";
+import moderationConfig from '../moderation.config.json';
+import { validateRecord } from '../scripts/moderation-policy.mjs';
+import { GitHub, GitHubError, writeSubmissionAssociation } from './github';
+import { runCleanup } from './cleanup';
 
 export interface R2HTTPMetadata {
   contentType?: string;
@@ -30,6 +34,7 @@ export interface R2HTTPMetadata {
 export interface R2PutOptions {
   httpMetadata?: R2HTTPMetadata;
   customMetadata?: Record<string, string>;
+  onlyIf?: {etagMatches?: string; etagDoesNotMatch?: string};
 }
 
 export interface R2Object {
@@ -39,6 +44,7 @@ export interface R2Object {
   readonly etag: string;
   readonly httpEtag: string;
   readonly uploaded: Date;
+  readonly customMetadata?: Record<string, string>;
 }
 
 export interface R2Bucket {
@@ -48,6 +54,11 @@ export interface R2Bucket {
     options?: R2PutOptions
   ): Promise<R2Object | null>;
   delete(keys: string | string[]): Promise<void>;
+  head(key: string): Promise<R2Object | null>;
+  get(key: string): Promise<(R2Object & {json(): Promise<any>}) | null>;
+  list(options: {prefix: string; limit: number; cursor?: string; include?: string[]}): Promise<{
+    objects: R2Object[]; truncated: boolean; cursor?: string;
+  }>;
 }
 
 export interface Env {
@@ -59,6 +70,8 @@ export interface Env {
   GOOGLE_CLIENT_ID: string;
   BUCKET: R2Bucket;
   R2_PUBLIC_BASE_URL: string;
+  CLEANUP_MODE?: string;
+  CLEANUP_ORPHAN_DAYS?: string;
 }
 
 type ResourceType = "Test Bank" | "Past Paper" | "Summary" | "Other";
@@ -107,32 +120,9 @@ interface TurnstileVerifyResponse {
   "error-codes"?: string[];
 }
 
-interface GitHubRefResponse {
-  ref?: string;
-  object?: {
-    sha?: string;
-    type?: string;
-  };
-}
-
-interface GitHubContentResponse {
-  content?: {
-    name?: string;
-    path?: string;
-    sha?: string;
-  };
-}
-
-interface GitHubPullRequestResponse {
-  number?: number;
-  html_url?: string;
-}
-
 const MAX_BODY_SIZE_BYTES = 25 * 1024 * 1024; // 26,214,400 bytes (25 MiB)
 const UPSTREAM_TIMEOUT_MS = 15_000;
 const TURNSTILE_VERIFY_ENDPOINT = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
-const GITHUB_API_BASE = "https://api.github.com";
-const GITHUB_API_VERSION = "2022-11-28";
 const WORKER_USER_AGENT = "root-archive-worker/1.0";
 
 const GOOGLE_JWKS_URL = new URL("https://www.googleapis.com/oauth2/v3/certs");
@@ -152,7 +142,6 @@ const CLOCK_SKEW_TOLERANCE_SECONDS = 30;
 const COURSE_ID_REGEX = /^\d{6,7}$/;
 const CONTROL_CHARS_REGEX = /[\x00-\x1F\x7F-\x9F]/;
 const LOCALHOST_ORIGIN_REGEX = /^http:\/\/(localhost|127\.0\.0\.1)(:\d{1,5})?$/;
-const GIT_SHA_REGEX = /^[0-9a-f]{40}$/i;
 
 /**
  * Authoritative allowlist of official AUM course IDs imported directly from
@@ -242,6 +231,9 @@ class WorkerHttpError extends Error {
 }
 
 export default {
+  async scheduled(_event: unknown, env: Env): Promise<void> {
+    await runCleanup(env);
+  },
   async fetch(request: Request, env: Env): Promise<Response> {
     let matchedCorsOrigin: string | null = null;
 
@@ -329,7 +321,7 @@ export default {
 
       // 11. Store binary file in Cloudflare R2
       const timestamp = Date.now();
-      const submissionId = `${timestamp}-${crypto.randomUUID().slice(0, 8)}`;
+      const submissionId = crypto.randomUUID();
       const createdAt = new Date(timestamp).toISOString();
 
       const { objectKey, assetUrl } = await storeFileInR2(
@@ -353,9 +345,15 @@ export default {
       // 12. Create GitHub submission JSON and PR; roll back R2 object if GitHub fails
       let prUrl: string;
       try {
-        prUrl = await orchestrateGitHubPullRequest(env, timestamp, submissionRecord);
+        prUrl = await orchestrateGitHubPullRequest(env, submissionRecord, objectKey);
       } catch (githubError: unknown) {
-        await env.BUCKET.delete(objectKey).catch(() => undefined);
+        // A timed-out PR POST may have succeeded remotely. Retain the object
+        // for authoritative Cron reconciliation rather than breaking that PR.
+        if (!(githubError instanceof GitHubError && githubError.uncertain)) {
+          await env.BUCKET.delete(objectKey).catch(() => console.error(JSON.stringify({event: 'rollback_failed', id: submissionId})));
+        } else {
+          console.warn(JSON.stringify({event: 'submission_outcome_uncertain', id: submissionId}));
+        }
         throw githubError;
       }
 
@@ -365,11 +363,14 @@ export default {
         {
           success: true,
           pr_url: prUrl,
-          asset_url: assetUrl,
         },
         matchedCorsOrigin
       );
     } catch (error: unknown) {
+      if (error instanceof GitHubError) {
+        console.error(JSON.stringify({event: 'submission_github_failed', status: error.status}));
+        return createJsonErrorResponse(502, 'GitHub submission failed. Please retry later.', matchedCorsOrigin);
+      }
       if (error instanceof WorkerHttpError) {
         return createJsonErrorResponse(
           error.status,
@@ -423,7 +424,7 @@ function validateEnvBindingsAndGetOrigins(env: Env): string[] {
 
   try {
     const r2BaseUrl = new URL(env.R2_PUBLIC_BASE_URL.trim());
-    if (r2BaseUrl.protocol !== "https:") {
+    if (r2BaseUrl.protocol !== "https:" || env.R2_PUBLIC_BASE_URL !== moderationConfig.asset_base_url) {
       throw new Error("R2 public base URL must use HTTPS");
     }
 
@@ -831,7 +832,7 @@ async function validateAndExtractPayload(
     );
   }
   const title = rawTitle.trim().replace(/[ \t]+/g, " ");
-  if (title.length < 3 || title.length > 120) {
+  if (title.length < 3 || title.length > 120 || /[<>\u202a-\u202e\u2066-\u2069]/u.test(title)) {
     throw new WorkerHttpError(
       400,
       "Field 'title' must be between 3 and 120 characters after trimming."
@@ -850,7 +851,7 @@ async function validateAndExtractPayload(
     );
   }
   const semester = rawSemester.trim().replace(/[ \t]+/g, " ");
-  if (semester.length < 4 || semester.length > 20) {
+  if (semester.length < 4 || semester.length > 20 || /[<>\u202a-\u202e\u2066-\u2069]/u.test(semester)) {
     throw new WorkerHttpError(
       400,
       "Field 'semester' must be between 4 and 20 characters after trimming."
@@ -872,7 +873,7 @@ async function validateAndExtractPayload(
         );
       }
       const normalizedContributor = rawContributor.trim().replace(/[ \t]+/g, " ");
-      if (normalizedContributor.length > 40) {
+      if (normalizedContributor.length > 40 || /[<>\u202a-\u202e\u2066-\u2069]/u.test(normalizedContributor)) {
         throw new WorkerHttpError(
           400,
           "Field 'contributor' must not exceed 40 characters."
@@ -1080,20 +1081,20 @@ async function storeFileInR2(
   payload: ValidatedSubmissionPayload
 ): Promise<StoredR2Asset> {
   const sanitizedFilename = sanitizeFilename(payload.fileName);
-  const objectKey = `assets/${payload.courseId}/${submissionId}-${sanitizedFilename}`;
+  const objectKey = `assets/v1/${submissionId}${payload.fileExtension}`;
   const policy = FILE_TYPE_POLICIES[payload.fileExtension];
   const dispositionType = policy ? policy.disposition : "attachment";
 
   try {
     const putResult = await env.BUCKET.put(objectKey, payload.fileBytes, {
+      onlyIf: {etagDoesNotMatch: '*'},
       httpMetadata: {
         contentType: payload.fileMimeType,
         contentDisposition: `${dispositionType}; filename="${sanitizedFilename}"`,
       },
       customMetadata: {
+        moderation_schema: '1',
         submission_id: submissionId,
-        course_id: payload.courseId,
-        resource_type: payload.type,
         created_at: createdAt,
       },
     });
@@ -1106,7 +1107,7 @@ async function storeFileInR2(
   }
 
   const normalizedBaseUrl = env.R2_PUBLIC_BASE_URL.trim().replace(/\/+$/, "");
-  const assetUrl = `${normalizedBaseUrl}/assets/${payload.courseId}/${submissionId}-${sanitizedFilename}`;
+  const assetUrl = `${normalizedBaseUrl}/${objectKey}`;
 
   try {
     const parsed = new URL(assetUrl);
@@ -1121,35 +1122,9 @@ async function storeFileInR2(
   return { objectKey, assetUrl };
 }
 
-function encodeUtf8ToBase64(input: string): string {
-  const bytes = new TextEncoder().encode(input);
-  const chunkSize = 0x8000;
-  const chunks: string[] = [];
-
-  for (let i = 0; i < bytes.length; i += chunkSize) {
-    const slice = bytes.subarray(i, i + chunkSize);
-    let binaryChunk = "";
-    for (let j = 0; j < slice.length; j++) {
-      binaryChunk += String.fromCharCode(slice[j]);
-    }
-    chunks.push(binaryChunk);
-  }
-
-  return btoa(chunks.join(""));
-}
-
-function generateRandomHex(byteCount: number): string {
-  const randomBytes = new Uint8Array(byteCount);
-  crypto.getRandomValues(randomBytes);
-  let hex = "";
-  for (let i = 0; i < randomBytes.length; i++) {
-    hex += randomBytes[i].toString(16).padStart(2, "0");
-  }
-  return hex;
-}
-
 function escapeMarkdownTableCell(value: string): string {
   return value
+    .replace(/@/g, "&#64;")
     .replace(/[\r\n]+/g, " ")
     .replace(/\\/g, "\\\\")
     .replace(/\|/g, "\\|")
@@ -1196,145 +1171,65 @@ function buildPullRequestBody(record: SubmissionRecord): string {
   ].join("\n");
 }
 
-async function githubApiRequest<T>(
-  env: Env,
-  method: "GET" | "POST" | "PUT",
-  path: string,
-  body?: Record<string, unknown>
-): Promise<T> {
-  const headers: Record<string, string> = {
-    Authorization: `Bearer ${env.GITHUB_TOKEN.trim()}`,
-    Accept: "application/vnd.github+json",
-    "X-GitHub-Api-Version": GITHUB_API_VERSION,
-    "User-Agent": WORKER_USER_AGENT,
-  };
-
-  if (body !== undefined) {
-    headers["Content-Type"] = "application/json; charset=utf-8";
-  }
-
-  let response: Response;
-  try {
-    response = await fetch(`${GITHUB_API_BASE}${path}`, {
-      method,
-      headers,
-      body: body !== undefined ? JSON.stringify(body) : undefined,
-      signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
-    });
-  } catch {
-    throw new WorkerHttpError(
-      502,
-      "Upstream network error while communicating with GitHub API."
-    );
-  }
-
-  if (!response.ok) {
-    throw new WorkerHttpError(502, "Upstream GitHub API operation failed.");
-  }
-
-  try {
-    return (await response.json()) as T;
-  } catch {
-    throw new WorkerHttpError(
-      502,
-      "Received malformed JSON response from GitHub API."
-    );
-  }
-}
-
 async function orchestrateGitHubPullRequest(
   env: Env,
-  timestamp: number,
-  record: SubmissionRecord
+  resource: SubmissionRecord,
+  objectKey: string
 ): Promise<string> {
-  const encodedOwner = encodeURIComponent(env.GITHUB_OWNER.trim());
-  const encodedRepo = encodeURIComponent(env.GITHUB_REPO.trim());
-  const repoBasePath = `/repos/${encodedOwner}/${encodedRepo}`;
-
-  // Step 1: Retrieve the main branch commit SHA
-  const refData = await githubApiRequest<GitHubRefResponse>(
-    env,
-    "GET",
-    `${repoBasePath}/git/ref/heads/main`
-  );
-
-  const mainSha = refData?.object?.sha;
-  if (typeof mainSha !== "string" || !GIT_SHA_REGEX.test(mainSha)) {
-    throw new WorkerHttpError(
-      502,
-      "Unable to verify main branch commit SHA from GitHub."
-    );
+  const github = new GitHub(env);
+  const association = {submission_id: resource.id, object_key: objectKey};
+  let associationEtag = await writeSubmissionAssociation(env, {...association, phase: 'not-created'});
+  const base = await github.main();
+  const catalog = await github.catalog(base);
+  const record = {schema: 1, object_key: objectKey, resource};
+  validateRecord(record, rawCoursesCatalog, moderationConfig.asset_base_url);
+  if (catalog.some(r => r.id === resource.id || r.asset_url === resource.asset_url)) {
+    throw new WorkerHttpError(502, 'Generated resource identity is already in use.');
   }
-
-  // Step 2: Create a dedicated submission branch
-  const randomHex = generateRandomHex(6);
-  const branchName = `submission-${timestamp}-${randomHex}`;
-  const fullRefName = `refs/heads/${branchName}`;
-
-  const createdRef = await githubApiRequest<GitHubRefResponse>(
-    env,
-    "POST",
-    `${repoBasePath}/git/refs`,
-    {
-      ref: fullRefName,
-      sha: mainSha,
+  // One atomic Git tree/commit contains both the receipt and catalog addition.
+  const commit = await github.commitFiles(base, [
+    {path: `submissions/${resource.id}.json`, content: JSON.stringify(record, null, 2) + '\n'},
+    {path: 'site/resources.json', content: JSON.stringify([...catalog, resource], null, 2) + '\n'},
+  ], `submission: ${resource.id}`);
+  const branch = `submission/${resource.id}`;
+  const created = await github.request('POST', '/git/refs', {ref: `refs/heads/${branch}`, sha: commit});
+  if (created?.ref !== `refs/heads/${branch}`) throw new GitHubError(201, true);
+  associationEtag = await writeSubmissionAssociation(env, {...association, phase: 'creating'}, associationEtag);
+  let result: any;
+  try {
+    result = await github.request('POST', '/pulls', {
+      title: `[Submission] ${resource.course_id}: ${resource.title} (${resource.type})`,
+      head: branch, base: 'main', body: buildPullRequestBody(resource),
+    });
+  } catch (error) {
+    if (error instanceof GitHubError && !error.uncertain) {
+      await writeSubmissionAssociation(env, {...association, phase: 'not-created'}, associationEtag);
     }
-  );
-
-  if (!createdRef || typeof createdRef.ref !== "string") {
-    throw new WorkerHttpError(
-      502,
-      "Failed to confirm new submission branch creation on GitHub."
-    );
+    throw error;
   }
-
-  // Step 3: Commit the submission JSON file to repository-root submissions/
-  const submissionFilePath = `submissions/${timestamp}-${record.id}.json`;
-  const serializedJson = JSON.stringify(record, null, 2);
-  const base64Content = encodeUtf8ToBase64(serializedJson);
-  const commitMessage = `feat(submission): add ${record.type} for ${record.course_id} - ${record.title}`;
-
-  const contentResponse = await githubApiRequest<GitHubContentResponse>(
-    env,
-    "PUT",
-    `${repoBasePath}/contents/${submissionFilePath}`,
-    {
-      message: commitMessage,
-      content: base64Content,
-      branch: branchName,
-    }
-  );
-
-  if (!contentResponse?.content?.sha) {
-    throw new WorkerHttpError(
-      502,
-      "Failed to confirm submission file commit on GitHub."
-    );
+  const expected = `https://github.com/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/pull/`;
+  if (!Number.isSafeInteger(result?.number) || result.number <= 0 || result.html_url !== `${expected}${result.number}`) {
+    // Malformed success after creation is ambiguous, so do not roll back R2.
+    throw new GitHubError(201, true);
   }
-
-  // Step 4: Open a pull request
-  const prTitle = `[Submission] ${record.course_id}: ${record.title} (${record.type})`;
-  const prBody = buildPullRequestBody(record);
-
-  const prResponse = await githubApiRequest<GitHubPullRequestResponse>(
-    env,
-    "POST",
-    `${repoBasePath}/pulls`,
-    {
-      title: prTitle,
-      head: branchName,
-      base: "main",
-      body: prBody,
-    }
-  );
-
-  const prUrl = prResponse?.html_url;
-  if (typeof prUrl !== "string" || !prUrl.startsWith("https://github.com/")) {
-    throw new WorkerHttpError(
-      502,
-      "Failed to retrieve a valid pull request URL from GitHub."
-    );
+  try {
+    await writeSubmissionAssociation(env, {...association, phase: 'linked', pr_number: result.number}, associationEtag);
+  } catch {
+    // A confirmed creation should not invite a duplicate upload/retry solely
+    // because saving its local association failed. Verify the actual PR once.
+    let verified = false;
+    try {
+      const pr = await github.request('GET', `/pulls/${result.number}`);
+      verified = pr?.number === result.number && pr.html_url === result.html_url
+        && pr.state === 'open' && pr.merged === false
+        && pr.user?.login === moderationConfig.submission_author
+        && pr.base?.ref === 'main' && pr.base?.repo?.full_name === `${env.GITHUB_OWNER}/${env.GITHUB_REPO}`
+        && pr.head?.ref === branch && pr.head?.sha === commit
+        && pr.head?.repo?.full_name === `${env.GITHUB_OWNER}/${env.GITHUB_REPO}`;
+    } catch { /* Unknown status retains the durable intent and never succeeds. */ }
+    console.warn(JSON.stringify({event: 'submission_association_repair_needed',
+      id: resource.id, pr_number: result.number, verified}));
+    if (!verified) throw new GitHubError(201, true);
   }
-
-  return prUrl;
+  return result.html_url;
 }

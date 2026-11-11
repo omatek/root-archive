@@ -1,12 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import worker from '../.wrangler/dist/worker.js';
+import { readFileSync } from 'node:fs';
+const config = JSON.parse(readFileSync(new URL('../../moderation.config.json', import.meta.url)));
 
 const origin = 'https://site.example.invalid';
 const env = {
   GITHUB_TOKEN: 'synthetic-placeholder', GITHUB_OWNER: 'example', GITHUB_REPO: 'test',
   TURNSTILE_SECRET: 'synthetic-placeholder', ALLOWED_ORIGIN: origin,
-  GOOGLE_CLIENT_ID: 'synthetic-client', R2_PUBLIC_BASE_URL: 'https://assets.example.invalid',
+  GOOGLE_CLIENT_ID: 'synthetic-client', R2_PUBLIC_BASE_URL: config.asset_base_url,
   BUCKET: {put() { throw new Error('Unexpected storage access'); },
     delete() { throw new Error('Unexpected storage access'); }},
 };
