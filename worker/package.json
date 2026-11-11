@@ -18,6 +18,6 @@
   "devDependencies": {
     "miniflare": "5.20261023.3-beta",
     "typescript": "^5.7.3",
-    "wrangler": "^4.156.0"
+    "wrangler": "^4.158.0"
   }
 }
