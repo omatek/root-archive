@@ -98,7 +98,7 @@ export function createContribution(getCourses) {
     if (!selectedFile) invalid('file', 'Choose a valid file and wait for it to finish checking.');
     if (issues.length) {
       status('Please check the highlighted fields. Your draft has been kept.');
-      $(`contribution-${issues[0]}`).focus(); return;
+      form.querySelector('[aria-invalid="true"]').focus(); return;
     }
     const credential = auth.getToken();
     if (!credential) { auth.requireSignIn(); return; }
@@ -194,7 +194,7 @@ export function createContribution(getCourses) {
   window.addEventListener('beforeunload', event => {
     if (dirty || busy) { event.preventDefault(); event.returnValue = ''; }
   });
-  return { open(courseId, trigger) {
+  return { refreshCourses: populateCourses, open(courseId, trigger) {
     if (dialog.open) return;
     returnFocus = trigger;
     populateCourses();

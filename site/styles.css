@@ -192,7 +192,8 @@ input[type='file']::file-selector-button{border:1px solid var(--muted);backgroun
   .wordmark-root{font-size:34px}
   .wordmark-slash{font-size:29px}
   .wordmark-product{font-size:19px}
-  .masthead nav{gap:14px;font-size:14px}
+  .masthead nav{gap:12px;font-size:14px;white-space:nowrap}
+  .masthead .arrow-icon{display:none}
   .masthead .button{padding:9px 11px;font-size:14px;min-height:40px}
   main{padding-block:28px 40px}
   .intro{margin-bottom:24px}
@@ -244,7 +245,7 @@ input[type='file']::file-selector-button{border:1px solid var(--muted);backgroun
   .auth-box{padding:14px}
   .form-actions{flex-wrap:wrap}
 }
-@media(max-width:380px){
+@media(max-width:360px){
   .masthead-inner{flex-wrap:wrap;gap:12px;min-height:0}
   .masthead nav{width:100%;justify-content:space-between}
   .track-filters{gap:0 16px;font-size:14px}

@@ -80,7 +80,7 @@ function renderDirectory() {
     const anchor = link(course.name, urlFor({ course: course.id, about: false }));
     anchor.id = `course-${course.id}`; anchor.dataset.nav = '';
     anchor.append(el('span', 'sr-only', `, course ${course.id}`));
-    anchor.append(arrowIcon()); name.append(anchor); row.append(name);
+    name.append(anchor); row.append(name);
     row.append(el('td', 'course-tracks', TRACKS.filter(t => course.tracks.includes(t)).join(' · ')));
     const count = el('td');
     const amount = el('span', `resource-count${course.resources.length ? '' : ' is-empty'}`, course.resources.length ? String(course.resources.length) : 'None yet');
@@ -191,7 +191,7 @@ function render() {
 async function start() {
   if (loading) return;
   loading = true; render();
-  try { catalog = await loadCatalog(); }
+  try { catalog = await loadCatalog(); contribution.refreshCourses(); }
   catch { catalog = null; $('result-count').textContent = 'Catalog unavailable'; }
   finally { loading = false; render(); }
   // A direct link/reload can restore its history entry without stealing initial search focus.
