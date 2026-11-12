@@ -1,5 +1,5 @@
 import { loadCatalog, filterCourses, readRoute, routeUrl } from './catalog.mjs';
-import { TRACKS, TRACK_LABELS, TYPES } from './config.mjs';
+import { TRACKS, TRACK_LABELS, TYPES, TYPE_HEADINGS } from './config.mjs';
 import { $, el, link, externalLink, focusHeading, arrowIcon } from './dom.mjs';
 import { createContribution } from './contribution.mjs';
 
@@ -8,6 +8,10 @@ let route = readRoute(location.href);
 let loading = false;
 const contribution = createContribution(() => catalog?.courses || []);
 const urlFor = updates => routeUrl({ ...route, ...updates }, location.pathname);
+function updateNavigationLinks() {
+  document.querySelectorAll('[data-return], [data-directory]').forEach(anchor => { anchor.href = urlFor({ course: '', about: false }); });
+  document.querySelectorAll('[data-about]').forEach(anchor => { anchor.href = urlFor({ course: '', about: true }); });
+}
 history.scrollRestoration = 'manual';
 const positions = new Map();
 let entryId = history.state?.entryId || crypto.randomUUID();
@@ -57,16 +61,18 @@ function returnToResults() {
 function updateResults() {
   history.replaceState({ ...history.state, scroll: 0 }, '', urlFor({ course: '', about: false }));
   renderDirectory();
+  updateNavigationLinks();
 }
 
 function renderDirectory() {
   $('course-search').value = route.query;
+  $('has-materials').checked = route.hasMaterials;
   $('clear-search').hidden = !route.query;
   document.querySelectorAll('[data-track]').forEach(button => {
     button.setAttribute('aria-pressed', String(button.dataset.track === route.track));
   });
   if (!catalog) return;
-  const matches = filterCourses(catalog.courses, route.query, route.track);
+  const matches = filterCourses(catalog.courses, route.query, route.track, route.hasMaterials);
   $('result-count').textContent = `${matches.length} ${matches.length === 1 ? 'course' : 'courses'}${matches.length === catalog.courses.length ? '' : ` of ${catalog.courses.length}`}`;
   $('catalog-note').hidden = false;
   $('catalog-availability').textContent = catalog.resourceCount
@@ -76,11 +82,13 @@ function renderDirectory() {
   container.replaceChildren();
   if (!matches.length) {
     const notice = el('div', 'notice');
-    notice.append(el('h2', '', 'No matching courses.'), el('p', '', 'Try a shorter name, a course code, or a different track.'));
+    notice.append(el('h2', '', 'No matching courses.'), el('p', '', route.hasMaterials
+      ? 'No courses with published materials match these filters. Turn off “Only courses with materials” to explore all matching courses, or change your search or track.'
+      : 'Try a shorter name, a course code, or a different track.'));
     const reset = el('button', 'button button-secondary', 'Clear search and filters');
     reset.type = 'button';
     reset.addEventListener('click', () => {
-      route.query = ''; route.track = 'All'; updateResults(); $('course-search').focus();
+      route.query = ''; route.track = 'All'; route.hasMaterials = false; updateResults(); $('course-search').focus();
     });
     notice.append(reset); container.append(notice); return;
   }
@@ -119,8 +127,8 @@ function contributeButton(courseId, text = 'Contribute a resource', className = 
 function renderSteps(parent) {
   const steps = el('section', 'contribution-steps'); steps.setAttribute('aria-label', 'How contributing works');
   [
-    ['Share what helped', 'Past papers, summaries and test banks can give the next student a starting point.'],
-    ['Sign in to contribute', 'Use your AUM student account. Reading and downloading need no account.'],
+    ['Share what helped', 'Practice questions, summaries, notes and test banks can give the next student a starting point.'],
+    ['Sign in to contribute', 'Contributions currently require an eligible student account. Reading and downloading need no account.'],
     ['Reviewed before publishing', 'A moderator checks every contribution before it joins the collection.']
   ].forEach(([title, text], index) => {
     const item = el('div'); const heading = el('h3');
@@ -135,7 +143,7 @@ function renderResources(course, container, type = '') {
     const resources = course.resources.filter(resource => resource.type === category && (!type || type === category));
     if (!resources.length) continue;
     const group = el('section', 'resource-group');
-    const heading = el('h3', '', `${category === 'Summary' ? 'Summaries' : category === 'Other' ? 'Other resources' : `${category}s`} · ${resources.length}`);
+    const heading = el('h3', '', `${TYPE_HEADINGS[category]} · ${resources.length}`);
     group.append(heading);
     const list = el('ul', 'resource-list');
     for (const resource of resources) {
@@ -176,9 +184,9 @@ function renderCourse() {
   if (!course.resources.length) {
     const empty = el('section', 'empty-course');
     empty.append(el('p', 'eyebrow', 'The collection starts here'), el('h2', '', 'No resources published yet.'));
-    empty.append(el('p', '', 'Have a past paper or a helpful summary? Share it with the next student taking this course.'));
+    empty.append(el('p', '', 'Have practice questions, notes, or a helpful summary? Share them with the next student taking this course.'));
     empty.append(contributeButton(course.id));
-    empty.append(el('p', 'small', 'AUM student account required to contribute. Every submission is reviewed.'));
+    empty.append(el('p', 'small', 'An eligible student account is required to contribute. Every submission is reviewed.'));
     container.append(empty); renderSteps(container); return;
   }
   const resources = el('div');
@@ -210,7 +218,7 @@ function render() {
   document.title = route.about ? 'About root — root/archive' : 'root/archive — Student-built course materials';
   if (route.course) renderCourse();
   else if (!route.about) renderDirectory();
-  document.querySelectorAll('[data-return]').forEach(anchor => { anchor.href = urlFor({ course: '', about: false }); });
+  updateNavigationLinks();
 }
 async function start() {
   if (loading) return;
@@ -223,6 +231,7 @@ async function start() {
 }
 
 $('course-search').addEventListener('input', event => { route.query = event.target.value; updateResults(); });
+$('has-materials').addEventListener('change', event => { route.hasMaterials = event.target.checked; updateResults(); });
 $('clear-search').addEventListener('click', () => { route.query = ''; updateResults(); $('course-search').focus(); });
 document.querySelectorAll('[data-track]').forEach(button => button.addEventListener('click', () => {
   route.track = button.dataset.track; updateResults();

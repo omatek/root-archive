@@ -25,7 +25,7 @@ export function createContribution(getCourses) {
   function setBusy(value) {
     busy = value;
     $('contribution-fields').disabled = value;
-    for (const id of ['submit-resource', 'close-contribution', 'save-close', 'discard-draft', 'signout']) $(id).disabled = value;
+    for (const id of ['submit-resource', 'close-contribution', 'save-close', 'discard-draft', 'signout', 'switch-account']) $(id).disabled = value;
     form.setAttribute('aria-busy', String(value));
   }
   function error(field, text) {
@@ -182,7 +182,6 @@ export function createContribution(getCourses) {
     $('contribution-file').value = '';
     selectFile(event.dataTransfer.files[0]);
   });
-  $('signout').addEventListener('click', () => { if (!busy) auth.clear(); });
   $('close-contribution').addEventListener('click', close);
   $('save-close').addEventListener('click', close);
   dialog.addEventListener('cancel', event => { event.preventDefault(); close(); });

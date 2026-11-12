@@ -14,6 +14,15 @@ const changes = [{path: 'site/resources.json', status: 'M', mode: '100644'},
 const proposal = (patch = {}) => ({courses, base: [], proposed: [resource()], record: record(), changes,
   assetBase: config.asset_base_url, ...patch});
 
+test('all five resource types pass exact receipt/catalog moderation; obsolete or unknown types fail', () => {
+  for (const type of ['Practice Questions', 'Summary', 'Notes', 'Test Bank', 'Other', 'Past Paper', 'Lecture']) {
+    const r = { ...resource(), type };
+    const p = proposal({ proposed: [r], record: { ...record(), resource: r } });
+    if (['Past Paper', 'Lecture'].includes(type)) assert.throws(() => validateProposal(p), /invalid type/);
+    else assert.equal(validateProposal(p).type, type);
+  }
+});
+
 test('exact single record/catalog addition passes, unknown fields and mismatched identity fail', () => {
   assert.equal(validateProposal(proposal()).id, id);
   for (const patch of [{schema: 2}, {unexpected: true}, {object_key: `assets/v1/${secondId}.pdf`}]) {

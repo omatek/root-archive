@@ -74,7 +74,7 @@ export interface Env {
   CLEANUP_ORPHAN_DAYS?: string;
 }
 
-type ResourceType = "Test Bank" | "Past Paper" | "Summary" | "Other";
+type ResourceType = "Practice Questions" | "Summary" | "Notes" | "Test Bank" | "Other";
 
 interface CourseCatalogEntry {
   id: string;
@@ -156,9 +156,10 @@ const KNOWN_COURSE_IDS: ReadonlySet<string> = new Set<string>(
 );
 
 const PERMITTED_RESOURCE_TYPES: ReadonlySet<ResourceType> = new Set<ResourceType>([
-  "Test Bank",
-  "Past Paper",
+  "Practice Questions",
   "Summary",
+  "Notes",
+  "Test Bank",
   "Other",
 ]);
 
@@ -815,7 +816,7 @@ async function validateAndExtractPayload(
   if (!PERMITTED_RESOURCE_TYPES.has(rawType as ResourceType)) {
     throw new WorkerHttpError(
       400,
-      "Invalid 'type'. Must be one of: Test Bank, Past Paper, Summary, Other."
+      "Invalid 'type'. Must be one of: Practice Questions, Summary, Notes, Test Bank, Other."
     );
   }
   const resourceType = rawType as ResourceType;

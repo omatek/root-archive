@@ -24,14 +24,14 @@ test('name, exact code, resource search and track intersection', () => {
   assert.equal(filterCourses(catalog.courses, 'nonexistent-course', 'All').length, 0);
 });
 test('URLs round-trip leading zeros, unicode, filters and reserved characters', () => {
-  const route = { course: '0401212', about: false, query: 'data & بحث + structures', track: 'CS' };
+  const route = { course: '0401212', about: false, query: 'data & بحث + structures', track: 'CS', hasMaterials: true };
   assert.deepEqual(readRoute('https://archive.example' + routeUrl(route)), route);
   assert.equal(readRoute('https://archive.example/?track=unknown').track, 'All');
   assert.equal(routeUrl({ query: 'data' }, '/preview/index.html'), '/preview/index.html?q=data');
 });
 test('browser rejects malformed catalogs and unsafe resource URLs like repository policy', () => {
   for (const patch of [{ asset_url: 'javascript:alert(1)' }, { asset_url: 'https://user:password@example.invalid/file' },
-    { type: 'Notes' }, { course_id: '9999999' }, { created_at: '2026-02-30T00:00:00.000Z' },
+    { type: 'Past Paper' }, { course_id: '9999999' }, { created_at: '2026-02-30T00:00:00.000Z' },
     { contributor: 'line\nbreak' }, { title: 'x' }]) {
     assert.throws(() => validateCatalogs(courses, [{ ...sample, ...patch }]));
     assert.throws(() => parseCatalog(courses, [{ ...sample, ...patch }]));
@@ -39,6 +39,33 @@ test('browser rejects malformed catalogs and unsafe resource URLs like repositor
   assert.throws(() => parseCatalog([...courses, courses[0]], []));
   assert.throws(() => parseCatalog(courses, [sample, sample]));
   for (const type of TYPES) assert.doesNotThrow(() => validateCatalogs(courses, [{ ...sample, type }]));
+});
+test('five resource types validate and normalize consistently with repository policy', () => {
+  assert.deepEqual(TYPES, ['Practice Questions', 'Summary', 'Notes', 'Test Bank', 'Other']);
+  for (const type of TYPES) {
+    const resources = [{ ...sample, type }];
+    assert.equal(validateCatalogs(courses, resources).resources, 1);
+    assert.equal(parseCatalog(courses, resources).byId.get(sample.course_id).resources[0].type, type);
+  }
+});
+test('materials filter intersects normalized published resources, search and track', () => {
+  const catalog = parseCatalog(courses.map(c => c.id === sample.course_id ? {...c, tracks: ['CS']} : c), [sample]);
+  assert.equal(filterCourses(catalog.courses, '', 'All').length, courses.length);
+  assert.deepEqual(filterCourses(catalog.courses, '', 'All', true).map(c => c.id), [sample.course_id]);
+  assert.equal(filterCourses(catalog.courses, 'synthetic trees', 'CS', true).length, 1);
+  assert.equal(filterCourses(catalog.courses, 'synthetic trees', 'Cybersecurity', true).length, 0);
+  assert.equal(filterCourses(catalog.courses, 'no match', 'All', true).length, 0);
+  assert.equal(filterCourses(parseCatalog(courses, []).courses, '', 'All', true).length, 0);
+});
+test('materials URL follows first-value routing and canonicalizes invalid/duplicate parameters', () => {
+  for (const [query, enabled] of [['', false], ['1', true], ['0', false], ['true', false], ['01', false],
+    ['1&hasMaterials=0', true], ['0&hasMaterials=1', false], ['bad&hasMaterials=1', false], ['1&hasMaterials=1', true]]) {
+    const route = readRoute(`https://archive.example/?hasMaterials=${query}`);
+    assert.equal(route.hasMaterials, enabled);
+    const params = new URL('https://archive.example' + routeUrl(route)).searchParams;
+    assert.deepEqual(params.getAll('hasMaterials'), enabled ? ['1'] : []);
+  }
+  assert.equal(routeUrl({ hasMaterials: '1' }), '/');
 });
 test('metadata guards match new Worker restrictions without changing the contract', () => {
   assert.equal(cleanText('  Midterm   summary  ', 3, 120), 'Midterm summary');

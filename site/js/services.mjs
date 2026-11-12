@@ -22,7 +22,7 @@ function loadScript(id, src) {
 }
 
 // This is only a local expiry hint AFTER the Worker verifies the credential.
-// Neither decoded claims nor the GIS hosted-domain hint authorize an upload.
+// Decoded claims never authorize an upload; the Worker checks every request.
 function tokenExpiry(token) {
   try {
     const value = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
@@ -36,44 +36,55 @@ export function createStudentAuth() {
   let generation = 0;
   let initialized = false;
   let loading = false;
+  let verifying = false;
+  let pending = null;
+  let expiryTimer = 0;
   function message(text) { $('auth-message').textContent = text; }
   function paint() {
-    $('auth-status').textContent = credential ? 'University account verified.' : '';
-    $('google-signin-slot').hidden = !!credential;
-    $('retry-signin').hidden = initialized || !!credential;
+    $('auth-status').textContent = verifying ? 'Verifying your account…' : credential ? 'Student account verified.' : '';
+    $('google-signin-slot').hidden = !!credential || verifying;
+    $('retry-signin').hidden = initialized || !!credential || verifying;
     $('signout').hidden = !credential;
+    $('switch-account').hidden = !initialized;
   }
   function clear() {
     generation++;
+    pending?.abort(); pending = null;
+    clearTimeout(expiryTimer); expiryTimer = 0;
+    verifying = false;
     credential = null; expires = 0;
+    message('');
     try { window.google?.accounts.id.disableAutoSelect(); } catch { /* No token persists. */ }
     paint();
   }
   async function verify(response) {
+    clear();
     const requestGeneration = ++generation;
-    credential = null; expires = 0;
     if (!response || typeof response.credential !== 'string' || !response.credential.trim()) {
       paint(); message('Google sign-in did not finish. Please try again.'); return;
     }
     const candidate = response.credential.trim();
-    $('google-signin-slot').hidden = true;
-    $('auth-status').textContent = 'Verifying your university account…';
+    verifying = true; paint();
     message('');
+    const controller = new AbortController();
+    pending = controller;
     try {
       const endpoint = CONFIG.submissionEndpoint.replace(/\/+$/, '').replace(/\/submit$/, '') + '/auth/verify';
       const result = await fetch(endpoint, {
         method: 'POST', headers: { Authorization: `Bearer ${candidate}`, Accept: 'application/json' },
-        signal: AbortSignal.timeout(20000)
+        signal: AbortSignal.any([controller.signal, AbortSignal.timeout(20000)])
       });
       const payload = await result.json().catch(() => null);
       if (generation !== requestGeneration) return;
+      pending = null; verifying = false;
       if (result.ok && payload?.success === true && payload.authorized === true) {
         credential = candidate; expires = tokenExpiry(candidate); paint();
+        if (expires) expiryTimer = setTimeout(getToken, Math.max(0, expires - Date.now() - 30000));
         message('You can now submit your resource. Your draft is ready below.');
       } else {
         clear();
         message(result.status === 403
-          ? 'Please use your @std.aum.edu.jo student account. This account is not eligible to contribute.'
+          ? 'This account isn’t currently eligible to contribute. Contributions require a verified @std.aum.edu.jo student account. Use a different Google account to try again; your draft is still here.'
           : 'We couldn’t verify this sign-in. Please sign in again, or try later.');
       }
     } catch {
@@ -82,6 +93,7 @@ export function createStudentAuth() {
     }
   }
   async function init() {
+    getToken();
     if (loading || initialized) { paint(); return; }
     loading = true;
     $('retry-signin').disabled = true;
@@ -91,7 +103,7 @@ export function createStudentAuth() {
       const identity = window.google?.accounts.id;
       if (!identity) throw new Error('Google unavailable');
       identity.initialize({
-        client_id: CONFIG.googleClientId, callback: verify, hd: CONFIG.allowedStudentDomain,
+        client_id: CONFIG.googleClientId, callback: verify,
         ux_mode: 'popup', auto_select: false, cancel_on_tap_outside: true, context: 'signin'
       });
       $('google-signin-slot').replaceChildren();
@@ -111,10 +123,18 @@ export function createStudentAuth() {
     return credential;
   }
   $('retry-signin').addEventListener('click', init);
-  return { init, getToken, clear, requireSignIn() {
-    message('Sign in with your @std.aum.edu.jo account before submitting. Your draft is still here.');
-    $('auth-heading').scrollIntoView({ block: 'nearest' });
+  function chooseAccount(text) {
+    clear(); message(text);
     const target = $('google-signin-slot').querySelector('[role=button], button, iframe') || $('retry-signin');
+    target.focus();
+  }
+  $('switch-account').addEventListener('click', () => chooseAccount('Choose another account using Google sign-in. Your draft is still here.'));
+  $('signout').addEventListener('click', () => chooseAccount('You’re signed out. You can sign in again; your draft is still here.'));
+  return { init, getToken, clear, requireSignIn() {
+    // Keep an eligibility/expiry explanation visible when submission is attempted again.
+    if (!$('auth-message').textContent) message('Sign in to contribute before submitting. Your draft is still here.');
+    $('auth-heading').scrollIntoView({ block: 'nearest' });
+    const target = verifying ? $('switch-account') : $('google-signin-slot').querySelector('[role=button], button, iframe') || $('retry-signin');
     target.focus();
   } };
 }

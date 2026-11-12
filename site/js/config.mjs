@@ -3,7 +3,6 @@ export const CONFIG = {
         submissionEndpoint: "https://api.rootamman.com",
         googleClientId: "451085424306-tll56iseq0qd9lcofeb1nkiqiaq0opvh.apps.googleusercontent.com",
         turnstileSiteKey: "0x4AAAAAAFtYsxdbI-Zx8mjy",
-        allowedStudentDomain: "std.aum.edu.jo",
         maxFileSize: 24 * 1024 * 1024 // 24 MiB safe file limit under the Worker's 25 MiB multipart body limit
       };
 
@@ -37,5 +36,6 @@ export const FILE_POLICIES = {
       };
 
 export const TRACKS = ['CS', 'AI', 'Cybersecurity'];
-export const TYPES = ['Past Paper', 'Summary', 'Test Bank', 'Other'];
+export const TYPES = ['Practice Questions', 'Summary', 'Notes', 'Test Bank', 'Other'];
+export const TYPE_HEADINGS = { 'Practice Questions': 'Practice Questions', Summary: 'Summaries', Notes: 'Notes', 'Test Bank': 'Test Banks', Other: 'Other resources' };
 export const TRACK_LABELS = { CS: 'Computer Science', AI: 'Artificial Intelligence', Cybersecurity: 'Cybersecurity' };
