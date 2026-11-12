@@ -37,6 +37,7 @@ before(async () => {
 after(async () => { await browser?.close(); await new Promise(resolve => server?.close(resolve)); });
 
 async function setup(options = {}) {
+  const appOrigin = options.frontendOrigin || origin;
   const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, reducedMotion: 'reduce' });
   const page = await context.newPage();
   const requests = [], errors = [];
@@ -45,12 +46,17 @@ async function setup(options = {}) {
   // No external request can leave a browser test. GIS, Turnstile and Worker are explicit mocks.
   await context.route('**/*', async route => {
     const request = route.request(), url = request.url();
-    if (url === origin + '/courses.json') {
+    if (url === appOrigin + '/courses.json') {
       if (options.failLoad) return route.fulfill({ status: 503, body: 'unavailable' });
       return route.fulfill({ json: options.courses || realCourses });
     }
-    if (url === origin + '/resources.json') return route.fulfill({ json: options.resources || realResources });
-    if (url.startsWith(origin + '/')) return route.continue();
+    if (url === appOrigin + '/resources.json') return route.fulfill({ json: options.resources || realResources });
+    if (url.startsWith(appOrigin + '/')) {
+      if (appOrigin === origin) return route.continue();
+      // Exercise the real frontend under either hostname using only local files.
+      const local = new URL(url); local.host = new URL(origin).host; local.protocol = 'http:';
+      return route.fulfill({ response: await route.fetch({ url: local.href }) });
+    }
     if (options.externalFailure) return route.abort();
     if (url.startsWith('https://accounts.google.com/gsi/client')) {
       return route.fulfill({ contentType: 'text/javascript', body: `window.google = { accounts: { id: {
@@ -66,11 +72,11 @@ async function setup(options = {}) {
       };` });
     }
     if (url === CONFIG.submissionEndpoint + '/auth/verify') {
-      requests.push({ type: 'verify', headers: request.headers() });
+      requests.push({ type: 'verify', url, method: request.method(), headers: request.headers() });
       return route.fulfill({ status: options.authStatus || 200, json: options.authPayload || { success: true, authorized: options.authStatus ? false : true } });
     }
     if (url === new URL(CONFIG.submissionEndpoint).href) {
-      requests.push({ type: 'submit', body: request.postData(), headers: request.headers() });
+      requests.push({ type: 'submit', url, method: request.method(), body: request.postData(), headers: request.headers() });
       if (options.holdUpload) await options.holdUpload;
       if (options.networkFailure) return route.abort();
       return route.fulfill({ status: options.uploadStatus || 201, json: options.uploadPayload || {
@@ -83,7 +89,7 @@ async function setup(options = {}) {
     }
     return route.abort();
   });
-  async function goto(path = '/') { await page.goto(origin + path); await page.locator('#load-state').waitFor({ state: 'hidden' }); }
+  async function goto(path = '/') { await page.goto(appOrigin + path); await page.locator('#load-state').waitFor({ state: 'hidden' }); }
   async function close() { assert.deepEqual(errors, [], 'no application exceptions'); await context.close(); }
   return { context, page, requests, options, goto, close };
 }
@@ -112,6 +118,109 @@ async function accessible(page) {
   const report = await page.evaluate(() => window.axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a','wcag2aa','wcag21aa','wcag22aa'] } }));
   assert.deepEqual(report.violations.map(v => ({ id: v.id, nodes: v.nodes.map(n => n.target) })), [], 'automated accessibility checks');
 }
+async function settledNavigation(page) {
+  await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+}
+
+test('Back/Forward saves the latest position and focus on every visited entry', async () => {
+  const resources = Array.from({ length: 18 }, (_, i) => ({ ...fixture, id: `history-${i}`, type: i % 2 ? 'Past Paper' : 'Summary' }));
+  const s = await setup({ resources }); const p = s.page; await s.goto();
+  await p.locator('#course-0401212').click(); await settledNavigation(p);
+  await p.evaluate(() => {
+    document.getElementById('resource-type-filter').focus({ preventScroll: true });
+    window.scrollTo(0, 650);
+    history.back();
+  });
+  await p.locator('.course-table').waitFor(); await settledNavigation(p);
+  await p.evaluate(() => {
+    document.getElementById('course-search').focus({ preventScroll: true });
+    window.scrollTo(0, 900);
+    history.forward();
+  });
+  await p.locator('#course-heading').waitFor(); await settledNavigation(p);
+  assert.equal(await p.evaluate(() => document.activeElement.id), 'resource-type-filter');
+  assert(Math.abs(await p.evaluate(() => scrollY) - 650) < 3);
+  // Revisit both entries and change the course position again before Back.
+  await p.evaluate(() => {
+    const heading = document.getElementById('course-heading');
+    heading.tabIndex = -1; heading.focus({ preventScroll: true });
+    window.scrollTo(0, 1100);
+    history.back();
+  });
+  await p.locator('.course-table').waitFor(); await settledNavigation(p);
+  assert.equal(await p.evaluate(() => document.activeElement.id), 'course-search');
+  assert(Math.abs(await p.evaluate(() => scrollY) - 900) < 3);
+  await p.goForward(); await settledNavigation(p);
+  assert.equal(await p.evaluate(() => document.activeElement.id), 'course-heading');
+  assert(Math.abs(await p.evaluate(() => scrollY) - 1100) < 3);
+  await s.close();
+});
+
+test('course resource-type filters survive history, explicit return and reload without leaking between courses', async () => {
+  const resources = ['0401212', '0401111'].flatMap(course_id => Array.from({ length: 14 }, (_, i) => ({
+    ...fixture, course_id, id: `${course_id}-${i}`, type: i % 2 ? 'Past Paper' : 'Summary'
+  })));
+  const s = await setup({ resources }); const p = s.page; await s.goto();
+  await p.locator('#course-0401212').click(); await settledNavigation(p);
+  await p.locator('#resource-type-filter').selectOption('Summary');
+  await p.locator('a[data-nav][href="?view=about"]').first().click();
+  await p.goBack(); await settledNavigation(p);
+  assert.equal(await p.locator('#resource-type-filter').inputValue(), 'Summary');
+  assert.equal(await p.locator('.resource-open').count(), 7);
+  await p.reload(); await p.locator('#resource-type-filter').waitFor(); await settledNavigation(p);
+  assert.equal(await p.locator('#resource-type-filter').inputValue(), 'Summary');
+  await p.locator('[data-return]').first().click(); await p.locator('.course-table').waitFor();
+  await p.goForward(); await settledNavigation(p);
+  assert.equal(await p.locator('#resource-type-filter').inputValue(), 'Summary');
+  await p.goBack(); await p.locator('.course-table').waitFor();
+  await p.locator('#course-0401111').click(); await settledNavigation(p);
+  assert.equal(await p.locator('#resource-type-filter').inputValue(), '');
+  assert.equal(await p.locator('.resource-open').count(), 14);
+  assert.equal(new URL(p.url()).searchParams.get('course'), '0401111');
+  await s.close();
+});
+
+test('/ from a course or About keeps search focused across rendering and accepts typing immediately', async () => {
+  const s = await setup(); const p = s.page;
+  for (const path of ['/?course=0401212', '/?view=about']) {
+    await s.goto(path);
+    await p.keyboard.press('/');
+    await p.keyboard.type('data');
+    await settledNavigation(p);
+    assert.equal(await p.evaluate(() => document.activeElement.id), 'course-search');
+    assert.equal(await p.locator('#course-search').inputValue(), 'data');
+    assert.equal(new URL(p.url()).searchParams.get('q'), 'data');
+    await p.keyboard.type(' structures');
+    assert.equal(await p.locator('#course-search').inputValue(), 'data structures');
+    assert.equal(await p.locator('.course-name a').count(), 1);
+  }
+  await s.close();
+});
+
+test('both hosted frontends keep shareable course URLs and construct the expected authenticated API requests (mocked services)', async () => {
+  assert.equal(CONFIG.submissionEndpoint, 'https://api.rootamman.com');
+  for (const frontendOrigin of ['https://archive.rootamman.com', 'https://root-archive.pages.dev']) {
+    const s = await setup({ frontendOrigin }); const p = s.page;
+    await s.goto('/?course=0401212&q=data&track=CS');
+    await p.reload(); await p.locator('#course-heading').waitFor();
+    assert.equal(p.url(), frontendOrigin + '/?course=0401212&q=data&track=CS');
+    assert.match(await p.title(), /Data Structures \(0401212\)/);
+    await openContribution(p); await fillContribution(p); await signIn(p);
+    await p.locator('#submit-resource').click(); await p.locator('#contribution-success').waitFor();
+    assert.deepEqual(s.requests.map(({type, url, method}) => ({type, url, method})), [
+      {type: 'verify', url: 'https://api.rootamman.com/auth/verify', method: 'POST'},
+      {type: 'submit', url: 'https://api.rootamman.com/', method: 'POST'}
+    ]);
+    assert(s.requests.every(request => request.headers.authorization === `Bearer ${fakeCredential}`));
+    const submission = s.requests.find(request => request.type === 'submit');
+    for (const field of ['course_id', 'type', 'title', 'semester', 'file', 'turnstile_token']) {
+      assert(submission.body.includes(`name="${field}"`));
+    }
+    assert(submission.body.includes('synthetic-turnstile-token'));
+    assert(submission.body.includes('0401212'));
+    await s.close();
+  }
+});
 
  test('directory query/filter/scroll/focus survive course navigation, Back and Forward', async () => {
   const s = await setup(); const p = s.page; await s.goto();

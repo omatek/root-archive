@@ -1,6 +1,6 @@
-// Public integration settings, preserved from the existing frontend. No secrets.
+// Public integration settings. No secrets.
 export const CONFIG = {
-        submissionEndpoint: "https://root-archive-worker.omar-khldooon33.workers.dev",
+        submissionEndpoint: "https://api.rootamman.com",
         googleClientId: "451085424306-tll56iseq0qd9lcofeb1nkiqiaq0opvh.apps.googleusercontent.com",
         turnstileSiteKey: "0x4AAAAAAFtYsxdbI-Zx8mjy",
         allowedStudentDomain: "std.aum.edu.jo",

@@ -9,23 +9,43 @@ let loading = false;
 const contribution = createContribution(() => catalog?.courses || []);
 const urlFor = updates => routeUrl({ ...route, ...updates }, location.pathname);
 history.scrollRestoration = 'manual';
+const positions = new Map();
+let entryId = history.state?.entryId || crypto.randomUUID();
+let restoring = false;
+let restoreFrame = 0;
+let positionTimer = 0;
+history.replaceState({ ...history.state, entryId }, '', location.href);
 
+const currentPosition = () => ({ scroll: scrollY, focus: document.activeElement?.id || '' });
 function rememberPosition() {
-  history.replaceState({ ...history.state, scroll: scrollY, focus: document.activeElement?.id || '' }, '', location.href);
+  clearTimeout(positionTimer); positionTimer = 0;
+  if (restoring) return;
+  const position = currentPosition();
+  positions.set(entryId, position);
+  history.replaceState({ ...history.state, ...position }, '', location.href);
 }
 function restorePosition() {
+  cancelAnimationFrame(restoreFrame);
+  clearTimeout(positionTimer); positionTimer = 0;
+  restoring = true;
   const saved = history.state;
-  requestAnimationFrame(() => {
-    const target = saved?.focus && $(saved.focus);
-    if (target) target.focus({ preventScroll: true });
+  restoreFrame = requestAnimationFrame(() => {
+    restoreFrame = 0;
+    const target = saved?.focus ? $(saved.focus) : null;
+    if (target?.matches('h1, h2, main')) focusHeading(target);
+    else if (target) target.focus({ preventScroll: true });
     else focusHeading(route.course ? $('course-heading') || $('main-content') : route.about ? $('about-heading') : $('directory-heading'));
     window.scrollTo(0, saved?.scroll || 0);
+    restoring = false;
+    rememberPosition();
   });
 }
-function navigate(href) {
+function navigate(href, focus = '') {
   rememberPosition();
+  restoring = true;
   const fromDirectory = !route.course && !route.about;
-  history.pushState({ fromDirectory, scroll: 0 }, '', href);
+  entryId = crypto.randomUUID();
+  history.pushState({ entryId, fromDirectory, scroll: 0, focus }, '', href);
   route = readRoute(location.href);
   render();
   restorePosition();
@@ -162,19 +182,23 @@ function renderCourse() {
     container.append(empty); renderSteps(container); return;
   }
   const resources = el('div');
+  let selectedType = '';
   if (course.resources.length >= 12 && new Set(course.resources.map(r => r.type)).size > 1) {
     const filter = el('div', 'resource-filter');
     const label = el('label', '', 'Filter materials by type'); label.htmlFor = 'resource-type-filter';
     const select = el('select'); select.id = 'resource-type-filter'; select.append(new Option('All resource types', ''));
     for (const type of TYPES.filter(t => course.resources.some(r => r.type === t))) select.append(new Option(type, type));
+    select.value = course.resources.some(r => r.type === history.state?.resourceType) ? history.state.resourceType : '';
+    selectedType = select.value || '';
     const status = el('p', 'sr-only'); status.setAttribute('role', 'status');
     select.addEventListener('change', () => {
+      history.replaceState({ ...history.state, resourceType: select.value }, '', location.href);
       renderResources(course, resources, select.value);
       status.textContent = `${course.resources.filter(r => !select.value || r.type === select.value).length} resources shown`;
     });
     filter.append(label, select, status); container.append(filter);
   }
-  renderResources(course, resources); container.append(resources);
+  renderResources(course, resources, selectedType); container.append(resources);
 }
 
 function render() {
@@ -214,13 +238,27 @@ document.addEventListener('click', event => {
   if (anchor.hasAttribute('data-return')) returnToResults();
   else navigate(anchor.href);
 });
-window.addEventListener('popstate', () => { route = readRoute(location.href); render(); restorePosition(); });
+window.addEventListener('popstate', event => {
+  // The URL/state already belongs to the destination, but the DOM still belongs
+  // to the entry being left. Capture even a scroll whose event hasn't fired yet.
+  if (!restoring) positions.set(entryId, currentPosition());
+  restoring = true;
+  entryId = event.state?.entryId || crypto.randomUUID();
+  history.replaceState({ ...event.state, ...positions.get(entryId), entryId }, '', location.href);
+  route = readRoute(location.href); render(); restorePosition();
+});
+window.addEventListener('scroll', () => {
+  // Bound history writes during continuous scrolling. popstate captures the
+  // final position synchronously even when this trailing save is still pending.
+  if (!restoring && !positionTimer) positionTimer = setTimeout(rememberPosition, 500);
+}, { passive: true });
+document.addEventListener('focusin', rememberPosition);
 window.addEventListener('pagehide', rememberPosition);
 document.addEventListener('keydown', event => {
   if (event.key !== '/' || event.ctrlKey || event.metaKey || event.altKey || $('contribution-dialog').open) return;
   if (document.activeElement.matches('input, select, textarea, [contenteditable=true]')) return;
   event.preventDefault();
-  if (route.course || route.about) navigate(urlFor({ course: '', about: false }));
+  if (route.course || route.about) navigate(urlFor({ course: '', about: false }), 'course-search');
   $('course-search').focus();
 });
 start();

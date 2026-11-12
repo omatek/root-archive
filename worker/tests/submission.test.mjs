@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { generateKeyPair, exportJWK, SignJWT } from 'jose';
 import worker from '../.wrangler/dist/worker.js';
-import { GitHubMock, MemoryBucket, envFor, courses, origin, assets, associationKey, resource } from './fixtures.mjs';
+import { GitHubMock, MemoryBucket, envFor, courses, origin, assets, associationKey, resource, workerConfig } from './fixtures.mjs';
 
 const {privateKey, publicKey} = await generateKeyPair('RS256');
 const jwk = {...await exportJWK(publicKey), kid: 'synthetic', alg: 'RS256', use: 'sig'};
@@ -42,6 +42,51 @@ test('eligible signed student upload creates one atomic catalog PR and no public
   // Simulate approved merge: the exact proposal becomes the production source.
   github.refs.set('main', pr.head.sha); pr.state = 'closed'; pr.merged = true; pr.merged_at = new Date().toISOString();
   await worker.scheduled({}, env); assert.equal(bucket.deleted.length, 0);
+});
+test('both frontend origins can verify and submit on the API domain using the existing Siteverify flow', async () => {
+  env.ALLOWED_ORIGIN = workerConfig.vars.ALLOWED_ORIGIN;
+  const jwt = await token();
+  for (const frontend of ['https://archive.rootamman.com', 'https://root-archive.pages.dev']) {
+    const headers = {Origin: frontend, Authorization: `Bearer ${jwt}`, 'CF-Connecting-IP': '192.0.2.10'};
+    const before = github.verifications.length;
+    const auth = await worker.fetch(new Request('https://api.rootamman.com/auth/verify', {method: 'POST', headers}), env);
+    assert.equal(auth.status, 200);
+    assert.equal(auth.headers.get('Access-Control-Allow-Origin'), frontend);
+    assert.deepEqual(await auth.json(), {success: true, authorized: true});
+    const invalid = await worker.fetch(new Request('https://api.rootamman.com/', {method: 'POST', headers,
+      body: form({turnstile_token: ''})}), env);
+    assert.equal(invalid.status, 400);
+    assert.equal(github.verifications.length, before, 'sign-in and invalid forms do not call Siteverify');
+    for (const path of ['/', '/submit']) {
+      const response = await worker.fetch(new Request(`https://api.rootamman.com${path}`, {method: 'POST', headers, body: form()}), env);
+      assert.equal(response.status, 201);
+      assert.equal(response.headers.get('Access-Control-Allow-Origin'), frontend);
+      assert.equal((await response.json()).asset_url, undefined);
+    }
+    assert.equal(github.verifications.length, before + 2, 'one verification per validated submission');
+  }
+  for (const verification of github.verifications) {
+    assert.equal(verification.url, 'https://challenges.cloudflare.com/turnstile/v0/siteverify');
+    assert.equal(verification.method, 'POST');
+    assert.deepEqual(verification.body, {secret: env.TURNSTILE_SECRET, response: 'synthetic', remoteip: '192.0.2.10'});
+  }
+  assert.equal(assets(bucket).length, 4);
+  assert.equal(github.prs.length, 4);
+});
+test('Siteverify transport, HTTP and malformed-response failures stop uploads and moderation writes', async () => {
+  for (const failure of ['network', 'http', 'json', 'missing-success']) {
+    globalThis.fetch = (input, init) => {
+      if (String(input) !== 'https://challenges.cloudflare.com/turnstile/v0/siteverify') return github.fetch(input, init);
+      if (failure === 'network') throw new TypeError('synthetic network failure');
+      if (failure === 'http') return new Response('unavailable', {status: 503});
+      if (failure === 'json') return new Response('not JSON');
+      return Response.json({});
+    };
+    const response = await submit();
+    assert.equal(response.status, failure === 'missing-success' ? 403 : 502);
+    assert.equal(assets(bucket).length, 0);
+    assert.equal(github.requests.length, 0);
+  }
 });
 test('cryptographic signature and claim failures reject before upload', async () => {
   const now = Math.floor(Date.now()/1000);

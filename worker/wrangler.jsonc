@@ -4,13 +4,18 @@
   "main": "worker.ts",
   "compatibility_date": "2025-02-01",
   "workers_dev": true,
+  // Intended custom domain for the existing Worker's / and /auth/verify paths.
+  // Source configuration does not establish that this route is deployed.
+  "routes": [
+    { "pattern": "api.rootamman.com", "custom_domain": true }
+  ],
 
   // Public non-sensitive configuration variables.
   // Replace these placeholders with your actual values before deploying.
   "vars": {
     "GITHUB_OWNER": "omatek",
     "GITHUB_REPO": "root-archive",
-    "ALLOWED_ORIGIN": "https://root-archive.pages.dev",
+    "ALLOWED_ORIGIN": "https://archive.rootamman.com,https://root-archive.pages.dev",
     "R2_PUBLIC_BASE_URL": "https://pub-7a7ae5ec96bb46c7829a25b4b06407eb.r2.dev",
     "GOOGLE_CLIENT_ID": "451085424306-tll56iseq0qd9lcofeb1nkiqiaq0opvh.apps.googleusercontent.com",
     "CLEANUP_MODE": "off",
