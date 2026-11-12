@@ -72,6 +72,14 @@ permit anonymous writes, and unlisted uploads must never be called private.
 
 ## Deployment and rollback (human-controlled)
 
+The intended frontend is `https://archive.rootamman.com` and the API is
+`https://api.rootamman.com`. Source configuration now declares that Worker custom
+domain and allows both the custom frontend and `https://root-archive.pages.dev`.
+The old Worker host remains enabled as a fallback; public R2 hosting is unchanged.
+See [PR #23 finalization](frontend/pr-23-finalization.md) for verified request paths,
+test evidence, the Turnstile warning assessment, and owner checks. These repository
+settings do not establish the deployed Cloudflare route or variables.
+
 This task does not deploy. Before any later release: review the moderation
 implementation and staging evidence, run CI, record the approved SHA and prior
 deployment IDs, verify OAuth origins/client, Turnstile hostnames/secret, CORS, R2 binding

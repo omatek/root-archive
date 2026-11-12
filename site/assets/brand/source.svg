@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1296" height="660" viewBox="0 0 1296 660" role="img" aria-labelledby="title description">
+  <title id="title">root logo color variants</title>
+  <desc id="description">Six color treatments of the same thin hashtag-and-underscore mark in a three-column, two-row grid.</desc>
+  <defs>
+    <path id="hash" d="M13 0h5.4L6.4 55H1z M33 0h5.4l-12 55H21z M3 16h41v5H3z M0 33h41v5H0z"/>
+    <rect id="underscore" x="50" y="61" width="46" height="3.5"/>
+  </defs>
+  <rect width="1296" height="660" fill="#F8F8F5"/>
+  <g font-family="Inter, Liberation Sans, Arial, sans-serif" font-size="20" fill="#262229" text-anchor="middle">
+    <g transform="translate(48 48)">
+      <rect width="384" height="240" rx="12" fill="#262229"/>
+      <g transform="translate(144 88)">
+        <use href="#hash" fill="#F7F8F2"/>
+        <use href="#underscore" fill="#EE8B73"/>
+      </g>
+      <text x="192" y="270">root</text>
+    </g>
+    <g transform="translate(456 48)">
+      <rect width="384" height="240" rx="12" fill="#E9EDE3"/>
+      <g transform="translate(144 88)" fill="#982F22">
+        <use href="#hash"/>
+        <use href="#underscore"/>
+      </g>
+      <text x="192" y="270">root/archive</text>
+    </g>
+    <g transform="translate(864 48)">
+      <rect width="384" height="240" rx="12" fill="#1C2941"/>
+      <g transform="translate(144 88)" fill="#386BD6">
+        <use href="#hash"/>
+        <use href="#underscore"/>
+      </g>
+      <text x="192" y="270">Computer Science</text>
+    </g>
+    <g transform="translate(48 350)">
+      <rect width="384" height="240" rx="12" fill="#1C3329"/>
+      <g transform="translate(144 88)" fill="#71BF88">
+        <use href="#hash"/>
+        <use href="#underscore"/>
+      </g>
+      <text x="192" y="270">Cybersecurity</text>
+    </g>
+    <g transform="translate(456 350)">
+      <rect width="384" height="240" rx="12" fill="#30283F"/>
+      <g transform="translate(144 88)" fill="#B19AE9">
+        <use href="#hash"/>
+        <use href="#underscore"/>
+      </g>
+      <text x="192" y="270">AI</text>
+    </g>
+    <g transform="translate(864 350)">
+      <rect width="384" height="240" rx="12" fill="#25272B"/>
+      <g transform="translate(144 88)" fill="#E2E4E8">
+        <use href="#hash"/>
+        <use href="#underscore"/>
+      </g>
+      <text x="192" y="270">Competitions</text>
+    </g>
+  </g>
+</svg>

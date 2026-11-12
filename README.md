@@ -25,6 +25,10 @@ python3 -m unittest discover -s scripts/tests -v
 ```
 
 Serve the static site with `python3 -m http.server 8000 --directory site`.
+The frontend needs no build step. Dedicated courses use `/?course=<code>`; see
+the [frontend architecture, screenshots and verification](docs/frontend/README.md).
+Browser regressions run with `npm ci --ignore-scripts`,
+`npx playwright install --with-deps chromium`, then `npm run test:frontend`.
 Run the Worker with `npm --prefix worker run dev` only after configuring local
 bindings; see the owner guide. Tests and dry-run builds do not deploy.
 

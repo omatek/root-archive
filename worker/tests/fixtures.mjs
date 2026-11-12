@@ -1,6 +1,8 @@
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 export const config = JSON.parse(readFileSync(new URL('../../moderation.config.json', import.meta.url)));
+export const workerConfig = JSON.parse(readFileSync(new URL('../wrangler.jsonc', import.meta.url), 'utf8')
+  .replace(/^\s*\/\/.*$/gm, ''));
 export const courses = JSON.parse(readFileSync(new URL('../../site/courses.json', import.meta.url)));
 export const origin = 'https://site.example.invalid';
 export const id = '12345678-1234-4123-8123-123456789abc';
@@ -82,6 +84,7 @@ export class GitHubMock {
   fail;
   before;
   turnstile = true;
+  verifications = [];
   jwks;
   constructor() {
     const files = {'site/resources.json': [], 'site/courses.json': courses};
@@ -115,7 +118,11 @@ export class GitHubMock {
     const request = input instanceof Request ? input : new Request(input, init);
     const url = new URL(request.url);
     if (url.hostname === 'www.googleapis.com') return Response.json(this.jwks);
-    if (url.hostname === 'challenges.cloudflare.com') return Response.json({success: this.turnstile});
+    if (url.href === 'https://challenges.cloudflare.com/turnstile/v0/siteverify') {
+      this.verifications.push({url: url.href, method: request.method,
+        body: Object.fromEntries(new URLSearchParams(await request.text()))});
+      return Response.json({success: this.turnstile});
+    }
     if (url.origin === config.asset_base_url) return new Response('%PDF-public', {status: 200});
     if (url.hostname !== 'api.github.com') throw new Error('unexpected_network_host');
     const path = url.pathname.replace('/repos/omatek/root-archive', '') + url.search;
