@@ -2,8 +2,10 @@
 
 This change replaces the terminal-style, accordion catalog with a mineral-green
 directory and dedicated course destinations. It is based on `ab6f1d6` (the merge
-of moderation PR #22). Neither public catalog, Worker code, storage behavior nor
-submission/moderation workflows are changed.
+of moderation PR #22). Neither public catalog, Worker runtime code, storage
+behavior nor submission/moderation workflows are changed. The focused
+[PR #23 finalization](pr-23-finalization.md) fixes three navigation defects and
+updates source configuration for the custom domains; it does not deploy them.
 
 ## Navigation and architecture
 
@@ -28,8 +30,9 @@ return path even in a new tab. About uses `?view=about`. Leading zeros survive.
 
 Internal left-click navigation uses the History API. Native links still support
 new tabs, copying and modified clicks. Each history entry saves its scroll and
-focus target before navigation; Back/Forward restores these alongside the query
-and track. The explicit return link uses browser Back when its prior entry is the
+focus target before navigation and tracks changes while browsing. Back/Forward
+captures the outgoing entry before rendering and restores its latest position,
+focus, query, track and course resource-type filter. The explicit return link uses browser Back when its prior entry is the
 directory, or the query/filter URL on direct visits. Document titles identify
 the current course. No credentials or draft fields enter history or web storage.
 
@@ -64,9 +67,9 @@ entry does not silently overwrite an unfinished contribution. Explicit discard
 asks for confirmation; reload/close warns when there is unsaved work. Drafts and
 credentials are never persisted to local/session storage.
 
-Google and Turnstile scripts load only on contribution. The public Worker URL,
-client ID, site key, hosted-domain hint and exact university-domain requirement
-are preserved. Only the Worker's `/auth/verify` success **and** `authorized: true`
+Google and Turnstile scripts load only on contribution. Requests now use
+`https://api.rootamman.com`; the client ID, site key, hosted-domain hint and exact
+university-domain requirement are preserved. Only the Worker's `/auth/verify` success **and** `authorized: true`
 response establishes the local verified state. JWT decoding is only an expiry
 hint after verification. The Worker still rechecks identity and all validation.
 
@@ -90,6 +93,10 @@ The form accurately notes that uploaded files are public by direct link even
 while awaiting review; the redesign does not alter R2 access or publication gates.
 
 ## Local verification
+
+The table below records the original overhaul verification. For current commands,
+counts, custom-domain coverage and live-service limits, see the
+[finalization verification](pr-23-finalization.md#validation).
 
 Environment: Node 24.22.1, Python 3.12.14, headless system Chromium. Every browser
 test blocks external network access and explicitly mocks GIS, Turnstile, Worker
