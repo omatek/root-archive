@@ -54,8 +54,10 @@ the remaining family variants are reusable assets, not track UI palettes.
 The primary masthead remains **root / archive**. The parent mark appears in
 About root; the archive mark signs the footer. Barlow Semi Condensed 600/700 and
 Atkinson Hyperlegible Next are locally hosted, with their licenses and fallbacks.
-See [asset provenance](../../site/assets/README.md). The previous frontend had
-no social-image asset to update; none was invented.
+The social card recomposes that same masthead as a self-contained 1200 × 630
+SVG/PNG pair. Static Open Graph/Twitter metadata uses the custom frontend domain
+and the same general preview for every course URL. See
+[asset provenance and regeneration](../../site/assets/README.md#social-sharing).
 
 ## Contributions and security boundaries
 
@@ -94,9 +96,10 @@ while awaiting review; the redesign does not alter R2 access or publication gate
 
 ## Local verification
 
-The table below records the original overhaul verification. For current commands,
-counts, custom-domain coverage and live-service limits, see the
-[finalization verification](pr-23-finalization.md#validation).
+The table below records the original overhaul verification. Navigation/domain
+follow-up commands, counts and live-service limits are in the
+[finalization verification](pr-23-finalization.md#validation); the subsequent
+social-card verification is in [asset provenance](../../site/assets/README.md#social-sharing).
 
 Environment: Node 24.22.1, Python 3.12.14, headless system Chromium. Every browser
 test blocks external network access and explicitly mocks GIS, Turnstile, Worker

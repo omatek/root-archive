@@ -26,7 +26,7 @@ before(async () => {
     try {
       const target = path === root ? resolve(root, 'index.html') : path;
       const content = await readFile(target);
-      res.setHeader('Content-Type', ({'.html':'text/html','.mjs':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml','.woff2':'font/woff2'})[extname(target)] || 'application/octet-stream');
+      res.setHeader('Content-Type', ({'.html':'text/html','.mjs':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.woff2':'font/woff2'})[extname(target)] || 'application/octet-stream');
       res.end(content);
     } catch { res.writeHead(404).end(); }
   });
@@ -121,6 +121,45 @@ async function accessible(page) {
 async function settledNavigation(page) {
   await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
 }
+
+test('social crawlers receive brand metadata and a standalone image without running JavaScript', async () => {
+  const s = await setup(); await s.goto();
+  const title = 'root/archive — Student-built course materials';
+  const description = 'Find your course. Share what helped you learn. An open resource archive built by students.';
+  const image = 'https://archive.rootamman.com/assets/social/root-archive-og.png';
+  assert.equal(await s.page.title(), title, 'directory rendering retains the brand-first title');
+  const crawler = await browser.newContext({ javaScriptEnabled: false });
+  try {
+    await crawler.route('**/*', route => route.request().url().startsWith(origin + '/') ? route.continue() : route.abort());
+    const page = await crawler.newPage();
+    // Static Pages returns the same general sharing identity for course links.
+    await page.goto(origin + '/?course=0401212');
+    assert.equal(await page.title(), title);
+    assert.equal(await page.locator('link[rel=canonical]').getAttribute('href'), 'https://archive.rootamman.com/');
+    for (const [key, expected] of Object.entries({
+      'og:type': 'website', 'og:site_name': 'root/archive', 'og:title': title,
+      'og:description': description, 'og:url': 'https://archive.rootamman.com/',
+      'og:image': image, 'og:image:type': 'image/png', 'og:image:width': '1200', 'og:image:height': '630',
+      'twitter:card': 'summary_large_image', 'twitter:title': title,
+      'twitter:description': description, 'twitter:url': 'https://archive.rootamman.com/', 'twitter:image': image
+    })) {
+      const meta = page.locator(`head meta[${key.startsWith('og:') ? 'property' : 'name'}="${key}"]`);
+      assert.equal(await meta.count(), 1, `one ${key} tag`);
+      assert.equal(await meta.getAttribute('content'), expected);
+    }
+    const alt = await page.locator('meta[property="og:image:alt"]').getAttribute('content');
+    assert.match(alt, /root\/archive/);
+    assert.equal(await page.locator('meta[name="twitter:image:alt"]').getAttribute('content'), alt);
+    const asset = await page.evaluate(async path => {
+      document.querySelector('link[rel=stylesheet]').remove();
+      const image = new Image(); image.src = path; await image.decode();
+      const canvas = document.createElement('canvas'); canvas.width = image.naturalWidth; canvas.height = image.naturalHeight;
+      const ctx = canvas.getContext('2d'); ctx.drawImage(image, 0, 0);
+      return { width: image.naturalWidth, height: image.naturalHeight, background: [...ctx.getImageData(0, 0, 1, 1).data] };
+    }, new URL(image).pathname);
+    assert.deepEqual(asset, { width: 1200, height: 630, background: [38, 34, 41, 255] });
+  } finally { await crawler.close(); await s.close(); }
+});
 
 test('Back/Forward saves the latest position and focus on every visited entry', async () => {
   const resources = Array.from({ length: 18 }, (_, i) => ({ ...fixture, id: `history-${i}`, type: i % 2 ? 'Past Paper' : 'Summary' }));

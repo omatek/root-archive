@@ -207,7 +207,7 @@ function render() {
   $('about-view').hidden = !!route.course || !route.about;
   $('load-state').hidden = !loading || route.about;
   $('load-error').hidden = !!catalog || loading || route.about;
-  document.title = route.about ? 'About root — root/archive' : 'AUM course materials — root/archive';
+  document.title = route.about ? 'About root — root/archive' : 'root/archive — Student-built course materials';
   if (route.course) renderCourse();
   else if (!route.about) renderDirectory();
   document.querySelectorAll('[data-return]').forEach(anchor => { anchor.href = urlFor({ course: '', about: false }); });
