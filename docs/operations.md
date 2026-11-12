@@ -63,6 +63,11 @@ cleanup off with no Cron. Put secrets in ignored `worker/.dev.vars` locally or
 approved Cloudflare secret storage for a human-controlled deployment. Never commit them.
 The existing public client/site identifiers are not secrets.
 
+See [frontend polish](frontend/polish.md) for the five supported resource types,
+the materials-only URL filter, and the Google Audience/consent settings the
+owner must inspect. Removing the chooser's domain hint does not change server
+eligibility or override Google-side restrictions.
+
 Restrict the submission token to this repository with Contents/PR read-write
 permissions, no administration/workflow permissions or main bypass. Verify its
 identity matches `submission_author`; use a distinct bot identity or another

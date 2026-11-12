@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { generateKeyPair, exportJWK, SignJWT } from 'jose';
 import worker from '../.wrangler/dist/worker.js';
 import { GitHubMock, MemoryBucket, envFor, courses, origin, assets, associationKey, resource, workerConfig } from './fixtures.mjs';
+import { TYPES } from '../../site/js/config.mjs';
 
 const {privateKey, publicKey} = await generateKeyPair('RS256');
 const jwk = {...await exportJWK(publicKey), kid: 'synthetic', alg: 'RS256', use: 'sig'};
@@ -42,6 +43,21 @@ test('eligible signed student upload creates one atomic catalog PR and no public
   // Simulate approved merge: the exact proposal becomes the production source.
   github.refs.set('main', pr.head.sha); pr.state = 'closed'; pr.merged = true; pr.merged_at = new Date().toISOString();
   await worker.scheduled({}, env); assert.equal(bucket.deleted.length, 0);
+});
+test('frontend resource types pass Worker validation and create matching catalog entries and receipts', async () => {
+  assert.deepEqual(TYPES, ['Practice Questions', 'Summary', 'Notes', 'Test Bank', 'Other']);
+  for (const type of TYPES) {
+    assert.equal((await submit({type})).status, 201);
+    const pr = github.prs.at(-1);
+    const files = github.trees.get(github.commits.get(pr.head.sha).tree.sha);
+    const r = files['site/resources.json'].at(-1);
+    assert.equal(r.type, type);
+    assert.deepEqual(files[`submissions/${r.id}.json`].resource, r);
+  }
+  const before = assets(bucket).length;
+  for (const type of ['Past Paper', 'Lecture', 'notes', '']) assert.equal((await submit({type})).status, 400);
+  assert.equal(assets(bucket).length, before);
+  assert.equal(github.prs.length, TYPES.length);
 });
 test('both frontend origins can verify and submit on the API domain using the existing Siteverify flow', async () => {
   env.ALLOWED_ORIGIN = workerConfig.vars.ALLOWED_ORIGIN;
@@ -91,18 +107,31 @@ test('Siteverify transport, HTTP and malformed-response failures stop uploads an
 test('cryptographic signature and claim failures reject before upload', async () => {
   const now = Math.floor(Date.now()/1000);
   for (const patch of [{iss: 'https://attacker.invalid'}, {aud: 'wrong-client'}, {exp: now - 60},
-    {iat: now + 3600}, {iat: now - 90000}, {email_verified: false}, {sub: ''}, {exp: undefined}]) {
-    assert.equal((await submit({}, await token(patch))).status, 401);
+    {iat: now + 3600}, {iat: now - 90000}, {nbf: now + 3600}, {iat: undefined},
+    {email_verified: false}, {email_verified: 'true'}, {sub: ''}, {exp: undefined}]) {
+    const jwt = await token(patch);
+    assert.equal((await submit({}, jwt)).status, 401);
+    assert.equal((await worker.fetch(new Request('https://worker.invalid/auth/verify', {method: 'POST',
+      headers: {Origin: origin, Authorization: `Bearer ${jwt}`}}), env)).status, 401);
   }
   assert.equal((await submit({}, await token({}, wrongKey))).status, 401);
   assert.equal(assets(bucket).length, 0);
 });
 test('exact email and hosted domain authorization', async () => {
-  for (const patch of [{email: 'synthetic@aum.edu.jo'}, {email: 'synthetic@std.aum.edu.jo.attacker.invalid'},
-    {email: 'synthetic@sub.std.aum.edu.jo'}, {hd: 'aum.edu.jo'}, {hd: undefined}]) {
-    assert.equal((await submit({}, await token(patch))).status, 403);
+  for (const patch of [{email: 'synthetic@gmail.com', hd: undefined}, {email: 'synthetic@gmail.com'},
+    {email: 'synthetic@aum.edu.jo'}, {email: 'synthetic@std.aum.edu.jo.attacker.invalid'},
+    {email: 'synthetic@sub.std.aum.edu.jo'}, {email: 'synthetic@@std.aum.edu.jo'},
+    {hd: 'aum.edu.jo'}, {hd: 'std.aum.edu.jo.attacker.invalid'}, {hd: undefined}]) {
+    const jwt = await token(patch);
+    for (const path of ['/', '/submit', '/auth/verify']) {
+      const response = await worker.fetch(new Request(`https://worker.invalid${path}`, {method: 'POST',
+        headers: {Origin: origin, Authorization: `Bearer ${jwt}`}, ...(path === '/auth/verify' ? {} : {body: form()})}), env);
+      assert.equal(response.status, 403);
+    }
   }
   assert.equal(assets(bucket).length, 0);
+  assert.equal(github.verifications.length, 0);
+  assert.equal(github.requests.length, 0);
 });
 test('Turnstile failure performs no storage or GitHub mutations', async () => {
   github.turnstile = false; assert.equal((await submit()).status, 403);

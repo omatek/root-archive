@@ -1,5 +1,8 @@
 # Frontend overhaul
 
+The current authentication, resource taxonomy and materials filter are documented
+in [frontend polish](polish.md). Historical verification below records PR #23.
+
 This change replaces the terminal-style, accordion catalog with a mineral-green
 directory and dedicated course destinations. It is based on `ab6f1d6` (the merge
 of moderation PR #22). Neither public catalog, Worker runtime code, storage
@@ -25,20 +28,21 @@ runtime dependencies. `index.html` supplies semantic page/dialog structure;
 Course URLs use `/?course=0401212`. Query parameters are a deliberate static
 hosting choice: direct visits and reloads request the existing index on
 Cloudflare Pages, with no rewrite rules or framework router. Directory state
-uses `?q=data&track=CS`; course links retain these parameters for a meaningful
+uses `?q=data&track=CS&hasMaterials=1`; course and About links retain these parameters for a meaningful
 return path even in a new tab. About uses `?view=about`. Leading zeros survive.
 
 Internal left-click navigation uses the History API. Native links still support
 new tabs, copying and modified clicks. Each history entry saves its scroll and
 focus target before navigation and tracks changes while browsing. Back/Forward
 captures the outgoing entry before rendering and restores its latest position,
-focus, query, track and course resource-type filter. The explicit return link uses browser Back when its prior entry is the
+focus, query, track, materials-only selection and course resource-type filter. The explicit return link uses browser Back when its prior entry is the
 directory, or the query/filter URL on direct visits. Document titles identify
 the current course. No credentials or draft fields enter history or web storage.
 
 The directory retains all 127 real courses, including empty courses. Resource
-counts come only from the published `resources.json` (currently empty). Materials
-are grouped by the four existing types; an additional type filter appears only
+counts come from normalized published resources (currently loaded from the empty
+`resources.json`). “Only courses with materials” is off by default and filters
+that normalized data. Materials are grouped by the five supported types; a type filter appears only
 for collections of at least 12 resources spanning multiple types. Public HTTPS
 resource links open directly, without sign-in. Runtime invalid catalogs fail
 closed with a retry state rather than displaying inaccurate counts or unsafe URLs.
@@ -70,16 +74,16 @@ asks for confirmation; reload/close warns when there is unsaved work. Drafts and
 credentials are never persisted to local/session storage.
 
 Google and Turnstile scripts load only on contribution. Requests now use
-`https://api.rootamman.com`; the client ID, site key, hosted-domain hint and exact
-university-domain requirement are preserved. Only the Worker's `/auth/verify` success **and** `authorized: true`
+`https://api.rootamman.com`; the client ID and site key are preserved. Google
+initialization has no hosted-domain hint; the Worker's exact institutional email
+and hosted-domain requirements remain mandatory. Only the Worker's `/auth/verify` success **and** `authorized: true`
 response establishes the local verified state. JWT decoding is only an expiry
 hint after verification. The Worker still rechecks identity and all validation.
 
 Submission preserves the original endpoint, bearer header and multipart fields:
 `course_id`, `type`, `title`, `semester`, optional `contributor`, `file`, and
-`turnstile_token`. Types remain `Past Paper`, `Summary`, `Test Bank`, `Other`.
-**Notes is not added:** issue #8's proposed category would need coordinated
-backend/publication policy changes outside this redesign.
+`turnstile_token`. Types are `Practice Questions`, `Summary`, `Notes`, `Test Bank`,
+`Other` across the frontend, Worker, catalog validator and moderation receipts.
 
 The frontend retains the 24 MiB file limit beneath the Worker's 25 MiB multipart
 limit, extension/MIME/signature checks and Turnstile verification/reset. Text

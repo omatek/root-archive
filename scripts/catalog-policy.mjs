@@ -1,6 +1,5 @@
 const tracks = new Set(['Cybersecurity', 'CS', 'AI']);
-// Preserve the current frontend and Worker contract. Add Notes in its own task.
-const types = new Set(['Test Bank', 'Past Paper', 'Summary', 'Other']);
+const types = new Set(['Practice Questions', 'Summary', 'Notes', 'Test Bank', 'Other']);
 const clean = (s, min, max) => typeof s === 'string' && s === s.trim()
   && s.length >= min && s.length <= max && !/[\x00-\x1f\x7f-\x9f]/u.test(s);
 const object = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);

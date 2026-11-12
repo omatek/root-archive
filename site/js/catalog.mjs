@@ -59,9 +59,10 @@ export async function loadCatalog() {
   return parseCatalog(...values);
 }
 
-export function filterCourses(courses, query, track) {
+export function filterCourses(courses, query, track, hasMaterials = false) {
   const terms = query.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
-  return courses.filter(course => (track === 'All' || course.tracks.includes(track))
+  return courses.filter(course => (!hasMaterials || course.resources.length > 0)
+    && (track === 'All' || course.tracks.includes(track))
     && terms.every(term => `${course.id} ${course.name} ${course.resources.map(r => r.title).join(' ')}`.toLocaleLowerCase().includes(term)));
 }
 
@@ -71,15 +72,18 @@ export function readRoute(href) {
     course: params.get('course') || '',
     about: params.get('view') === 'about',
     query: params.get('q') || '',
-    track: TRACKS.includes(params.get('track')) ? params.get('track') : 'All'
+    track: TRACKS.includes(params.get('track')) ? params.get('track') : 'All',
+    // Like the existing route fields, the first occurrence wins. Only "1" enables it.
+    hasMaterials: params.get('hasMaterials') === '1'
   };
 }
-export function routeUrl({ course = '', about = false, query = '', track = 'All' }, pathname = '/') {
+export function routeUrl({ course = '', about = false, query = '', track = 'All', hasMaterials = false }, pathname = '/') {
   const params = new URLSearchParams();
   if (course) params.set('course', course);
   else if (about) params.set('view', 'about');
   if (query) params.set('q', query);
   if (TRACKS.includes(track)) params.set('track', track);
+  if (hasMaterials === true) params.set('hasMaterials', '1');
   return pathname + (params.size ? `?${params}` : '');
 }
 

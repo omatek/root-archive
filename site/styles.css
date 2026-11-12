@@ -75,6 +75,8 @@ main{flex:1;padding-block:38px 64px}
 .track-filters button{border-bottom:3px solid transparent;padding:9px 0 12px;min-height:46px}
 .track-filters button[aria-pressed='true']{border-color:var(--oxide);font-weight:650}
 .track-filters button:hover{color:var(--oxide)}
+.materials-filter{display:flex;align-items:center;gap:10px;width:fit-content;max-width:100%;min-height:44px;margin-top:8px;font-size:15px;cursor:pointer}
+.materials-filter input{width:18px;height:18px;min-height:0;flex-shrink:0;padding:0;accent-color:var(--oxide)}
 .result-count{font-size:15px;color:var(--muted);padding-block:12px;white-space:nowrap}
 .catalog-note{display:flex;justify-content:space-between;gap:20px;font-size:15px;color:var(--muted);padding:12px 0 16px}
 .catalog-note button{font:inherit;color:var(--oxide);text-decoration:underline;text-underline-offset:.2em;padding:0;min-height:24px}

@@ -5,7 +5,7 @@ import { readFile, mkdir } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { resolve, extname, sep } from 'node:path';
 import { chromium } from 'playwright';
-import { CONFIG } from '../../site/js/config.mjs';
+import { CONFIG, TYPES } from '../../site/js/config.mjs';
 
 const root = resolve(fileURLToPath(new URL('../../site/', import.meta.url)));
 const realCourses = JSON.parse(await readFile(resolve(root, 'courses.json')));
@@ -61,8 +61,8 @@ async function setup(options = {}) {
     if (url.startsWith('https://accounts.google.com/gsi/client')) {
       return route.fulfill({ contentType: 'text/javascript', body: `window.google = { accounts: { id: {
         initialize(options) { window.testIdentity = options; },
-        renderButton(slot) { const button = document.createElement('button'); button.type='button'; button.textContent='Google sign-in (simulated)'; button.onclick=()=>window.testIdentity.callback({credential:${JSON.stringify(fakeCredential)}}); slot.append(button); },
-        disableAutoSelect() {}
+        renderButton(slot) { const button = document.createElement('button'); button.type='button'; button.textContent='Google sign-in (simulated)'; button.onclick=()=>window.testIdentity.callback({credential:window.testCredential || ${JSON.stringify(fakeCredential)}}); slot.append(button); },
+        disableAutoSelect() { window.testAutoSelectDisabled = (window.testAutoSelectDisabled || 0) + 1; }
       } } };` });
     }
     if (url.startsWith('https://challenges.cloudflare.com/turnstile/')) {
@@ -73,6 +73,7 @@ async function setup(options = {}) {
     }
     if (url === CONFIG.submissionEndpoint + '/auth/verify') {
       requests.push({ type: 'verify', url, method: request.method(), headers: request.headers() });
+      if (options.authNetworkFailure) return route.abort();
       return route.fulfill({ status: options.authStatus || 200, json: options.authPayload || { success: true, authorized: options.authStatus ? false : true } });
     }
     if (url === new URL(CONFIG.submissionEndpoint).href) {
@@ -106,7 +107,14 @@ async function fillContribution(page) {
 }
 async function signIn(page) {
   await page.getByRole('button', { name: 'Google sign-in (simulated)' }).click();
-  await page.getByText('University account verified.', { exact: true }).waitFor();
+  await page.getByText('Student account verified.', { exact: true }).waitFor();
+}
+async function retainedDraft(page) {
+  assert.equal(await page.locator('#contribution-course').inputValue(), '0401212');
+  assert.equal(await page.locator('#contribution-title').inputValue(), 'Synthetic study summary');
+  assert.equal(await page.locator('#contribution-type').inputValue(), 'Summary');
+  assert.equal(await page.locator('#contribution-semester').inputValue(), 'Fall 2026');
+  assert.match(await page.locator('#selected-file').innerText(), /synthetic.pdf/);
 }
 async function noOverflow(page) {
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1), false, 'page fits viewport');
@@ -162,7 +170,7 @@ test('social crawlers receive brand metadata and a standalone image without runn
 });
 
 test('Back/Forward saves the latest position and focus on every visited entry', async () => {
-  const resources = Array.from({ length: 18 }, (_, i) => ({ ...fixture, id: `history-${i}`, type: i % 2 ? 'Past Paper' : 'Summary' }));
+  const resources = Array.from({ length: 18 }, (_, i) => ({ ...fixture, id: `history-${i}`, type: i % 2 ? 'Practice Questions' : 'Summary' }));
   const s = await setup({ resources }); const p = s.page; await s.goto();
   await p.locator('#course-0401212').click(); await settledNavigation(p);
   await p.evaluate(() => {
@@ -197,12 +205,12 @@ test('Back/Forward saves the latest position and focus on every visited entry', 
 
 test('course resource-type filters survive history, explicit return and reload without leaking between courses', async () => {
   const resources = ['0401212', '0401111'].flatMap(course_id => Array.from({ length: 14 }, (_, i) => ({
-    ...fixture, course_id, id: `${course_id}-${i}`, type: i % 2 ? 'Past Paper' : 'Summary'
+    ...fixture, course_id, id: `${course_id}-${i}`, type: i % 2 ? 'Practice Questions' : 'Summary'
   })));
   const s = await setup({ resources }); const p = s.page; await s.goto();
   await p.locator('#course-0401212').click(); await settledNavigation(p);
   await p.locator('#resource-type-filter').selectOption('Summary');
-  await p.locator('a[data-nav][href="?view=about"]').first().click();
+  await p.locator('a[data-about]').first().click();
   await p.goBack(); await settledNavigation(p);
   assert.equal(await p.locator('#resource-type-filter').inputValue(), 'Summary');
   assert.equal(await p.locator('.resource-open').count(), 7);
@@ -301,7 +309,7 @@ test('direct URLs reload, links open in a second tab, titles and unknown courses
 });
 
 test('published resources use real metadata and safe direct links; larger collections filter', async () => {
-  const resources = Array.from({ length: 14 }, (_, i) => ({ ...fixture, id: `synthetic-${i}`, type: i % 2 ? 'Past Paper' : 'Summary', title: i === 0 ? 'x'.repeat(120) : `Synthetic resource ${i}` }));
+  const resources = Array.from({ length: 14 }, (_, i) => ({ ...fixture, id: `synthetic-${i}`, type: i % 2 ? 'Practice Questions' : 'Summary', title: i === 0 ? 'x'.repeat(120) : `Synthetic resource ${i}` }));
   const s = await setup({ resources }); const p = s.page; await s.goto('/?course=0401212');
   assert.equal(await p.locator('.resource-open').count(), 14);
   assert.equal(await p.locator('.resource-open').first().getAttribute('target'), '_blank');
@@ -329,6 +337,125 @@ test('catalog errors can retry and malformed resources never become visible', as
   assert.equal(await s.page.locator('.resource-open').count(), 0); await s.close();
 });
 
+test('materials-only filter intersects search/track and survives course, About, reload and history', async () => {
+  const courses = realCourses.map(c => ['0401212', '0401111'].includes(c.id) ? {...c, tracks: ['CS']} : c);
+  const s = await setup({ courses, resources: [fixture, {...fixture, id: 'second', course_id: '0401111'}] });
+  const p = s.page; await s.goto();
+  const checkbox = p.getByRole('checkbox', {name: 'Only courses with materials'});
+  assert.equal(await checkbox.isChecked(), false);
+  await checkbox.focus(); await p.keyboard.press('Space');
+  await settledNavigation(p);
+  assert.equal(new URL(p.url()).searchParams.get('hasMaterials'), '1');
+  assert.equal(await p.locator('.course-name a').count(), 2);
+  await p.locator('#course-search').fill('synthetic');
+  await p.locator('[data-track=CS]').click();
+  assert.equal(await p.locator('.course-name a').count(), 2);
+  await p.locator('[data-track=Cybersecurity]').click();
+  await p.getByRole('heading', {name: 'No matching courses.'}).waitFor();
+  assert.match(await p.locator('#directory-results').innerText(), /Turn off “Only courses with materials”/);
+  await p.locator('[data-track=CS]').click();
+  await p.locator('#course-search').fill('data');
+  assert.equal(await p.locator('.course-name a').count(), 1);
+  const directoryUrl = p.url();
+  const courseHref = await p.locator('#course-0401212').getAttribute('href');
+  assert.match(courseHref, /hasMaterials=1/);
+  await p.locator('#course-0401212').click(); await settledNavigation(p);
+  await p.reload(); await p.locator('#course-heading').waitFor();
+  assert.equal(new URL(p.url()).searchParams.get('hasMaterials'), '1');
+  await p.goBack(); await p.locator('.course-table').waitFor(); await settledNavigation(p);
+  assert.equal(p.url(), directoryUrl);
+  assert.equal(await checkbox.isChecked(), true);
+  await p.goForward(); await p.locator('#course-heading').waitFor();
+  await p.locator('a[data-about]').first().click(); await p.locator('#about-view').waitFor();
+  assert.equal(new URL(p.url()).searchParams.get('hasMaterials'), '1');
+  await p.reload(); await p.locator('#about-view').waitFor();
+  await p.locator('#about-view [data-return]').click(); await p.locator('.course-table').waitFor();
+  assert.equal(await checkbox.isChecked(), true);
+  assert.equal(await p.locator('#course-search').inputValue(), 'data');
+  assert.equal(await p.locator('[data-track=CS]').getAttribute('aria-pressed'), 'true');
+  await p.reload(); await p.locator('.course-table').waitFor();
+  assert.equal(await checkbox.isChecked(), true);
+  await checkbox.uncheck();
+  await settledNavigation(p);
+  assert.equal(new URL(p.url()).searchParams.has('hasMaterials'), false);
+  await p.goBack(); await p.locator('#about-view').waitFor();
+  await p.goForward(); await p.locator('.course-table').waitFor();
+  assert.equal(await checkbox.isChecked(), false);
+  await accessible(p); await s.close();
+});
+
+test('materials-only empty catalog and duplicate/invalid URLs stay usable and never count pending uploads', async () => {
+  const s = await setup({resources: []}); const p = s.page;
+  for (const [query, checked] of [['1', true], ['0', false], ['true', false], ['1&hasMaterials=0', true],
+    ['0&hasMaterials=1', false], ['bad&hasMaterials=1', false], ['1&hasMaterials=1', true]]) {
+    await s.goto('/?hasMaterials=' + query);
+    assert.equal(await p.locator('#has-materials').isChecked(), checked);
+    assert.equal(await p.locator('.course-name a').count(), checked ? 0 : realCourses.length);
+    await p.locator('#course-search').fill('data');
+    await settledNavigation(p);
+    assert.deepEqual(new URL(p.url()).searchParams.getAll('hasMaterials'), checked ? ['1'] : []);
+  }
+  await accessible(p);
+  await p.getByRole('button', {name: 'Clear search and filters'}).click();
+  assert.equal(await p.locator('#has-materials').isChecked(), false);
+  assert.equal(await p.locator('.course-name a').count(), realCourses.length);
+  await s.goto('/?course=0401212&hasMaterials=1');
+  await openContribution(p); await fillContribution(p); await signIn(p);
+  await p.locator('#submit-resource').click(); await p.locator('#contribution-success').waitFor();
+  await p.locator('#close-contribution').click();
+  await p.locator('[data-directory]').click();
+  await p.getByRole('heading', {name: 'No matching courses.'}).waitFor();
+  assert.equal(await p.locator('.course-name a').count(), 0, 'a pending success is not published data');
+  await s.close();
+});
+
+test('five resource categories render, filter and submit with consistent names (mocked services)', async () => {
+  const resources = Array.from({length: 15}, (_, i) => ({...fixture, id: `type-${i}`, type: TYPES[i % TYPES.length]}));
+  const s = await setup({resources}); const p = s.page;
+  await s.goto('/?course=0401212');
+  assert.deepEqual(await p.locator('.resource-group h3').allTextContents(), [
+    'Practice Questions · 3', 'Summaries · 3', 'Notes · 3', 'Test Banks · 3', 'Other resources · 3'
+  ]);
+  assert.deepEqual(await p.locator('#resource-type-filter option').allTextContents(), ['All resource types', ...TYPES]);
+  for (const type of TYPES) {
+    await p.locator('#resource-type-filter').selectOption(type);
+    assert.equal(await p.locator('.resource-open').count(), 3);
+    assert((await p.locator('.resource-meta').allTextContents()).every(text => text.startsWith(type + ' ·')));
+  }
+  await accessible(p);
+  await openContribution(p, false);
+  assert.deepEqual(await p.locator('#contribution-type option').allTextContents(), ['Choose a type', ...TYPES]);
+  await p.locator('#contribution-course').selectOption('0401212');
+  await fillContribution(p); await signIn(p);
+  for (const type of TYPES) {
+    await p.locator('#contribution-type').selectOption(type);
+    await p.locator('#submit-resource').click(); await p.locator('#contribution-success').waitFor();
+    const upload = s.requests.filter(r => r.type === 'submit').at(-1);
+    assert(upload.body.includes(`name="type"\r\n\r\n${type}\r\n`));
+    if (type !== TYPES.at(-1)) {
+      await p.locator('#contribute-another').click();
+      await p.locator('#contribution-course').selectOption('0401212'); await fillContribution(p);
+    }
+  }
+  await s.close();
+});
+
+test('About introduces root and initial academic coverage while preserving identity and public access', async () => {
+  const s = await setup(); const p = s.page; await s.goto();
+  assert.equal(await p.locator('#directory-heading').innerText(), 'Course directory');
+  await p.locator('a[data-about]').first().click(); await p.locator('#about-view').waitFor();
+  const text = await p.locator('#about-view').innerText();
+  for (const phrase of ['independent, student-led engineering and IT community in Jordan', 'collaborative projects',
+    'workshops', 'experimentation', 'competitions', 'A little less starting from scratch.',
+    'root/archive is our first public project', 'Computer Science, Artificial Intelligence, and Cybersecurity at AUM',
+    'Anyone can browse and download', 'eligible student account', 'every submission is reviewed',
+    'Practice questions, summaries, notes, test banks', 'not official university services']) assert(text.includes(phrase), phrase);
+  assert(!/past paper|AUM’s archive|AUM's archive/i.test(text));
+  assert.equal(await p.locator('.parent-mark').getAttribute('src'), './assets/brand/root.svg');
+  for (const width of [320, 768, 1440]) { await p.setViewportSize({width, height: 900}); await noOverflow(p); }
+  await accessible(p); await s.close();
+});
+
 test('global course picker, contextual defaults, draft retention and keyboard dialog behavior', async () => {
   const s = await setup({ externalFailure: true }); const p = s.page; await s.goto('/?course=0401212');
   assert.equal(s.requests.length, 0, 'browsing does not authenticate');
@@ -352,7 +479,7 @@ test('auth verification preserves course/file/details; 403 and forged authorized
   const s = await setup({ authStatus: 403 }); const p = s.page; await s.goto('/?course=0401212');
   await openContribution(p); await fillContribution(p);
   await p.getByRole('button', { name: 'Google sign-in (simulated)' }).click();
-  await p.getByText(/This account is not eligible/).waitFor();
+  await p.getByText(/This account isn’t currently eligible/).waitFor();
   await p.locator('#submit-resource').click(); assert.equal(s.requests.filter(r => r.type === 'submit').length, 0);
   assert.equal(await p.locator('#contribution-course').inputValue(), '0401212');
   s.options.authStatus = 0; s.options.authPayload = { success: true, authorized: false };
@@ -363,6 +490,103 @@ test('auth verification preserves course/file/details; 403 and forged authorized
   assert.match(await p.locator('#selected-file').innerText(), /synthetic.pdf/);
   const stores = await p.evaluate(() => [JSON.stringify(localStorage), JSON.stringify(sessionStorage), location.href]);
   assert(stores.every(text => !text.includes('synthetic.')));
+  await s.close();
+});
+
+test('Google chooser has no domain hint; rejected accounts can switch and submit their complete draft', async () => {
+  const s = await setup({authStatus: 403}); const p = s.page;
+  await s.goto('/?course=0401212'); await openContribution(p); await fillContribution(p);
+  await p.locator('#contribution-contributor').fill('Synthetic contributor');
+  assert.equal(await p.locator('#auth-heading').innerText(), 'Sign in to contribute.');
+  await p.waitForFunction(() => !!window.testIdentity);
+  assert.equal(await p.evaluate(() => Object.hasOwn(window.testIdentity, 'hd')), false);
+  assert.equal(await p.evaluate(() => window.testIdentity.auto_select), false);
+  await p.getByRole('button', {name: 'Google sign-in (simulated)'}).click();
+  await p.locator('#auth-message').filter({hasText: /isn’t currently eligible/}).waitFor();
+  assert.equal(await p.locator('#auth-message').getAttribute('role'), 'status');
+  await retainedDraft(p); await accessible(p);
+  await p.locator('#submit-resource').click();
+  assert.match(await p.locator('#auth-message').innerText(), /isn’t currently eligible/);
+  assert.equal(s.requests.filter(r => r.type === 'submit').length, 0);
+  await p.getByRole('button', {name: 'Use a different Google account'}).click();
+  assert.equal(await p.evaluate(() => document.activeElement.textContent), 'Google sign-in (simulated)');
+  const switched = fakeCredential + '-another-account';
+  await p.evaluate(value => {window.testCredential = value;}, switched);
+  s.options.authStatus = 0;
+  await signIn(p); await retainedDraft(p);
+  assert.equal(await p.locator('#contribution-contributor').inputValue(), 'Synthetic contributor');
+  await p.getByRole('button', {name: 'Sign out', exact: true}).click();
+  assert.match(await p.locator('#auth-message').innerText(), /signed out/);
+  await retainedDraft(p);
+  await p.locator('#submit-resource').click();
+  assert.equal(s.requests.filter(r => r.type === 'submit').length, 0);
+  await signIn(p); await retainedDraft(p);
+  assert(await p.evaluate(() => window.testAutoSelectDisabled > 0));
+  assert.deepEqual(await p.evaluate(() => [Object.keys(localStorage), Object.keys(sessionStorage), document.cookie]), [[], [], '']);
+  await p.locator('#submit-resource').click(); await p.locator('#contribution-success').waitFor();
+  assert.equal(s.requests.filter(r => r.type === 'submit')[0].headers.authorization, `Bearer ${switched}`);
+  await s.close();
+});
+
+test('late verification responses cannot restore a signed-out account or override a repeated sign-in', async () => {
+  const s = await setup(); const p = s.page;
+  await s.goto('/?course=0401212'); await openContribution(p); await fillContribution(p); await signIn(p);
+  // Hold the browser fetch promise after its mocked response arrives, so an obsolete
+  // success reaches the application even when its AbortController was cancelled.
+  await p.evaluate(() => {
+    const original = window.fetch;
+    window.fetch = async (...args) => {
+      const result = await original(...args);
+      if (String(args[0]).endsWith('/auth/verify') && window.testHoldVerification) {
+        await new Promise(resolve => {window.testReleaseVerification = resolve;});
+      }
+      return result;
+    };
+  });
+  for (const replacement of [false, true]) {
+    await p.evaluate(() => {window.testHoldVerification = true;});
+    await p.evaluate(credential => { window.testIdentity.callback({credential}); }, fakeCredential + '-stale');
+    await p.waitForFunction(() => typeof window.testReleaseVerification === 'function');
+    await p.locator('#switch-account').click();
+    await retainedDraft(p);
+    await p.evaluate(() => {window.testHoldVerification = false;});
+    if (replacement) await signIn(p);
+    await p.evaluate(() => {window.testReleaseVerification(); delete window.testReleaseVerification;});
+    await settledNavigation(p);
+    assert.equal(await p.locator('#signout').isVisible(), replacement);
+    assert.equal(await p.locator('#google-signin-slot').isVisible(), !replacement);
+  }
+  await p.locator('#submit-resource').click(); await p.locator('#contribution-success').waitFor();
+  assert.equal(s.requests.filter(r => r.type === 'submit')[0].headers.authorization, `Bearer ${fakeCredential}`);
+  await s.close();
+});
+
+test('verification failure retries and token expiration retain the draft across close/reopen', async () => {
+  const s = await setup({authStatus: 503, externalFailure: true}); const p = s.page;
+  await s.goto('/?course=0401212'); await openContribution(p); await fillContribution(p);
+  await p.locator('#auth-message').filter({hasText: /Google sign-in couldn’t load/}).waitFor();
+  await retainedDraft(p);
+  s.options.externalFailure = false;
+  await p.locator('#retry-signin').click();
+  await p.getByRole('button', {name: 'Google sign-in (simulated)'}).click();
+  await p.locator('#auth-message').filter({hasText: /couldn’t verify/}).waitFor();
+  await retainedDraft(p);
+  s.options.authNetworkFailure = true;
+  await p.getByRole('button', {name: 'Google sign-in (simulated)'}).click();
+  await p.locator('#auth-message').filter({hasText: /couldn’t reach account verification/}).waitFor();
+  await retainedDraft(p);
+  s.options.authNetworkFailure = false;
+  s.options.authStatus = 0; await signIn(p);
+  await p.locator('#save-close').click();
+  const now = Date.now();
+  await p.clock.install({time: now});
+  await p.clock.fastForward(3600 * 1000);
+  await openContribution(p); // init also checks expiry after suspension/backgrounding.
+  await p.locator('#auth-message').filter({hasText: /expired/}).waitFor();
+  assert.equal(await p.locator('#signout').isVisible(), false);
+  await retainedDraft(p);
+  await p.clock.setSystemTime(now);
+  await signIn(p); await retainedDraft(p);
   await s.close();
 });
 
@@ -379,7 +603,7 @@ test('validation, Turnstile expiry and expired sign-in prevent submission with u
   await p.locator('#retry-security').click();
   const expired = `synthetic.${Buffer.from(JSON.stringify({ exp: 1 })).toString('base64url')}.signature`;
   await p.evaluate(credential => window.testIdentity.callback({ credential }), expired);
-  await p.getByText('University account verified.', { exact: true }).waitFor();
+  await p.locator('#auth-message').filter({hasText: /expired/}).waitFor();
   await p.locator('#submit-resource').click(); assert.equal(s.requests.filter(r => r.type === 'submit').length, 0);
   assert.equal(await p.locator('#contribution-title').inputValue(), 'Synthetic study summary'); await s.close();
 });
@@ -444,6 +668,12 @@ test('submission rejection, network and malformed-success paths keep drafts and 
     assert.equal(await p.locator('#contribution-title').inputValue(), 'Synthetic study summary');
     assert.equal(await p.locator('#contribution-success').isVisible(), false);
     assert.equal(s.requests.filter(r => r.type === 'submit').length, 1);
+    if ([401, 403].includes(options.uploadStatus)) {
+      await retainedDraft(p); s.options.uploadStatus = 0;
+      await signIn(p);
+      await p.locator('#submit-resource').click(); await p.locator('#contribution-success').waitFor();
+      assert.equal(s.requests.filter(r => r.type === 'submit').length, 2);
+    }
     await s.close();
   }
 });

@@ -19,7 +19,7 @@ test('invalid courses fail instead of silently disappearing', () => {
   }
 });
 test('resource integrity and unsafe metadata failures', () => {
-  for (const patch of [{course_id: '9999999'}, {type: 'Notes'}, {title: 'a'},
+  for (const patch of [{course_id: '9999999'}, {type: 'Past Paper'}, {title: 'a'},
     {semester: 'x'}, {contributor: 'bad\nname'}, {id: ''},
     {asset_url: 'javascript:alert(1)'}, {asset_url: 'http://example.invalid'},
     {asset_url: 'https://name:secret@example.invalid/a'},

@@ -33,11 +33,11 @@
   <a class="skip-link" href="#main-content">Skip to content</a>
   <header class="masthead">
     <div class="shell masthead-inner">
-      <a class="wordmark" href="./" data-nav aria-label="root/archive home">
+      <a class="wordmark" href="./" data-nav data-directory aria-label="root/archive home">
         <span class="wordmark-root">root</span><span class="wordmark-slash" aria-hidden="true">/</span><span class="wordmark-product">archive</span>
       </a>
       <nav aria-label="Main navigation">
-        <a href="?view=about" data-nav>About root</a>
+        <a href="?view=about" data-nav data-about>About root</a>
         <button class="button button-light" type="button" data-contribute>Contribute <svg class="arrow-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h12m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.5"/></svg></button>
       </nav>
     </div>
@@ -46,7 +46,7 @@
     <section id="directory-view" aria-labelledby="directory-heading">
       <div class="intro">
         <div>
-          <h1 id="directory-heading">AUM course materials</h1>
+          <h1 id="directory-heading">Course directory</h1>
           <p>Find your course. Share what helped you learn.</p>
         </div>
         <div class="publisher-note"><strong>Open to everyone.</strong>Built by students, for the next student.</div>
@@ -68,6 +68,7 @@
         </div>
         <p id="result-count" class="result-count" role="status">Loading courses…</p>
       </div>
+      <label class="materials-filter" for="has-materials"><input id="has-materials" type="checkbox" aria-controls="directory-results">Only courses with materials</label>
       <div id="catalog-note" class="catalog-note" hidden>
         <p id="catalog-availability"></p>
         <button type="button" data-contribute>Help build the collection <svg class="arrow-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h12m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.5"/></svg></button>
@@ -82,12 +83,13 @@
         <div><p class="eyebrow">The community behind the archive</p><h1 id="about-heading">About root</h1></div>
       </div>
       <div class="about-copy">
-        <p>root is an independent, student-led engineering and IT community in Jordan. We learn by doing, work together, and build things that are useful.</p>
+        <p>root is an independent, student-led engineering and IT community in Jordan. We bring curious people together to learn by doing, build real projects, share knowledge, and explore things beyond the classroom.</p>
+        <p>Through collaborative projects, workshops, experimentation, and competitions, we make room to try things out and learn from each other.</p>
         <h2>A little less starting from scratch.</h2>
-        <p>archive is our first public project: a shared collection of course materials, initially for AUM students. It brings students’ learning resources together so the next person has somewhere to start.</p>
-        <p>Anyone can browse and download. Verified university students can contribute, and every submission is reviewed before it appears in the archive.</p>
+        <p>root/archive is our first public project: a shared collection of course materials, initially covering Computer Science, Artificial Intelligence, and Cybersecurity at AUM. It brings students’ learning resources together so the next person has somewhere to start.</p>
+        <p>Anyone can browse and download. Contributions currently require an eligible student account, and every submission is reviewed before it appears in the archive.</p>
         <h2>Built by a community.</h2>
-        <p>A useful summary or a past paper can make a difference. If you have something you’re allowed to share, help the collection grow.</p>
+        <p>Practice questions, summaries, notes, test banks, and other resources can make a difference. If you have something you’re allowed to share, help the collection grow.</p>
         <p>root and root/archive are independent community projects, not official university services.</p>
         <button class="button" type="button" data-contribute>Contribute a resource <svg class="arrow-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h12m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.5"/></svg></button>
       </div>
@@ -102,7 +104,7 @@
   <footer class="site-footer">
     <div class="shell footer-inner">
       <div class="footer-signature"><img src="./assets/brand/archive.svg" width="47" height="34" alt=""><div><strong>A project by root.</strong><br>Independent. Student-built. Not an official university service.</div></div>
-      <nav class="footer-links" aria-label="Footer"><a href="?view=about" data-nav>About root</a><a href="https://github.com/omatek/root-archive">Source on GitHub</a></nav>
+      <nav class="footer-links" aria-label="Footer"><a href="?view=about" data-nav data-about>About root</a><a href="https://github.com/omatek/root-archive">Source on GitHub</a></nav>
     </div>
   </footer>
   <dialog id="contribution-dialog" aria-labelledby="contribution-heading" aria-describedby="contribution-description">
@@ -113,13 +115,14 @@
     <div class="dialog-content">
       <div id="contribution-editor">
         <section class="auth-box" aria-labelledby="auth-heading">
-          <h3 id="auth-heading">A university account to contribute.</h3>
-          <p>Sign in with your <strong>@std.aum.edu.jo</strong> Google account. Browsing and downloading are always open to everyone.</p>
+          <h3 id="auth-heading">Sign in to contribute.</h3>
+          <p>Contributions currently require an eligible student account. Browsing and downloading are open to everyone.</p>
           <div class="auth-actions">
             <div id="google-signin-slot"></div>
             <button id="retry-signin" class="button button-secondary" type="button">Load Google sign-in</button>
             <span id="auth-status" class="auth-status" role="status"></span>
             <button id="signout" class="text-button" type="button" hidden>Sign out</button>
+            <button id="switch-account" class="text-button" type="button" hidden>Use a different Google account</button>
           </div>
           <p id="auth-message" class="auth-message" role="status"></p>
         </section>
@@ -144,7 +147,7 @@
               <div class="field">
                 <label for="contribution-type">Resource type</label>
                 <select id="contribution-type" name="type" required aria-describedby="type-error">
-                  <option value="">Choose a type</option><option>Past Paper</option><option>Summary</option><option>Test Bank</option><option>Other</option>
+                  <option value="">Choose a type</option><option>Practice Questions</option><option>Summary</option><option>Notes</option><option>Test Bank</option><option>Other</option>
                 </select>
                 <p id="type-error" class="field-error" hidden></p>
               </div>
