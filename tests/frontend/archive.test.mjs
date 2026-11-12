@@ -11,6 +11,8 @@ const root = resolve(fileURLToPath(new URL('../../site/', import.meta.url)));
 const realCourses = JSON.parse(await readFile(resolve(root, 'courses.json')));
 const realResources = JSON.parse(await readFile(resolve(root, 'resources.json')));
 const axeSource = await readFile(new URL('../../node_modules/axe-core/axe.min.js', import.meta.url), 'utf8');
+// Reproduce a browser retaining the unversioned pre-filter form styles.
+const staleFormStyles = 'input,select{width:100%;min-height:46px}';
 const fakeCredential = `synthetic.${Buffer.from(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 })).toString('base64url')}.signature`;
 const fixture = {
   id: 'synthetic-1', course_id: '0401212', type: 'Summary', title: 'Synthetic resource for browser tests',
@@ -51,6 +53,9 @@ async function setup(options = {}) {
       return route.fulfill({ json: options.courses || realCourses });
     }
     if (url === appOrigin + '/resources.json') return route.fulfill({ json: options.resources || realResources });
+    if (options.staleStylesheet && url === appOrigin + '/styles.css') {
+      return route.fulfill({ contentType: 'text/css', body: staleFormStyles });
+    }
     if (url.startsWith(appOrigin + '/')) {
       if (appOrigin === origin) return route.continue();
       // Exercise the real frontend under either hostname using only local files.
@@ -335,6 +340,47 @@ test('catalog errors can retry and malformed resources never become visible', as
   s.options.resources = [{ ...fixture, asset_url: 'javascript:alert(1)' }]; await s.goto();
   assert.equal(await s.page.locator('#load-error').isVisible(), true);
   assert.equal(await s.page.locator('.resource-open').count(), 0); await s.close();
+});
+
+test('materials checkbox stays compact and beside its clickable label on desktop and mobile, including stale CSS caches', async () => {
+  const s = await setup({staleStylesheet: true}); const p = s.page;
+  try {
+    for (const width of [1440, 390, 320]) {
+      await p.setViewportSize({width, height: 900}); await s.goto();
+      await p.evaluate(() => document.fonts.ready);
+      const checkbox = p.getByRole('checkbox', {name: 'Only courses with materials'});
+      const geometry = await checkbox.evaluate(input => {
+        const label = input.labels[0];
+        const text = [...label.childNodes].find(node => node.nodeType === Node.TEXT_NODE && node.textContent.trim());
+        const range = document.createRange(); range.selectNodeContents(text);
+        const box = input.getBoundingClientRect(), caption = range.getBoundingClientRect();
+        return {width: box.width, height: box.height, gap: caption.left - box.right,
+          centerDifference: Math.abs((box.top + box.bottom - caption.top - caption.bottom) / 2)};
+      });
+      assert(geometry.width >= 14 && geometry.width <= 22, `${width}px viewport: compact checkbox width (${geometry.width})`);
+      assert(geometry.height >= 14 && geometry.height <= 22, `${width}px viewport: compact checkbox height (${geometry.height})`);
+      assert(geometry.gap >= 4 && geometry.gap <= 20, `${width}px viewport: label immediately to the right`);
+      assert(geometry.centerDifference <= 3, `${width}px viewport: checkbox and text horizontally aligned`);
+      await checkbox.focus(); await p.keyboard.press('Space'); await settledNavigation(p);
+      assert.equal(await checkbox.isChecked(), true);
+      assert.equal(new URL(p.url()).searchParams.get('hasMaterials'), '1');
+      const focus = await checkbox.evaluate(input => ({visible: input.matches(':focus-visible'), outline: getComputedStyle(input).outlineStyle}));
+      assert.equal(focus.visible, true); assert.notEqual(focus.outline, 'none');
+      // Click the text side of the wrapping label, away from the checkbox.
+      await p.locator('.materials-filter').click({position: {x: 100, y: 22}});
+      assert.equal(await checkbox.isChecked(), false);
+      await noOverflow(p);
+    }
+    // A checkbox must not depend on one component's override to escape text-field sizing.
+    const nativeSize = await p.evaluate(() => {
+      const wrapper = document.createElement('div');
+      const input = document.createElement('input'); input.type = 'checkbox';
+      wrapper.append(input); document.body.append(wrapper);
+      const box = input.getBoundingClientRect(); wrapper.remove();
+      return {width: box.width, height: box.height};
+    });
+    assert(nativeSize.width <= 22 && nativeSize.height <= 22, 'global full-width field styles exclude checkboxes');
+  } finally { await s.close(); }
 });
 
 test('materials-only filter intersects search/track and survives course, About, reload and history', async () => {
