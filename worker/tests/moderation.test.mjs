@@ -6,12 +6,13 @@ import {generateKeyPair, exportJWK, SignJWT} from 'jose';
 
 // Real local workerd, D1 and R2 emulation. Google, Access and Turnstile are
 // signed/offline fixtures; no request may reach a real third-party service.
-const adminOrigin = 'https://admin.example.invalid';
+const moderationConfig=JSON.parse(readFileSync(new URL('../wrangler.moderation.jsonc',import.meta.url),'utf8').replace(/^\s*\/\/.*$/gm,''));
+// Exercise the configured hostname in local workerd; outbound identity calls stay mocked.
+const adminOrigin = moderationConfig.vars.ADMIN_ORIGIN;
 const publicOrigin = 'https://api.example.invalid';
 const studentOrigin = 'https://archive.example.invalid';
 const issuer = 'https://fixture.cloudflareaccess.com';
 const actor = 'root@example.invalid';
-const moderationConfig=JSON.parse(readFileSync(new URL('../wrangler.moderation.jsonc',import.meta.url),'utf8').replace(/^\s*\/\/.*$/gm,''));
 const studentEmail = 'synthetic@std.aum.edu.jo';
 const course = JSON.parse(readFileSync(new URL('../../site/courses.json', import.meta.url)))[0];
 const {privateKey, publicKey} = await generateKeyPair('RS256');
@@ -118,14 +119,19 @@ test.beforeEach(async () => {
 test.after(async () => {await mf?.dispose();});
 
 test('all admin API, static, file and alternate-host boundaries independently require Access and allowlist authorization',async () => {
-  for(const path of ['/','/admin/api/session','/admin/api/submissions','/admin/api/submissions/12345678-1234-4123-8123-123456789abc']) {
-    const response=await dispatch(new Request(adminOrigin+path));
+  const paths=['/','/index.html','/styles.css','/js/admin.mjs','/js/image-editor.mjs',
+    '/assets/fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2','/admin/api/session',
+    '/admin/api/courses','/admin/api/submissions','/admin/api/submissions/12345678-1234-4123-8123-123456789abc',
+    '/admin/api/submissions/12345678-1234-4123-8123-123456789abc/files/12345678-1234-4123-8123-123456789abc'];
+  for(const path of paths) for(const method of ['GET','HEAD']) {
+    const response=await dispatch(new Request(adminOrigin+path,{method}));
     assert.equal(response.status,401,`${path}: ${await response.text()}`);
     assert.match(response.headers.get('Cache-Control'),/no-store/);
   }
   const valid=await adminToken();
-  for(const host of [publicOrigin,'https://moderation.workers.dev','https://preview.pages.dev','https://admin.example.invalid.attacker.invalid']) {
-    const denied=await dispatch(new Request(host+'/admin/api/submissions',{headers:{'Cf-Access-Jwt-Assertion':valid}}));
+  for(const host of [publicOrigin,'https://moderation.workers.dev','https://preview.pages.dev',
+    'https://admin.rootamman.com','https://admin-staging.rootamman.com',adminOrigin+'.attacker.invalid']) for(const path of paths) {
+    const denied=await dispatch(new Request(host+path,{headers:{'Cf-Access-Jwt-Assertion':valid}}));
     assert.equal(denied.status,404);
   }
   const now=Math.floor(Date.now()/1000);
@@ -146,6 +152,16 @@ test('all admin API, static, file and alternate-host boundaries independently re
   assert.equal((await admin('/admin/api/session',{jwt:await adminToken({exp:now-60})})).status,401);
   assert.equal(outbound.filter(url => url === `${issuer}/cdn-cgi/access/certs`).length,certRequests,
     'cached public keys avoid repeated cert fetches without caching identity or authorization');
+});
+
+test('configured administrator hostname fails closed until issuer, audience and explicit allowlist are complete',async () => {
+  for(const overrides of [{ADMIN_EMAILS:''},{ADMIN_EMAILS:'*'},{ACCESS_ISSUER:''},{ACCESS_AUD:''}]) {
+    for(const path of ['/','/js/admin.mjs','/admin/api/session']) {
+      const response=await invokeNode(new Request(adminOrigin+path),overrides);
+      assert.equal(response.status,503);
+      assert.match(response.headers.get('Cache-Control'),/no-store/);
+    }
+  }
 });
 
 test('CSRF rejects foreign origins, missing custom headers and cross-site browser requests',async () => {

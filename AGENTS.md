@@ -10,7 +10,10 @@
   Unpublish retains a private file for review; permanent removal revokes and
   queues deletion. Do not restore public access using old catalogs or buckets.
 - The private system is NOT deployed. Staging D1/R2 provisioning is documented;
-  Access remains unconfigured. Public `CONFIG.privateModeration` is false.
+  Access app `admin.archive` now exists for `admin.archive.rootamman.com`;
+  identity-provider repair and staging DNS/TLS/deployment remain pending. See
+  `docs/staging-deployment.md` for the verified inventory and approval gate.
+  Public `CONFIG.privateModeration` is false.
   The legacy architecture below remains active pending explicit production
   approval and live integration checks. Its owner-controlled pause switch is
   `LEGACY_SUBMISSIONS_ENABLED=false` (default preserves the old workflow).

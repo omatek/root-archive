@@ -70,10 +70,12 @@ is part of these fixes. All live-service and production gates below still apply.
 Keep Pages and the static course catalog. A separate moderation Worker owns D1
 and a **new private R2 bucket**, serves the administrator assets and same-origin
 administrator API, and exposes a read-only public catalog and download API.
-`admin.rootamman.com` is the intended administrator origin; `api.rootamman.com`
-is the intended public API origin after an approved cutover. Staging uses
-different names and storage. No private files or administrator assets are placed
-in `site/` or GitHub submission PRs.
+`admin.archive.rootamman.com` is the approved administrator origin. It is
+reserved for isolated staging first; using it with production storage later
+requires a separate approved cutover and production configuration.
+`api.rootamman.com` is the intended public API origin only after that cutover.
+Staging uses `api-staging.rootamman.com` and separate storage. No private files
+or administrator assets are placed in `site/` or GitHub submission PRs.
 
 Access protects the entire administrator hostname. The Worker additionally
 verifies its signed Access JWT (issuer, audience, algorithm, expiration), checks
@@ -112,12 +114,16 @@ The replacement never writes submission PRs or needs a GitHub credential.
 - Pages has 44 deployments, including 32 previews and eight successful historical
   submission previews. Current submission-branch exclusions do not revoke old
   previews. Historical links require a separate owner-approved disposition.
-- Access apps/organization reads return `access.api.error.not_enabled`.
+- At the earlier checkpoint, Access apps/organization reads returned
+  `access.api.error.not_enabled`.
   Enabling Zero Trust, choosing a team and identity method, setting administrator
   addresses and policies are owner actions. Cloudflare's setup documentation
   requires plan selection/payment details even for its Free option. No plan or
   Access policy was enabled here. Account billing APIs are unavailable to the
-  OAuth connection, so no paid entitlement is assumed.
+  OAuth connection, so no paid entitlement is assumed. This Access observation
+  is superseded by the [14 November staging verification](staging-deployment.md):
+  onboarding and the application/policy now exist; compatible administrator
+  login and DNS/TLS still need the explicitly approved operations in that plan.
 
 ## Isolated infrastructure prepared
 
@@ -190,8 +196,12 @@ Sources: [repository](https://api.github.com/repos/omatek/root-archive),
 
 Use Node 24 and the existing lockfiles. Commands below run from the repository
 root. `wrangler.moderation.jsonc` targets **staging**, has no routes, disables
-workers.dev/version previews, and leaves Access configuration empty. It is not
-a production deployment configuration.
+workers.dev/version previews, and pins the verified Access issuer and audience.
+The administrator allowlist remains empty (fail-closed) until supplied as a
+protected deployment secret. Staging Google configuration is also empty;
+submissions and scheduled cleanup remain disabled. It is not a production
+deployment configuration. The nonexistent staging preview-bucket binding has
+been removed; no preview bucket is required for local emulation.
 
 ```sh
 npm ci --prefix worker
@@ -221,11 +231,13 @@ bindings at production.
 
 Owner configuration required before a real administrator can sign in:
 
-1. Enable Zero Trust on the existing account, choose an available suitable plan
-   and team name, and configure an identity provider. Do not buy or upgrade a
-   plan automatically. Confirm current seat limits and existing billing.
-2. Create a self-hosted Access application covering **the entire administrator
-   hostname**, with a short session duration and an Allow policy listing the
+1. Zero Trust onboarding is complete with team `rootamman.cloudflareaccess.com`;
+   the owner confirms Zero Trust Free. The selected Cloudflare login cannot
+   authenticate the current exact-email allowlist with current account membership.
+   The owner chose to plan email one-time PIN login; implementing it still needs
+   approval. See [the exact staging plan](staging-deployment.md).
+2. Preserve the existing self-hosted Access application covering **the entire
+   administrator hostname**, with a short session duration and an Allow policy listing the
    actual approved administrator addresses. No wildcard student-domain policy,
    Everyone/BYPASS policy or service-token shortcut. Prefer MFA through the IdP.
 3. Set server variables `ACCESS_ISSUER=https://<actual-team>.cloudflareaccess.com`,
@@ -284,6 +296,11 @@ retains UUID/course/type, decision times, moderator/action/reason and deletion
 bookkeeping. Current published resources retain only the chosen file. Pending
 and withdrawn records are retained for review; the owner should review these
 queues monthly and explicitly reject/remove abandoned material.
+
+`CLEANUP_ENABLED=false` disables only the scheduled handler. Replacement,
+approval, rejection, removal, failed-upload recovery and the authorized manual
+cleanup route can still delete R2 objects. Deployment approval must cover those
+effects separately; disabling Cron is not a deletion safety switch.
 
 Cleanup attempts a bounded batch after relevant moderation actions. Failures
 remain in D1 with attempt count, fixed error code and five-minute retry delay.
