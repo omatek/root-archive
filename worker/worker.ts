@@ -84,9 +84,10 @@ interface CourseCatalogEntry {
 
 interface VerifiedStudentIdentity {
   sub: string;
+  email: string;
 }
 
-interface ValidatedSubmissionPayload {
+export interface ValidatedSubmissionPayload {
   courseId: string;
   type: ResourceType;
   title: string;
@@ -219,7 +220,7 @@ const FILE_TYPE_POLICIES: Readonly<Record<string, FileTypePolicy>> = {
   },
 };
 
-class WorkerHttpError extends Error {
+export class WorkerHttpError extends Error {
   public readonly status: number;
   public readonly clientMessage: string;
 
@@ -497,9 +498,9 @@ function resolvePermittedOrigin(
  * Validates the Authorization header, cryptographically verifies the Google ID token via Google's
  * public JWKS, and enforces exact @std.aum.edu.jo institutional eligibility.
  */
-async function verifyGoogleStudentToken(
+export async function verifyGoogleStudentToken(
   request: Request,
-  env: Env
+  env: { GOOGLE_CLIENT_ID: string }
 ): Promise<VerifiedStudentIdentity> {
   const authHeader = request.headers.get("Authorization");
   if (!authHeader || typeof authHeader !== "string" || CONTROL_CHARS_REGEX.test(authHeader)) {
@@ -600,7 +601,7 @@ async function verifyGoogleStudentToken(
     );
   }
 
-  return { sub: sub.trim() };
+  return { sub: sub.trim(), email: email.trim().toLowerCase() };
 }
 
 function isExactUniversityEmail(email: string, expectedDomain: string): boolean {
@@ -695,7 +696,7 @@ function isMultipartFormData(contentTypeHeader: string | null): boolean {
   return /;\s*boundary=[^\s;]+/i.test(trimmed);
 }
 
-async function parseMultipartWithByteLimit(
+export async function parseMultipartWithByteLimit(
   request: Request,
   maxBytes: number
 ): Promise<FormData> {
@@ -772,8 +773,9 @@ async function parseMultipartWithByteLimit(
   }
 }
 
-async function validateAndExtractPayload(
-  formData: FormData
+export async function validateAndExtractPayload(
+  formData: FormData,
+  options: { optionalSemester?: boolean } = {}
 ): Promise<ValidatedSubmissionPayload> {
   const seenKeys = new Set<string>();
   for (const [key] of formData.entries()) {
@@ -841,7 +843,7 @@ async function validateAndExtractPayload(
   }
 
   // 4. Validate semester
-  const rawSemester = formData.get("semester");
+  const rawSemester = formData.get("semester") ?? (options.optionalSemester ? "" : null);
   if (typeof rawSemester !== "string") {
     throw new WorkerHttpError(400, "Field 'semester' is required and must be a string.");
   }
@@ -852,7 +854,7 @@ async function validateAndExtractPayload(
     );
   }
   const semester = rawSemester.trim().replace(/[ \t]+/g, " ");
-  if (semester.length < 4 || semester.length > 20 || /[<>\u202a-\u202e\u2066-\u2069]/u.test(semester)) {
+  if ((semester.length < 4 && !(options.optionalSemester && semester.length === 0)) || semester.length > 20 || /[<>\u202a-\u202e\u2066-\u2069]/u.test(semester)) {
     throw new WorkerHttpError(
       400,
       "Field 'semester' must be between 4 and 20 characters after trimming."
@@ -998,7 +1000,7 @@ function matchesFileSignature(bytes: Uint8Array, signature: readonly number[]): 
   return true;
 }
 
-async function verifyTurnstileToken(
+export async function verifyTurnstileToken(
   secret: string,
   token: string,
   clientIp: string | null
@@ -1051,7 +1053,7 @@ async function verifyTurnstileToken(
   }
 }
 
-function sanitizeFilename(originalFilename: string): string {
+export function sanitizeFilename(originalFilename: string): string {
   const baseName = originalFilename.split(/[/\\]/).pop() ?? "resource";
 
   const extMatch = /\.[a-zA-Z0-9]+$/.exec(baseName);
