@@ -132,28 +132,54 @@ async function mutation(env: ModerationEnv, statements: D1PreparedStatement[]) {
 }
 
 async function listPublic(url: URL, env: ModerationEnv) {
-  const offset = page(url);
   const course = url.searchParams.get('course_id');
   if (course && !COURSE_IDS.has(course)) throw new WorkerHttpError(400, 'Unknown course.');
-  const rows = await statement(env, `SELECT * FROM resources WHERE status='published' ${course ? 'AND course_id=?' : ''}
-    ORDER BY published_at DESC,id LIMIT 201 OFFSET ?`, ...(course ? [course, offset] : [offset])).all<Resource>();
-  return json({resources:rows.results.slice(0,200).map(r => publicRecord(r,env)),
-    next_cursor:rows.results.length > 200 ? String(offset + 200) : null}, 200, {'Access-Control-Allow-Origin':'*'});
+  let offset = 0, generation: string | null = null;
+  const cursor = url.searchParams.get('cursor');
+  if (cursor !== null) {
+    try {
+      if (!/^[A-Za-z0-9_-]{1,512}$/.test(cursor)) throw new Error();
+      const decoded: unknown = JSON.parse(atob(cursor.replace(/-/g,'+').replace(/_/g,'/')));
+      if (!Array.isArray(decoded) || decoded.length !== 4 || decoded[0] !== 1 ||
+          typeof decoded[1] !== 'string' || !/^[a-f0-9]{32}$/.test(decoded[1]) ||
+          !Number.isSafeInteger(decoded[2]) || decoded[2] < 200 || decoded[2] > 1000000 || decoded[2] % 200 !== 0 ||
+          decoded[3] !== (course ?? '')) throw new Error();
+      [,generation,offset] = decoded;
+    } catch {throw new WorkerHttpError(400,'Invalid catalog cursor.');}
+  }
+  // One D1 batch observes the generation and page in the same transaction.
+  // A changed generation invalidates the whole traversal, including earlier
+  // pages affected by withdrawal. Never assemble pages from different states.
+  const [state, rows] = await env.DB.batch<{generation:string} | Resource>([
+    statement(env,'SELECT generation FROM catalog_state WHERE singleton=1'),
+    statement(env, `SELECT * FROM resources WHERE status='published' ${course ? 'AND course_id=?' : ''}
+      ORDER BY published_at DESC,id LIMIT 201 OFFSET ?`, ...(course ? [course, offset] : [offset])),
+  ]);
+  const current = (state.results[0] as {generation:string}).generation;
+  if (generation !== null && generation !== current) return json({success:false,code:'catalog_changed',
+    error:'The catalog changed. Restart from the first page.'},409,{'Access-Control-Allow-Origin':'*'});
+  const resources = rows.results as Resource[];
+  const next = resources.length > 200 ? btoa(JSON.stringify([1,current,offset+200,course??'']))
+    .replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'') : null;
+  return json({resources:resources.slice(0,200).map(r => publicRecord(r,env)),next_cursor:next},200,{'Access-Control-Allow-Origin':'*'});
 }
 async function download(request: Request, env: ModerationEnv, id: string) {
   assertId(id);
   // Deliberately use DB directly, never a read-replica session, KV, Cache API, or an R2 public URL.
-  const live = await statement(env, `SELECT r.*, f.object_key,f.filename,f.mime,f.size,f.etag FROM resources r
+  const live = await statement(env, `SELECT r.*, f.object_key,f.mime,f.size,f.etag FROM resources r
     JOIN file_revisions f ON f.id=r.revision_id WHERE r.id=? AND r.status='published' AND f.status='ready'`, id)
-    .first<Resource & Pick<Revision,'object_key'|'filename'|'mime'|'size'|'etag'>>();
+    .first<Resource & Pick<Revision,'object_key'|'mime'|'size'|'etag'>>();
   if (!live) throw new WorkerHttpError(404, 'Resource is unavailable.');
   const object = request.method === 'HEAD' ? await env.PRIVATE_FILES.head(live.object_key) : await env.PRIVATE_FILES.get(live.object_key);
   if (!object || object.size !== live.size || object.etag !== live.etag) throw new WorkerHttpError(404, 'Resource is unavailable.');
   // Recheck after storage access: a concurrent withdrawal/replacement cannot grant a new response using an old pointer.
   const stillLive = await statement(env, "SELECT id FROM resources WHERE id=? AND status='published' AND revision_id=?", id, live.revision_id).first();
   if (!stillLive) throw new WorkerHttpError(404, 'Resource is unavailable.');
+  const extension = ({'application/pdf':'.pdf','image/png':'.png','image/jpeg':'.jpg',
+    'application/zip':'.zip','application/vnd.openxmlformats-officedocument.wordprocessingml.document':'.docx'} as Record<string,string>)[live.mime];
+  if (!extension) throw new WorkerHttpError(404,'Resource is unavailable.');
   const headers = {...PRIVATE_HEADERS, 'Access-Control-Allow-Origin':'*', 'Content-Type':live.mime,
-    'Content-Length':String(live.size), 'Content-Disposition':`attachment; filename="${sanitizeFilename(live.filename)}"`,
+    'Content-Length':String(live.size), 'Content-Disposition':`attachment; filename="resource-${id}${extension}"`,
     'Content-Security-Policy':FILE_CSP, 'Cross-Origin-Resource-Policy':'cross-origin'};
   return new Response(request.method === 'HEAD' ? null : (object as R2ObjectBody).body, {headers});
 }

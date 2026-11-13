@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync} from 'node:fs';
+import {readFileSync, readdirSync} from 'node:fs';
 import {Miniflare, convertV4MiniflareOptions, Response as MiniflareResponse} from 'miniflare';
 import {generateKeyPair, exportJWK, SignJWT} from 'jose';
 
@@ -102,8 +102,11 @@ test.before(async () => {
     },
   }]}));
   db=await mf.getD1Database('DB'); bucket=await mf.getR2Bucket('PRIVATE_FILES');
-  const migration=readFileSync(new URL('../migrations/0001_private_moderation.sql',import.meta.url),'utf8').replace(/^\s*--.*$/gm,'');
-  for(const sql of migration.split(';').map(x=>x.trim()).filter(Boolean)) await db.prepare(sql).run();
+  for (const name of readdirSync(new URL('../migrations/',import.meta.url)).filter(n=>n.endsWith('.sql')).sort()) {
+    const migration=readFileSync(new URL('../migrations/'+name,import.meta.url),'utf8').replace(/^\s*--.*$/gm,'');
+    // Trigger bodies stay on one line; only statement-ending newlines split SQL.
+    for(const sql of migration.split(/;\s*(?:\n|$)/).map(x=>x.trim()).filter(Boolean)) await db.prepare(sql).run();
+  }
 });
 test.beforeEach(async () => {
   await db.batch(['DELETE FROM moderation_audit','DELETE FROM resources','DELETE FROM file_revisions','DELETE FROM submissions'].map(sql=>db.prepare(sql)));
@@ -222,6 +225,81 @@ test('pending and replacement revisions stay private; only selected approved sna
   assert.equal((await bucket.list()).objects.length,1,'unnecessary original is deleted after selected revision publication');
 });
 
+test('F-01 anonymous GET/HEAD use only resource identity and trusted extension, never source filenames',async () => {
+  const formats=[['pdf','application/pdf','%PDF-private'],['png','image/png',new Uint8Array([137,80,78,71,13,10,26,10])],
+    ['jpg','image/jpeg',new Uint8Array([255,216,255])],['zip','application/zip',new Uint8Array([80,75,3,4])],
+    ['docx','application/vnd.openxmlformats-officedocument.wordprocessingml.document',new Uint8Array([80,75,3,4])]];
+  for(const [ext,mime,bytes] of formats) {
+    const originalName=`Synthetic-Student-123456-private-name.${ext}`;
+    let record=await create({file:new File([bytes],originalName,{type:mime})});
+    const id=record.submission.id,originalRevision=record.submission.candidate_revision_id;
+    assert.equal(record.submission.contributor,null);
+    assert.ok((await admin(`/admin/api/submissions/${id}/files/${originalRevision}`)).headers.get('Content-Disposition').includes(originalName));
+    async function checkPublic() {
+      for(const method of ['GET','HEAD']) {
+        const response=await publicDownload(id,method);assert.equal(response.status,200);
+        assert.equal(response.headers.get('Content-Disposition'),`attachment; filename="resource-${id}.${ext}"`);
+        assert.equal(response.headers.get('Content-Type'),mime);
+        assert.match(response.headers.get('Cache-Control'),/no-store/);
+        assert.equal(response.headers.get('X-Content-Type-Options'),'nosniff');
+        assert.doesNotMatch(JSON.stringify([...response.headers]),/Synthetic-Student|123456-private|replacement-name|private\/v1/);
+      }
+    }
+    record=await read(await action(record,'approve',{revision_id:originalRevision}));await checkPublic();
+    record=await read(await action(record,'unpublish',{reason:'Private correction'}));
+    for(const method of ['GET','HEAD']) assert.equal((await publicDownload(id,method)).status,404);
+    record=await read(await replacement(record,bytes,`replacement-name-987654.${ext}`,mime));
+    record=await read(await action(record,'approve',{revision_id:record.submission.candidate_revision_id}));await checkPublic();
+  }
+});
+
+test('F-02 catalog generations reject mixed pages and restart to a complete, parseable live catalog',async () => {
+  const {loadPublishedResources,parseCatalog}=await import('../../site/js/catalog.mjs');
+  const ids=[];
+  async function seed(n,date='2026-01-01T00:00:00.000Z') {
+    const id=`${n.toString(16).padStart(8,'0')}-1111-4111-8111-111111111111`;
+    await db.batch([
+      db.prepare(`INSERT INTO submissions(id,course_id,type,title,semester,status,created_at,updated_at,last_operation)
+        VALUES(?,?,'Summary','Synthetic material','','published',?,?,?)`).bind(id,course.id,date,date,id),
+      db.prepare(`INSERT INTO resources(id,course_id,type,title,semester,status,published_at,updated_at,published_by)
+        VALUES(?,?,'Summary','Synthetic material','','published',?,?,'synthetic')`).bind(id,course.id,date,date),
+    ]);return id;
+  }
+  for(let n=1;n<=205;n++) ids.push(await seed(n));
+  const initial=await publicCatalog();assert.equal(initial.resources.length,200);
+  assert.match(initial.next_cursor,/^[A-Za-z0-9_-]+$/);assert.notEqual(initial.next_cursor,'200');
+  await seed(300,'2026-11-01T00:00:00.000Z');
+  const stale=await dispatch(new Request(`${publicOrigin}/resources?cursor=${initial.next_cursor}`));
+  assert.equal(stale.status,409);assert.equal((await stale.json()).code,'catalog_changed');
+  const originalFetch=globalThis.fetch;
+  async function traversal(mutate) {
+    let first=true,restarts=0;
+    globalThis.fetch=async value=>{
+      const response=await dispatch(new Request(value));
+      if(response.status===409) restarts++;
+      if(first){first=false;await mutate();}
+      return response;
+    };
+    const resources=await loadPublishedResources(publicOrigin+'/resources');
+    assert.equal(restarts,1);
+    const expected=await db.prepare("SELECT id FROM resources WHERE status='published' ORDER BY published_at DESC,id").all();
+    assert.deepEqual(resources.map(r=>r.id),expected.results.map(r=>r.id));
+    assert.equal(new Set(resources.map(r=>r.id)).size,resources.length);
+    assert.equal(parseCatalog([course],resources,{allowEmptySemester:true,downloadOrigin:publicOrigin}).resourceCount,resources.length);
+  }
+  try {
+    await traversal(()=>seed(301,'2026-12-01T00:00:00.000Z'));
+    for(const id of [ids[0],ids.at(-1)]) await traversal(()=>db.prepare("UPDATE resources SET status='unpublished' WHERE id=?").bind(id).run());
+    await traversal(()=>db.prepare('DELETE FROM resources WHERE id=?').bind(ids[1]).run());
+  } finally {globalThis.fetch=originalFetch;}
+  // All seeded timestamps tie: an unchanged generation still terminates exactly.
+  for(const cursor of ['200','bad!','a'.repeat(513),btoa(JSON.stringify([1,'0'.repeat(32),-200,'']))]) {
+    assert.equal((await dispatch(new Request(`${publicOrigin}/resources?cursor=${encodeURIComponent(cursor)}`))).status,400);
+  }
+  const first=await publicCatalog();
+  assert.equal((await dispatch(new Request(`${publicOrigin}/resources?course_id=${course.id}&cursor=${first.next_cursor}`))).status,400);
+});
+
 test('published replacement preserves old file until approval; unpublish revokes stable URLs and returns private re-review',async () => {
   let record=await create();const id=record.submission.id;
   record=await read(await action(record,'approve',{revision_id:record.submission.candidate_revision_id}));
@@ -300,16 +378,31 @@ test('missing candidate bytes and interrupted D1 publication never produce a pub
   // Replace successfully, then abort inside D1's atomic batch after the guarded
   // submission UPDATE. Neither the state, audit nor resource insert may commit.
   record=await read(await replacement(record));
-  await db.prepare("CREATE TRIGGER fixture_fail_publish BEFORE INSERT ON resources BEGIN SELECT RAISE(ABORT, 'synthetic_database_failure'); END").run();
+  const generationBefore=(await db.prepare('SELECT generation FROM catalog_state').first()).generation;
+  // Abort after the resource insert and its generation trigger have executed.
+  await db.prepare("CREATE TRIGGER fixture_fail_publish BEFORE INSERT ON moderation_audit WHEN NEW.action='submission_approved' BEGIN SELECT RAISE(ABORT, 'synthetic_database_failure'); END").run();
   try {
     assert.equal((await action(record,'approve',{revision_id:record.submission.candidate_revision_id})).status,503);
     const unchanged=await read(await admin(`/admin/api/submissions/${id}`));
     assert.equal(unchanged.submission.version,record.submission.version);assert.equal(unchanged.submission.status,'pending');
     assert.equal((await db.prepare("SELECT COUNT(*) AS n FROM moderation_audit WHERE action='submission_approved'").first()).n,0);
+    assert.equal((await db.prepare('SELECT generation FROM catalog_state').first()).generation,generationBefore);
     assert.equal((await publicDownload(id)).status,404);assert.deepEqual((await publicCatalog()).resources,[]);
   } finally {await db.prepare('DROP TRIGGER fixture_fail_publish').run();}
   record=await read(await action(record,'approve',{revision_id:record.submission.candidate_revision_id}));
   assert.equal(record.submission.status,'published');assert.equal((await publicDownload(id)).status,200);
+});
+
+test('withdrawal during storage access still revokes an in-flight public response',async()=>{
+  let record=await create();record=await read(await action(record,'approve',{revision_id:record.submission.candidate_revision_id}));
+  let pause,release;const paused=new Promise(resolve=>pause=resolve),continued=new Promise(resolve=>release=resolve);
+  const wrapped=new Proxy(bucket,{get(target,key){
+    if(key==='get')return async(...args)=>{const object=await target.get(...args);pause();await continued;return object;};
+    const value=target[key];return typeof value==='function'?value.bind(target):value;
+  }});
+  const pending=invokeNode(new Request(`${publicOrigin}/download/${record.submission.id}`),{PRIVATE_FILES:wrapped});
+  await paused;await read(await action(record,'unpublish',{reason:'Synthetic withdrawal during storage read'}));release();
+  assert.equal((await pending).status,404);
 });
 
 test('replacement MIME/signature/size validation keeps current approved snapshot intact',async () => {

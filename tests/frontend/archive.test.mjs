@@ -74,8 +74,13 @@ async function setup(options = {}) {
       requests.push({type: 'resources', url, method: request.method(), headers: request.headers()});
       if (options.resourceApiFailure) return route.fulfill({status: 503, body: 'unavailable'});
       const cursor = new URL(url).searchParams.get('cursor');
+      if(cursor !== null && options.changeCatalog){
+        options.apiPages=options.changeCatalog;options.changeCatalog=null;
+        return route.fulfill({status:409,json:{code:'catalog_changed'}});
+      }
       const pages = options.apiPages || [{resources: options.resources || [], next_cursor: null}];
-      return route.fulfill({json: pages[cursor === null ? 0 : Number(cursor)]});
+      const index=cursor===null?0:pages.findIndex((_,i)=>i>0&&pages[i-1].next_cursor===cursor);
+      return route.fulfill({json: pages[index]});
     }
     if (url.startsWith('https://accounts.google.com/gsi/client')) {
       return route.fulfill({ contentType: 'text/javascript', body: `window.google = { accounts: { id: {
@@ -406,6 +411,26 @@ test('private resource API failure offers retry without claiming an empty catalo
     await s.page.getByText('No resources published yet.', {exact: true}).waitFor();
     assert.equal(await s.page.locator('#load-error').isVisible(), false);
   } finally { await s.close(); }
+});
+
+test('F-02 a concurrent catalog change restarts paging and renders only a coherent generation',async()=>{
+  const resource=n=>{const id=`12345678-1234-4123-8123-${String(n).padStart(12,'0')}`;
+    return {...fixture,id,asset_url:`https://api.rootamman.com/download/${id}`};};
+  const stale=Array.from({length:201},(_,i)=>resource(i+1));
+  // Publication plus withdrawal before the old offset: the old first page must
+  // be discarded, rather than deduplicated and joined to the new last page.
+  const live=[resource(202),...stale.slice(1)];
+  const s=await setup({privateModeration:true,apiPages:[{resources:stale.slice(0,200),next_cursor:'old_page'},
+    {resources:stale.slice(200),next_cursor:null}],changeCatalog:[{resources:live.slice(0,200),next_cursor:'new_page'},
+    {resources:live.slice(200),next_cursor:null}]});
+  try{
+    await s.goto('/?course=0401212');await s.page.locator('#course-heading').waitFor();
+    assert.equal(await s.page.locator('#load-error').isVisible(),false);
+    const links=await s.page.locator('.resource-open').evaluateAll(nodes=>nodes.map(n=>n.href));
+    assert.deepEqual(new Set(links),new Set(live.map(r=>r.asset_url)));assert.equal(links.length,201);
+    assert.equal(s.requests.filter(r=>r.type==='resources').length,4);
+    assert.equal(s.requests.filter(r=>r.type==='static-resources').length,0);
+  }finally{await s.close();}
 });
 
 test('private submission keeps drafts, opts into credit and confirms only a reference (mocked Google and Worker)', async () => {

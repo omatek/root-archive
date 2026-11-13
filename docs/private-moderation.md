@@ -37,6 +37,36 @@ These are local results, not live Access/Google/Turnstile or CDN verification.
 
 ## Architecture
 
+### Independent review fixes (F-01–F-03)
+
+Anonymous GET/HEAD downloads use `resource-<public UUID>.<extension>`, with the
+extension selected from a trusted MIME mapping. Original/replacement filenames
+remain available only on authenticated administrator routes; public responses
+do not forward stored R2 metadata.
+
+`0002_catalog_generation.sql` adds one catalog-generation row and triggers on
+resource snapshot inserts, updates and deletes. Public cursors are opaque tokens
+bound to that generation, page position and course filter. A D1 batch reads each
+page and its generation atomically. Changed generations return
+`409 {code: "catalog_changed"}`; the public loader discards **all** partial pages
+and restarts, up to three attempts. Every successful traversal therefore comes
+from a single catalog state, including equal publication timestamps and changes
+to previously read pages. Continuous writes can still exhaust those attempts;
+the UI then offers retry instead of partial data. No static fallback or frontend
+deduplication hides omissions. This keeps the bounded offset query while fixing
+its consistency contract; keyset pagination alone would not remove withdrawn
+records already collected on earlier pages. The private administrator queue's
+pagination is unchanged. Downloads independently check live publication state.
+
+Startup and session recovery share idempotent course initialization. An initial
+session/network/course-loading failure can be retried without reloading the
+page; later reauthentication leaves initialized options and in-memory drafts
+intact. Neither this change nor public pagination relaxes authorization.
+
+The new migration must accompany any later approved deployment. It has been
+tested only in local emulation; no remote migration, activation or data change
+is part of these fixes. All live-service and production gates below still apply.
+
 Keep Pages and the static course catalog. A separate moderation Worker owns D1
 and a **new private R2 bucket**, serves the administrator assets and same-origin
 administrator API, and exposes a read-only public catalog and download API.

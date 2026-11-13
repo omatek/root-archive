@@ -240,9 +240,22 @@ async function session() {
   const result = await api('/session'); authorized = true; $('identity').textContent = result.email;
   for (const recovery of document.querySelectorAll('.session-recovery')) recovery.hidden = true; paintEnabled();
 }
+async function initializeSession() {
+  await session();
+  try {
+    if (!courses.length) {
+      const loaded = (await api('/courses')).courses;
+      if (!Array.isArray(loaded) || !loaded.length) throw new Error('Course metadata is unavailable. Retry session to initialize editing.');
+      const options = loaded.map(course => {
+        const option = element('option',`${course.id} · ${course.name}`); option.value = course.id; return option;
+      });
+      $('meta-course').replaceChildren(...options); courses = loaded;
+    }
+  } catch (error) { expired(); throw error; }
+}
 for (const retry of document.querySelectorAll('.retry-session')) retry.addEventListener('click',() => {
   const target = $('editor-dialog').open ? 'editor-status' : $('detail-dialog').open ? 'detail-status' : 'status';
-  run(async () => { await session(); message('Session verified. Your draft is ready.', target); if (!detail) await loadRecords(); }, target);
+  run(async () => { await initializeSession(); message('Session verified. Your draft is ready.', target); if (!detail) await loadRecords(); }, target);
 });
 
 // Image controls use output pixel coordinates. The fresh PNG is the only upload.
@@ -299,8 +312,6 @@ $('editor-dialog').addEventListener('cancel',event=>{event.preventDefault();clos
 window.addEventListener('beforeunload',event=>{if(metadataDirty||editorDirty||busy){event.preventDefault();event.returnValue='';}});
 
 await run(async()=>{
-  await session();
-  courses=(await api('/courses')).courses;
-  for(const course of courses){const option=element('option',`${course.id} · ${course.name}`);option.value=course.id;$('meta-course').append(option);}
+  await initializeSession();
   await loadRecords();
 },'status');

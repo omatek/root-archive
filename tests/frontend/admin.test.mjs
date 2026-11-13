@@ -37,7 +37,9 @@ before(async()=>{
 after(async()=>{await browser?.close();await new Promise(done=>server?.close(done));});
 async function setup(options={}){
   const context=await browser.newContext({viewport:options.mobile?{width:390,height:844}:{width:1440,height:1000}}),page=await context.newPage();
-  let record=fixture(),metadataFailures=options.metadataFailures||0;const calls=[],errors=[];
+  let record=fixture(),metadataFailures=options.metadataFailures||0;
+  let sessionNetworkFailures=options.sessionNetworkFailures||0,coursesFailures=options.coursesFailures||0;
+  const calls=[],errors=[];
   if(options.title)record.submission.title=options.title;
   page.on('pageerror',error=>errors.push(error.message));page.on('dialog',dialog=>dialog.accept());
   await context.route('**/*',async route=>{
@@ -48,12 +50,16 @@ async function setup(options={}){
     calls.push({path:url.pathname,method:req.method(),headers:req.headers(),body:req.postData()});
     const json=(body,status=200)=>route.fulfill({status,json:body});
     const path=url.pathname.slice('/admin/api'.length);
-    if(path==='/session')return json(options.denySession?{error:'Forbidden'}:{email:'moderator@example.invalid'},options.denySession?403:200);
-    if(path==='/courses')return json({courses:[course]});
+    if(path==='/session'){
+      if(sessionNetworkFailures-->0)return route.abort();
+      return json(options.denySession?{error:'Forbidden'}:{email:'moderator@example.invalid'},options.denySession?403:200);
+    }
+    if(path==='/courses')return coursesFailures-->0?json({error:'Course service unavailable'},503):json({courses:[course]});
     if(path==='/submissions')return json({submissions:[record.submission],next_cursor:null});
     if(path==='/cleanup')return json({success:true});
     if(path===`/submissions/${id}`)return json(record);
     if(path.startsWith(`/submissions/${id}/files/`))return route.fulfill({contentType:'image/png',body:image});
+    if(options.denyWrites&&req.method()==='POST')return json({error:'Session expired'},401);
     const action=path.split('/').at(-1);
     if(action==='metadata'&&metadataFailures-->0)return json({success:false,error:'Changed'},409);
     if(action==='revisions'){
@@ -74,7 +80,11 @@ async function setup(options={}){
     }
     record.submission.version++;record.audit.push({action,actor:'moderator@example.invalid',created_at:'2026-11-02T10:00:00Z'});return json(record);
   });
-  await page.goto(origin);await page.getByText(options.denySession?'Your Access session is unavailable or this identity is not an administrator. Your draft has been kept.':'1 record loaded.',{exact:true}).waitFor();
+  await page.goto(origin);
+  if(options.denySession||options.sessionNetworkFailures||options.coursesFailures){
+    await page.locator('#session-recovery').waitFor({state:'visible'});
+    await page.waitForFunction(()=>document.getElementById('detail-dialog').getAttribute('aria-busy')==='false');
+  }else await page.getByText('1 record loaded.',{exact:true}).waitFor();
   return {page,context,calls,record:()=>record,async close(){assert.deepEqual(errors,[]);await context.close();}};
 }
 async function open(s){await s.page.locator('.record button').click();await s.page.locator('#detail-dialog').waitFor({state:'visible'});}
@@ -109,6 +119,47 @@ test('session denial fails closed and offers reauthentication without another pa
   const s=await setup({denySession:true});try{
     assert.equal(await s.page.locator('#session-recovery').isVisible(),true);assert.equal(await s.page.locator('.record').count(),0);
     assert.equal(s.calls.some(c=>c.path.includes('/submissions')),false);assert.equal(await s.page.locator('#refresh').isDisabled(),true);
+  }finally{await s.close();}
+});
+
+test('F-03 initial session or course-load failures recover full editing without a reload',async()=>{
+  for(const options of [{denySession:true},{sessionNetworkFailures:1},{coursesFailures:1}]){
+    const s=await setup(options);try{
+      const p=s.page;assert.equal(await p.locator('.record').count(),0);
+      options.denySession=false;
+      await p.locator('#retry-session').click();await p.getByText('1 record loaded.',{exact:true}).waitFor();
+      await open(s);
+      assert.equal(await p.locator('#meta-course option').count(),1);
+      assert.equal(await p.locator('#meta-course').inputValue(),course.id);
+      await p.locator('#meta-title').fill('Saved after session recovery');await p.locator('#save-metadata').click();
+      await p.getByText('Candidate metadata saved. Inspect and approve it before publication.',{exact:true}).waitFor();
+      assert.equal(s.record().submission.course_id,course.id);
+      assert.equal(s.record().submission.title,'Saved after session recovery');
+    }finally{await s.close();}
+  }
+});
+
+test('F-03 later reauthentication keeps course options and unsaved metadata/file/image drafts',async()=>{
+  const options={};const s=await setup(options);try{
+    const p=s.page;await open(s);
+    await p.getByRole('button',{name:'Edit image',exact:true}).click();await p.locator('#rotate-right').click();
+    const dimensions=await p.locator('#image-dimensions').innerText();
+    await p.evaluate(()=>document.getElementById('editor-dialog').close());
+    await p.locator('#meta-title').fill('Unsaved draft across expiry');
+    await p.locator('#replacement-file').setInputFiles({name:'retained.png',mimeType:'image/png',buffer:image});
+    options.denySession=true;options.denyWrites=true;
+    await p.locator('#save-metadata').click();await p.locator('#detail-dialog .session-recovery').waitFor({state:'visible'});
+    assert.equal(await p.locator('#meta-title').inputValue(),'Unsaved draft across expiry');
+    options.denySession=false;options.denyWrites=false;
+    await p.locator('#detail-dialog .retry-session').click();await p.getByText('Session verified. Your draft is ready.',{exact:true}).waitFor();
+    assert.equal(await p.locator('#meta-course option').count(),1);
+    assert.equal(await p.locator('#meta-course').inputValue(),course.id);
+    assert.equal(await p.locator('#meta-title').inputValue(),'Unsaved draft across expiry');
+    assert.equal(await p.locator('#replacement-file').evaluate(e=>e.files[0].name),'retained.png');
+    assert.equal(await p.locator('#image-dimensions').innerText(),dimensions);
+    assert.equal(s.calls.filter(c=>c.path==='/admin/api/courses').length,1,'already initialized courses are not reloaded');
+    await p.locator('#save-metadata').click();await p.getByText('Candidate metadata saved. Inspect and approve it before publication.',{exact:true}).waitFor();
+    assert.equal(s.record().submission.title,'Unsaved draft across expiry');
   }finally{await s.close();}
 });
 

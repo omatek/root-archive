@@ -54,18 +54,27 @@ export function parseCatalog(courses, resources, { allowEmptySemester = false, d
   return { courses: [...byId.values()], byId, resourceCount: resources.length };
 }
 
+class CatalogChanged extends Error {}
 async function readJson(url) {
   const response = await fetch(url, {
     headers: { Accept: 'application/json' }, cache: 'no-store', signal: AbortSignal.timeout(20000)
   });
+  if (response.status === 409 && (await response.json().catch(() => null))?.code === 'catalog_changed') throw new CatalogChanged();
   if (!response.ok) throw new Error('The archive could not be loaded.');
   return response.json();
 }
 
-// Follow only the configured API's numeric cursor. Never follow a server-supplied
+// Follow only opaque cursor tokens on the configured API. Never follow a supplied
 // URL or fall back to an old static catalog: that could revive removed resources.
 export async function loadPublishedResources(endpoint = CONFIG.resourcesEndpoint) {
   if (!httpsUrl(endpoint)) throw new Error('The resource API is not configured.');
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try { return await readPublishedTraversal(endpoint); }
+    catch (error) { if (!(error instanceof CatalogChanged)) throw error; }
+  }
+  throw new Error('The catalog is changing. Please try again shortly.');
+}
+async function readPublishedTraversal(endpoint) {
   const resources = [], cursors = new Set();
   let cursor = null;
   for (let page = 0; page < 100; page++) {
@@ -73,7 +82,7 @@ export async function loadPublishedResources(endpoint = CONFIG.resourcesEndpoint
     if (cursor !== null) url.searchParams.set('cursor', cursor);
     const result = await readJson(url);
     if (!result || !Array.isArray(result.resources) || result.resources.length > 200
-      || !(result.next_cursor === null || (typeof result.next_cursor === 'string' && /^\d{1,10}$/.test(result.next_cursor)))) {
+      || !(result.next_cursor === null || (typeof result.next_cursor === 'string' && /^[A-Za-z0-9_-]{1,512}$/.test(result.next_cursor)))) {
       throw new Error('The published resource list could not be read.');
     }
     resources.push(...result.resources);

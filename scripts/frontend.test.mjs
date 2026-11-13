@@ -116,6 +116,18 @@ test('D1 public data rejects non-download URLs, repeated or unsafe cursors and p
     await assert.rejects(loadPublishedResources(), /could not be loaded/);
   } finally { globalThis.fetch = originalFetch; }
 });
+test('catalog change retries discard partial generations and are bounded during continuous writes',async()=>{
+  const originalFetch=globalThis.fetch;let requests=0;
+  try{
+    globalThis.fetch=async value=>{
+      requests++;const url=new URL(value);
+      return url.searchParams.has('cursor')?Response.json({code:'catalog_changed'},{status:409}):
+        Response.json({resources:[sample],next_cursor:'opaque_generation_page'});
+    };
+    await assert.rejects(loadPublishedResources(),/catalog is changing/);
+    assert.equal(requests,6,'three complete traversal attempts, no unbounded retry or partial return');
+  }finally{globalThis.fetch=originalFetch;}
+});
 test('metadata guards match new Worker restrictions without changing the contract', () => {
   assert.equal(cleanText('  Midterm   summary  ', 3, 120), 'Midterm summary');
   for (const value of ['<script>', 'hidden\u202etext', 'line\nbreak', 'ab']) assert.equal(cleanText(value, 3, 120), null);
