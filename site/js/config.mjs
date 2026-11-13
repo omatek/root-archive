@@ -1,5 +1,9 @@
 // Public integration settings. No secrets.
 export const CONFIG = {
+        // Owner-controlled cutover switch. Keep false until the private Worker,
+        // Access protection and production lifecycle checks are approved.
+        privateModeration: false,
+        resourcesEndpoint: "https://api.rootamman.com/resources",
         submissionEndpoint: "https://api.rootamman.com",
         googleClientId: "451085424306-tll56iseq0qd9lcofeb1nkiqiaq0opvh.apps.googleusercontent.com",
         turnstileSiteKey: "0x4AAAAAAFtYsxdbI-Zx8mjy",

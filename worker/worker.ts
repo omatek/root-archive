@@ -72,6 +72,7 @@ export interface Env {
   R2_PUBLIC_BASE_URL: string;
   CLEANUP_MODE?: string;
   CLEANUP_ORPHAN_DAYS?: string;
+  LEGACY_SUBMISSIONS_ENABLED?: string;
 }
 
 type ResourceType = "Practice Questions" | "Summary" | "Notes" | "Test Bank" | "Other";
@@ -295,6 +296,12 @@ export default {
           },
           matchedCorsOrigin
         );
+      }
+
+      // Owner-controlled cutover pause applies on every route/hostname of the
+      // legacy Worker, including workers.dev. Default preserves the old flow.
+      if (env.LEGACY_SUBMISSIONS_ENABLED === "false") {
+        throw new WorkerHttpError(503, "Contributions are paused. Reload the archive and try again later.");
       }
 
       // 6. Validate multipart Content-Type and request-size constraints

@@ -2,6 +2,19 @@
 
 ## Confirmed architecture
 
+- Private moderation replacement is implemented separately in `worker/moderation.ts`,
+  `worker/wrangler.moderation.jsonc`, `worker/migrations/` and `admin/`. Read
+  `docs/private-moderation.md` before changing this boundary. All revisions stay
+  in a new private bucket; D1 publication state gates every anonymous download.
+  Administrator assets and API share a Worker-first Access/allowlist gate.
+  Unpublish retains a private file for review; permanent removal revokes and
+  queues deletion. Do not restore public access using old catalogs or buckets.
+- The private system is NOT deployed. Staging D1/R2 provisioning is documented;
+  Access remains unconfigured. Public `CONFIG.privateModeration` is false.
+  The legacy architecture below remains active pending explicit production
+  approval and live integration checks. Its owner-controlled pause switch is
+  `LEGACY_SUBMISSIONS_ENABLED=false` (default preserves the old workflow).
+
 - `site/`: static vanilla HTML/JS; `courses.json` is an array of `{id, name,
   tracks}`. `resources.json` is an array of `{id, course_id, type, title,
   semester, asset_url, contributor?, created_at}`. See `scripts/catalogs.mjs`.

@@ -52,7 +52,14 @@ async function setup(options = {}) {
       if (options.failLoad) return route.fulfill({ status: 503, body: 'unavailable' });
       return route.fulfill({ json: options.courses || realCourses });
     }
-    if (url === appOrigin + '/resources.json') return route.fulfill({ json: options.resources || realResources });
+    if (url === appOrigin + '/resources.json') {
+      if (options.privateModeration) requests.push({type: 'static-resources', url});
+      return route.fulfill({ json: options.staticResources || options.resources || realResources });
+    }
+    if (options.privateModeration && url === appOrigin + '/js/config.mjs') {
+      const config = await readFile(resolve(root, 'js/config.mjs'), 'utf8');
+      return route.fulfill({contentType: 'text/javascript', body: config.replace('privateModeration: false', 'privateModeration: true')});
+    }
     if (options.staleStylesheet && url === appOrigin + '/styles.css') {
       return route.fulfill({ contentType: 'text/css', body: staleFormStyles });
     }
@@ -63,6 +70,13 @@ async function setup(options = {}) {
       return route.fulfill({ response: await route.fetch({ url: local.href }) });
     }
     if (options.externalFailure) return route.abort();
+    if (url.startsWith(CONFIG.resourcesEndpoint)) {
+      requests.push({type: 'resources', url, method: request.method(), headers: request.headers()});
+      if (options.resourceApiFailure) return route.fulfill({status: 503, body: 'unavailable'});
+      const cursor = new URL(url).searchParams.get('cursor');
+      const pages = options.apiPages || [{resources: options.resources || [], next_cursor: null}];
+      return route.fulfill({json: pages[cursor === null ? 0 : Number(cursor)]});
+    }
     if (url.startsWith('https://accounts.google.com/gsi/client')) {
       return route.fulfill({ contentType: 'text/javascript', body: `window.google = { accounts: { id: {
         initialize(options) { window.testIdentity = options; },
@@ -81,12 +95,14 @@ async function setup(options = {}) {
       if (options.authNetworkFailure) return route.abort();
       return route.fulfill({ status: options.authStatus || 200, json: options.authPayload || { success: true, authorized: options.authStatus ? false : true } });
     }
-    if (url === new URL(CONFIG.submissionEndpoint).href) {
+    if (url === new URL(CONFIG.submissionEndpoint).href || url === new URL('/submit', CONFIG.resourcesEndpoint).href) {
       requests.push({ type: 'submit', url, method: request.method(), body: request.postData(), headers: request.headers() });
       if (options.holdUpload) await options.holdUpload;
       if (options.networkFailure) return route.abort();
       return route.fulfill({ status: options.uploadStatus || 201, json: options.uploadPayload || {
-        success: !options.uploadStatus, pr_url: 'https://github.com/omatek/root-archive/pull/999999',
+        success: !options.uploadStatus, ...(options.privateModeration
+          ? {submission_id: '12345678-1234-4123-8123-123456789abc'}
+          : {pr_url: 'https://github.com/omatek/root-archive/pull/999999'}),
         asset_url: 'https://assets.example.invalid/pending-must-not-render.pdf'
       } });
     }
@@ -340,6 +356,112 @@ test('catalog errors can retry and malformed resources never become visible', as
   s.options.resources = [{ ...fixture, asset_url: 'javascript:alert(1)' }]; await s.goto();
   assert.equal(await s.page.locator('#load-error').isVisible(), true);
   assert.equal(await s.page.locator('.resource-open').count(), 0); await s.close();
+});
+
+test('private catalog API preserves navigation and filters with no static fallback (mocked API)', async () => {
+  const resources = Array.from({length: 14}, (_, i) => {
+    const id = `12345678-1234-4123-8123-${String(i + 1).padStart(12, '0')}`;
+    return {...fixture, id, type: i % 2 ? 'Notes' : 'Summary', semester: i ? 'Fall 2026' : '',
+      asset_url: `https://api.rootamman.com/download/${id}`};
+  });
+  const s = await setup({privateModeration: true, staticResources: [fixture], apiPages: [
+    {resources: resources.slice(0, 7), next_cursor: '1'}, {resources: resources.slice(7), next_cursor: null}
+  ]}); const p = s.page;
+  try {
+    await s.goto('/?hasMaterials=1&track=CS&q=synthetic');
+    assert.equal(await p.locator('.course-name a').count(), 1);
+    assert.equal(s.requests.filter(r => r.type === 'resources').length, 2);
+    assert.equal(s.requests.filter(r => r.type === 'static-resources').length, 0);
+    assert.equal(s.requests.filter(r => ['verify', 'submit'].includes(r.type)).length, 0);
+    const directoryUrl = p.url();
+    await p.locator('#course-0401212').click(); await p.locator('#course-heading').waitFor();
+    assert.equal(await p.locator('.resource-open').count(), 14);
+    assert.equal(await p.locator('.resource-open').first().getAttribute('href'), resources[0].asset_url);
+    await p.locator('#resource-type-filter').selectOption('Notes');
+    assert.equal(await p.locator('.resource-open').count(), 7);
+    await p.goBack(); await p.locator('.course-table').waitFor(); await settledNavigation(p);
+    assert.equal(p.url(), directoryUrl);
+    assert.equal(await p.locator('#has-materials').isChecked(), true);
+    await p.goForward(); await p.locator('#resource-heading, #course-heading').first().waitFor();
+    assert.equal(await p.locator('#resource-type-filter').inputValue(), 'Notes');
+    for (const width of [320, 1440]) { await p.setViewportSize({width, height: 900}); await noOverflow(p); }
+    await accessible(p);
+    s.options.apiPages = [{resources: [], next_cursor: null}];
+    await s.goto('/?hasMaterials=1');
+    assert.equal(await p.locator('.course-name a').count(), 0, 'old static data cannot revive removed resources');
+    assert.match(await p.locator('#directory-results').innerText(), /No matching courses/);
+  } finally { await s.close(); }
+});
+
+test('private resource API failure offers retry without claiming an empty catalog (mocked API)', async () => {
+  const s = await setup({privateModeration: true, resourceApiFailure: true, staticResources: [fixture]});
+  try {
+    await s.goto('/?course=0401212');
+    assert.equal(await s.page.locator('#load-error').isVisible(), true);
+    assert.equal(await s.page.getByText('No resources published yet.', {exact: true}).count(), 0);
+    assert.equal(await s.page.locator('.resource-open').count(), 0);
+    assert.equal(s.requests.filter(r => r.type === 'static-resources').length, 0);
+    s.options.resourceApiFailure = false;
+    await s.page.locator('#retry-load').click();
+    await s.page.getByText('No resources published yet.', {exact: true}).waitFor();
+    assert.equal(await s.page.locator('#load-error').isVisible(), false);
+  } finally { await s.close(); }
+});
+
+test('private submission keeps drafts, opts into credit and confirms only a reference (mocked Google and Worker)', async () => {
+  const s = await setup({privateModeration: true, uploadStatus: 401}); const p = s.page;
+  try {
+    await s.goto('/?course=0401212'); await openContribution(p); await fillContribution(p);
+    await p.locator('#contribution-semester').fill('');
+    assert.match(await p.locator('#contribution-notice').innerText(), /private until approved/);
+    assert.match(await p.locator('#contribution-notice').innerText(), /format, rotate, crop or redact/);
+    assert.equal(await p.locator('#contribution-contributor').isDisabled(), true);
+    await signIn(p); await p.locator('#submit-resource').click();
+    await p.locator('#submission-message').filter({hasText: /verified again/}).waitFor();
+    assert.equal(await p.locator('#contribution-title').inputValue(), 'Synthetic study summary');
+    assert.match(await p.locator('#selected-file').innerText(), /synthetic.pdf/);
+    s.options.uploadStatus = 0;
+    await signIn(p); await p.locator('#submit-resource').click(); await p.locator('#contribution-success').waitFor();
+    assert.equal(await p.locator('#submission-reference').innerText(), 'Submission reference: 12345678-1234-4123-8123-123456789abc');
+    assert.equal(await p.locator('#contribution-success a').count(), 0);
+    assert.doesNotMatch(await p.locator('#contribution-success').innerText(), /github|pending-must-not-render|email|notification|track status/i);
+    await p.setViewportSize({width: 320, height: 800}); await noOverflow(p);
+    let uploads = s.requests.filter(r => r.type === 'submit');
+    assert(uploads.every(r => !r.body.includes('name="contributor"')), 'credit is absent by default');
+    assert(uploads.every(r => r.url.endsWith('/submit')));
+    await p.locator('#contribute-another').click();
+    await noOverflow(p);
+    await p.locator('#contribution-course').selectOption('0401212'); await fillContribution(p);
+    await p.locator('#contribution-credit').check();
+    await p.locator('#contribution-contributor').fill('Chosen public name');
+    await p.locator('#submit-resource').click(); await p.locator('#contribution-success').waitFor();
+    uploads = s.requests.filter(r => r.type === 'submit');
+    assert(uploads.at(-1).body.includes('Chosen public name'));
+    await p.locator('#contribute-another').click();
+    assert.equal(await p.locator('#contribution-credit').isChecked(), false);
+    assert.equal(await p.locator('#contribution-contributor').isDisabled(), true);
+    await accessible(p);
+  } finally { await s.close(); }
+});
+
+test('private security-check and malformed-reference failures keep drafts and reveal no private links (mocked Worker)', async () => {
+  const s = await setup({privateModeration: true, uploadStatus: 403,
+    uploadPayload: {success: false, error: 'Turnstile verification failed.'}}); const p = s.page;
+  try {
+    await s.goto('/?course=0401212'); await openContribution(p); await fillContribution(p); await signIn(p);
+    await p.locator('#submit-resource').click();
+    await p.locator('#submission-message').filter({hasText: /security check was not accepted/}).waitFor();
+    assert.equal(await p.locator('#signout').isVisible(), true, 'Turnstile rejection does not sign out an eligible student');
+    assert.equal(await p.locator('#contribution-title').inputValue(), 'Synthetic study summary');
+    s.options.uploadStatus = 0;
+    s.options.uploadPayload = {success: true, submission_id: 'https://private.invalid/file',
+      pr_url: 'https://github.com/omatek/root-archive/pull/1', asset_url: 'https://private.invalid/file'};
+    await p.locator('#submit-resource').click();
+    await p.locator('#submission-message').filter({hasText: /valid submission reference/}).waitFor();
+    assert.equal(await p.locator('#contribution-success').isVisible(), false);
+    assert.doesNotMatch(await p.locator('#submission-status').innerText(), /private.invalid|github.com/);
+    assert.match(await p.locator('#selected-file').innerText(), /synthetic.pdf/);
+  } finally { await s.close(); }
 });
 
 test('materials checkbox stays compact and beside its clickable label on desktop and mobile, including stale CSS caches', async () => {

@@ -19,6 +19,7 @@
     "R2_PUBLIC_BASE_URL": "https://pub-7a7ae5ec96bb46c7829a25b4b06407eb.r2.dev",
     "GOOGLE_CLIENT_ID": "451085424306-tll56iseq0qd9lcofeb1nkiqiaq0opvh.apps.googleusercontent.com",
     "CLEANUP_MODE": "off",
+    "LEGACY_SUBMISSIONS_ENABLED": "true",
     "CLEANUP_ORPHAN_DAYS": "7"
   },
 

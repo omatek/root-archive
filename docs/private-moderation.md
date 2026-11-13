@@ -4,6 +4,37 @@ Work is on `feat/private-moderation`. This is a staged replacement, not an
 approved production cutover. The legacy Worker/configuration, publication App,
 required checks and static public catalog remain operational until release.
 
+## Checkpoint verification — 13 November 2026
+
+Milestones A–C have local implementations: private backend/schema/authentication,
+moderation and image preparation portal, and disabled public integration. They
+still require independent review and live staging acceptance before activation.
+The versioned migration exists in source and local emulation only; it has **not**
+been applied to the remote staging database. No moderation Worker is deployed.
+
+After the final Access public-key cache change:
+
+- `XDG_CONFIG_HOME=/tmp/root-archive-config WRANGLER_SEND_METRICS=false npm --prefix worker run check`:
+  typecheck, both dry-run bundles and **67/67 Worker tests passed**. The auth
+  regression verifies repeated requests reuse public keys while expired tokens
+  and nonadministrators remain denied. No identity/authorization result is cached.
+- The first full rerun hit a local undici `EPIPE` while sending an oversized
+  request that the Worker rejected early. That size test now exercises the same
+  bounded handler directly in Node with real emulated D1/R2 bindings; the
+  413 assertion is unchanged. The full suite then passed. Other lifecycle/auth
+  tests still execute in local workerd, with signed external-service fixtures.
+- Earlier full Chromium suite: **34/34 passed**, including public navigation,
+  disabled/new integration modes, six portal/editor/accessibility checks and
+  raster redaction/metadata-removal assertions. External APIs were mocked.
+- Checkpoint reruns: `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/chromium node --test tests/frontend/admin.test.mjs`
+  **6/6 passed**; `node --test scripts/*.test.mjs` **33/33 passed**.
+- `node scripts/catalogs.mjs`: **127 courses, zero static published resources**.
+
+Generated runtime types, bundles and dependencies remain ignored. Private keys,
+JWT literals, GitHub token patterns, temporary logs and debugging code were
+checked before committing; font binaries match the existing licensed site fonts.
+These are local results, not live Access/Google/Turnstile or CDN verification.
+
 ## Architecture
 
 Keep Pages and the static course catalog. A separate moderation Worker owns D1
@@ -124,3 +155,193 @@ Sources: [repository](https://api.github.com/repos/omatek/root-archive),
 [environment availability](https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments),
 [Pages integration](https://developers.cloudflare.com/pages/configuration/git-integration/github-integration/),
 [visibility consequences](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/managing-repository-settings/setting-repository-visibility).
+
+## Local development and administrator setup
+
+Use Node 24 and the existing lockfiles. Commands below run from the repository
+root. `wrangler.moderation.jsonc` targets **staging**, has no routes, disables
+workers.dev/version previews, and leaves Access configuration empty. It is not
+a production deployment configuration.
+
+```sh
+npm ci --prefix worker
+npm ci --ignore-scripts
+npm --prefix worker run check
+PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/chromium npm run test:frontend
+npm --prefix worker run db:moderation:local
+npm --prefix worker run dev:moderation
+```
+
+The browser path is specific to the managed development environment; elsewhere
+install Chromium using the project's Playwright version. If the environment's
+default user directories are unwritable, use `npm --cache /tmp/root-archive-npm`
+and `XDG_CONFIG_HOME=/tmp/root-archive-config` for Wrangler. Generated runtime
+types and local D1/R2 state are under ignored `.wrangler/`; no Node compatibility
+flag or extra runtime dependency is required.
+
+The new Worker uses compatibility date `2026-10-30`, the maximum supported by
+the repository's pinned workerd. It is tested at that date; changing to a newer
+date requires an intentional toolchain update and runtime verification.
+
+The portal cannot be used locally by turning off authentication. Automated tests
+use synthetic, signed Access/Google JWTs and mocked JWKS/Turnstile inside local
+workerd. For real interactive testing, the owner must first configure an isolated
+Access application and authorized staging hostnames. Do not point development
+bindings at production.
+
+Owner configuration required before a real administrator can sign in:
+
+1. Enable Zero Trust on the existing account, choose an available suitable plan
+   and team name, and configure an identity provider. Do not buy or upgrade a
+   plan automatically. Confirm current seat limits and existing billing.
+2. Create a self-hosted Access application covering **the entire administrator
+   hostname**, with a short session duration and an Allow policy listing the
+   actual approved administrator addresses. No wildcard student-domain policy,
+   Everyone/BYPASS policy or service-token shortcut. Prefer MFA through the IdP.
+3. Set server variables `ACCESS_ISSUER=https://<actual-team>.cloudflareaccess.com`,
+   `ACCESS_AUD=<actual-application-audience>`, and `ADMIN_EMAILS=<comma-separated
+   approved addresses>`. No addresses have been invented or inferred from the
+   connected account. Keep the Access policy and application allowlist aligned.
+   Store real addresses in protected deployment settings or a secret binding,
+   removing the empty placeholder variable from the release configuration when
+   using a secret. Never commit an actual administrator allowlist.
+4. Set distinct exact HTTPS `ADMIN_ORIGIN` and `PUBLIC_API_ORIGIN`, the explicit
+   Pages origin(s) in `ALLOWED_ORIGIN`, and existing Google client ID. Store
+   `TURNSTILE_SECRET` as a Worker secret, never a frontend setting. Configure
+   the matching Google authorized JS origins and Turnstile hostnames for staging.
+5. Route administrator frontend **and** `/admin/api/*` to this same Worker.
+   Keep `assets.run_worker_first=true`, `workers_dev=false` and
+   `preview_urls=false`. The public API hostname must never serve administrator
+   files. No credentialed cross-origin administrator API is used.
+
+API mutations use record versions. A stale edit returns 409 and must be reconciled
+against a refreshed record; it must not silently overwrite another moderator.
+Authentication expiry requires Access sign-in again. The portal keeps unsaved
+form/file work in the current tab and does not persist private documents in
+browser storage.
+
+## File preparation and retention
+
+The portal inspects raster images in an authenticated blob preview. Its canvas
+editor rotates, crops/removes margins, adjusts brightness/contrast, converts to
+grayscale or black-and-white scan style, and replaces redacted pixels with opaque
+black **after** all adjustments. Export creates a new PNG and strips source
+metadata. Administrators must inspect that final preview before saving a new
+private candidate. Changing crop/rotation clears redactions and requires renewed
+inspection. Pixel/dimension limits protect browser memory.
+
+Perspective correction, deskew, image-to-PDF export and native PDF page editing
+are not implemented. PDFs, Office documents and ZIP files are downloaded for
+local inspection; the portal does not embed active document content. Sanitize
+PDFs with an appropriate local tool, verify text/images and hidden data are
+actually removed, and upload the replacement. No PDF overlay is described as
+redaction. Replacement supports every currently accepted type: PDF, DOCX, ZIP,
+PNG and JPG. Size/extension/MIME/signature validation is shared with submissions.
+Signatures are a format check, not a malware scanner or proof of copyright.
+No private file is sent to an external conversion or AI service.
+
+R2 revisions are immutable and D1 records an upload intent before any PUT. A
+revision is a candidate only after the upload completes. Approving checks its
+ETag and size before atomically updating the D1 snapshot. Publication needs no
+R2 copy. Original/unused revisions are queued for deletion after publication;
+superseded edited drafts are queued after replacement. Re-review retains the
+current private file and stable resource ID until a new decision.
+
+Rejection/permanent removal immediately revoke publication, clear contributor
+identity/credit and content-bearing metadata, and queue all files for deletion.
+Keep concise reasons free of unnecessary personal data. A minimal private record
+retains UUID/course/type, decision times, moderator/action/reason and deletion
+bookkeeping. Current published resources retain only the chosen file. Pending
+and withdrawn records are retained for review; the owner should review these
+queues monthly and explicitly reject/remove abandoned material.
+
+Cleanup attempts a bounded batch after relevant moderation actions. Failures
+remain in D1 with attempt count, fixed error code and five-minute retry delay.
+Interrupted uploads have a one-hour deadline before cleanup, avoiding deletion
+while a normal PUT is still running. A bounded R2 inventory sweep revisits
+tombstoned revisions to catch a late PUT after an earlier delete. Unknown objects
+are held for owner review rather than guessed to be disposable. The portal has
+an authorized retry-cleanup action. Before enabling submissions, configure a
+scheduled trigger, set `CLEANUP_ENABLED=true`, verify repeated progress and watch
+the private retry backlog. There is no public cleanup endpoint.
+
+Deleted-file bytes cannot be restored by rolling back code. D1 Time Travel or
+other backups may retain older metadata independently of active-table scrubbing;
+the owner must account for backup retention and access when reviewing privacy
+wording. Do not export or retain removed content in untracked backups.
+
+## Production cutover — approval required
+
+The following is a release checklist, **not actions performed by this PR**:
+
+1. Review this draft, pass the required checks and independently inspect auth,
+   publication and cleanup behavior. Validate the live staging acceptance below.
+   Approve the contributor preparation/credit wording after legal/content review;
+   root remains independent of AUM and contributor permission is not ownership.
+2. Obtain explicit owner approval for the exact production deployment/routing,
+   Access policy and submissions activation. Create a separate production D1 and
+   private bucket; verify no r2.dev/custom domains. Create a production Wrangler
+   configuration with those actual IDs, same asset gate, approved origins and
+   secrets. Never reuse staging IDs. Apply versioned migrations with Wrangler.
+3. Inventory current `main`, Pages catalog, open historical submission PRs and
+   legacy R2 dependencies again. Current zero resources makes a no-content
+   cutover possible; if resources appeared, stop and import their approved bytes
+   privately with an explicit ID/URL mapping before changing catalog source.
+   Do not blindly import pending PR records. Old direct public R2 URLs cannot be
+   revoked by D1; retiring those endpoints/objects needs separate owner approval.
+4. Deploy the new Worker/Access-protected admin hostname with submissions
+   disabled. Disable its alternate public hosts and test them. Configure the
+   recurring cleanup trigger and confirm the private bindings. Keep the public
+   archive running on its existing source during this stage.
+5. In an approved release window, deploy the tested legacy pause with
+   `LEGACY_SUBMISSIONS_ENABLED=false` on **all legacy entrypoints**, including
+   workers.dev/version previews, and verify no hostname can create PRs or public
+   uploads. This switch defaults to preserving the old flow in this PR and does
+   nothing to the older deployed implementation until an approved deployment.
+   Drain outstanding
+   uploads, back up only approved operational metadata as appropriate and change
+   the API route to the tested replacement. Publish Pages with
+   `CONFIG.privateModeration=true` and `resourcesEndpoint` pointing to the new
+   production API `/resources`. The new student endpoint is `/submit`.
+   Do not use a static fallback after switching: it could re-list removed items.
+   Old frontend tabs targeting `/` receive a safe failure and must reload.
+6. Recheck anonymous browsing/download, expired/nonadmin denials, every removal
+   URL, CORS, rate limiting on the actual new routes, Google and Turnstile using
+   authorized synthetic staging/production checks. Verify no cache rule overrides
+   `no-store` for `/resources` or `/download/*`; exclude them from cache-everything
+   rules. Enable submissions only after these checks pass and approval covers it.
+7. Only after the replacement passes and its production cutover is approved,
+   retire the legacy submission PR code/workflow in a follow-up change, remove
+   **only** the App-bound Submission policy requirement in coordination with its
+   reporter, and revoke the old Worker GitHub token and publication App key/install
+   if they have no other use. Keep Repository/Worker/Frontend/Pages checks and
+   unrelated branch protections. Review historical PRs/previews individually;
+   closing PRs does not delete Git history or R2 copies.
+
+Staging acceptance must use real owner-authorized identities and check anonymous,
+eligible/ineligible student and nonadmin cases; wrong/expired Access audience,
+alternate domains and session expiry; submit→edit→approve→anonymous download;
+rejection→cleanup; replacement with old file preserved until publish;
+unpublish→same-URL denial→private correction→same-ID republication; permanent
+removal→same-URL denial→verified object deletion and interrupted retry. Record
+deployment IDs, migration versions and results without saving tokens or student
+content. Local signed fixtures do not establish live Google, Access, Turnstile,
+DNS, R2 public-domain policy or CDN behavior.
+
+## Rollback and legacy cleanup
+
+Before activation, rollback means reverting the development release; production
+has not changed. After activation, first disable submissions and drain in-flight
+work; retain the new download gate and D1 tombstones so revoked URLs stay revoked.
+Roll back UI/Worker code only to a version compatible with the current schema.
+Do not roll back to a static catalog or the old public upload pipeline after
+accepting private submissions. A full legacy return requires a separate reviewed
+data/export plan and must preserve all removal decisions. Prefer fixing forward
+with submissions temporarily disabled.
+
+Staging resources can be deleted after owner review when testing is finished;
+no production resource or historical object is scheduled for deletion here.
+For historical public content, inventory exact PR/preview/object dependencies,
+obtain owner approval, revoke the relevant public hosts/URLs and purge applicable
+managed CDN caches before deleting only the approved objects. Neither changing
+repository visibility nor code rollback removes previously public content.

@@ -15,6 +15,18 @@ export function createContribution(getCourses) {
   let completed = false;
   let returnFocus = null;
 
+  function updateCreditChoice() {
+    $('contribution-contributor').disabled = CONFIG.privateModeration && !$('contribution-credit').checked;
+  }
+  if (CONFIG.privateModeration) {
+    $('credit-choice').hidden = false;
+    $('semester-optional').hidden = false;
+    $('contribution-semester').required = false;
+    $('contributor-help').textContent = 'Choose whether to show a name publicly. Your sign-in identity stays private either way.';
+    $('contribution-notice').textContent = 'Submissions stay private until approved. Share only material you are allowed to share, and remove personal details first. By submitting, you allow root moderators to format, rotate, crop or redact personal details and prepare a permitted resource for publication. This permission does not establish ownership of someone else’s copyrighted material.';
+    updateCreditChoice();
+  }
+
   function markDirty() { dirty = true; $('discard-draft').hidden = false; }
   function status(text, progress = false, focus = false) {
     $('submission-message').textContent = text;
@@ -58,6 +70,7 @@ export function createContribution(getCourses) {
     $('discard-draft').hidden = true; $('submission-status').hidden = true;
     $('contribution-success').hidden = true; $('contribution-editor').hidden = false;
     clearErrors(); populateCourses();
+    updateCreditChoice();
   }
   function close() {
     if (busy) return;
@@ -90,10 +103,12 @@ export function createContribution(getCourses) {
     if (!getCourses().some(course => course.id === fields.course)) invalid('course', 'Choose a course from the directory.');
     if (!TYPES.includes(fields.type)) invalid('type', 'Choose a resource type.');
     const title = cleanText(fields.title, 3, 120);
-    const semester = cleanText(fields.semester, 4, 20);
-    const contributor = fields.contributor.trim() ? cleanText(fields.contributor, 1, 40) : '';
+    const semester = CONFIG.privateModeration && !fields.semester.trim() ? '' : cleanText(fields.semester, 4, 20);
+    const wantsCredit = !CONFIG.privateModeration || $('contribution-credit').checked;
+    const contributor = wantsCredit && fields.contributor.trim() ? cleanText(fields.contributor, 1, 40) : '';
     if (!title) invalid('title', 'Use 3–120 characters, without angle brackets or hidden control characters.');
-    if (!semester) invalid('semester', 'Use 4–20 characters, such as Fall 2026, without angle brackets or hidden control characters.');
+    if (semester === null) invalid('semester', 'Use 4–20 characters, such as Fall 2026, without angle brackets or hidden control characters.');
+    if (CONFIG.privateModeration && wantsCredit && !contributor) invalid('contributor', 'Enter the name you want shown, or turn off public credit.');
     if (contributor === null) invalid('contributor', 'Use up to 40 characters, without angle brackets or hidden control characters.');
     if (!selectedFile) invalid('file', 'Choose a valid file and wait for it to finish checking.');
     if (issues.length) {
@@ -119,34 +134,46 @@ export function createContribution(getCourses) {
     data.set('file', file, file.name); data.set('turnstile_token', challenge);
     status('Submitting your resource for review… Please keep this tab open.', true, true);
     try {
-      const response = await fetch(CONFIG.submissionEndpoint, {
+      const endpoint = CONFIG.privateModeration ? new URL('/submit', CONFIG.resourcesEndpoint).href : CONFIG.submissionEndpoint;
+      const response = await fetch(endpoint, {
         method: 'POST', headers: { Authorization: `Bearer ${credential}` }, body: data,
         signal: AbortSignal.timeout(120000)
       });
       const payload = await response.json().catch(() => null);
       if (!response.ok || payload?.success !== true) {
-        if (response.status === 401 || response.status === 403) {
+        if (CONFIG.privateModeration && response.status === 403 && /turnstile|security check/i.test(payload?.error || '')) {
+          status('The security check was not accepted. Complete it again and retry. Your account and draft are still here.', false, true);
+        } else if (response.status === 401 || response.status === 403) {
           auth.clear(); status('Your account needs to be verified again. Sign in above; your draft is still here.', false, true);
         } else if (response.status === 413) {
           status('This upload is too large. Choose a file smaller than 24 MiB.', false, true);
         } else if (response.status === 429) {
           status('Too many requests. Wait a little before trying again. Your draft is still here.', false, true);
         } else if (response.status >= 500 || !payload) {
-          status('We couldn’t confirm whether your submission was received. Your draft is still here. Avoid submitting it again immediately; the review request may already exist.', false, true);
+          status('We couldn’t confirm whether your submission was received. Your draft is still here. Avoid submitting it again immediately; it may already be awaiting review.', false, true);
         } else {
           status('Your resource wasn’t accepted. Check the details and file, complete the security check again, and retry. Your draft is still here.', false, true);
         }
         return;
       }
-      const reviewUrl = httpsUrl(payload.pr_url);
-      if (!reviewUrl || !/^https:\/\/github\.com\/omatek\/root-archive\/pull\/\d+$/.test(reviewUrl)) {
-        status('The service reported success but did not return a valid review link. Avoid submitting again immediately; your material may already be awaiting review.', false, true); return;
+      let reviewUrl = null;
+      if (CONFIG.privateModeration) {
+        if (typeof payload.submission_id !== 'string'
+          || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(payload.submission_id)) {
+          status('The service reported success but did not return a valid submission reference. Avoid submitting again immediately; your material may already be awaiting review.', false, true); return;
+        }
+      } else {
+        reviewUrl = httpsUrl(payload.pr_url);
+        if (!reviewUrl || !/^https:\/\/github\.com\/omatek\/root-archive\/pull\/\d+$/.test(reviewUrl)) {
+          status('The service reported success but did not return a valid review link. Avoid submitting again immediately; your material may already be awaiting review.', false, true); return;
+        }
       }
       completed = true; dirty = false; selectedFile = null; fileRevision++;
       form.reset(); $('contribution-editor').hidden = true; $('contribution-success').hidden = false;
-      $('submission-reference').textContent = `${title} · ${fields.course}`;
-      $('review-link').replaceChildren(externalLink('View review request on GitHub ↗', reviewUrl, 'text-button'));
-      // Only the review link is shown. Pending asset URLs never enter the public UI.
+      $('submission-reference').textContent = CONFIG.privateModeration
+        ? `Submission reference: ${payload.submission_id}` : `${title} · ${fields.course}`;
+      $('review-link').replaceChildren(...(reviewUrl ? [externalLink('View review request on GitHub ↗', reviewUrl, 'text-button')] : []));
+      // The new workflow has no public status or file URL before approval.
       focusHeading($('success-heading'));
     } catch {
       status('The connection was interrupted, so we couldn’t confirm receipt. Your draft is still here. Avoid submitting again immediately; your material may already be awaiting review.', false, true);
@@ -157,6 +184,7 @@ export function createContribution(getCourses) {
   }
 
   form.addEventListener('submit', submit);
+  $('contribution-credit').addEventListener('change', updateCreditChoice);
   form.addEventListener('input', event => {
     if (event.target.id === 'course-picker-search') return;
     markDirty();

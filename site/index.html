@@ -26,7 +26,7 @@
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
   <link rel="preload" href="./assets/fonts/barlow-semi-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="./assets/fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="./styles.css?v=materials-checkbox-1">
+  <link rel="stylesheet" href="./styles.css?v=private-moderation-1">
   <script type="module" src="./js/app.mjs"></script>
 </head>
 <body>
@@ -99,7 +99,7 @@
       <h2>We couldn’t load the archive.</h2><p>Please check your connection and try again.</p>
       <button id="retry-load" class="button" type="button">Try again</button>
     </section>
-    <noscript><div class="notice">JavaScript is needed to search the directory and contribute. You can still read the <a href="./courses.json">course catalog</a> and <a href="./resources.json">published resource list</a>.</div></noscript>
+    <noscript><div class="notice">JavaScript is needed to browse published resources, search the directory and contribute. You can still read the <a href="./courses.json">course catalog</a>.</div></noscript>
   </main>
   <footer class="site-footer">
     <div class="shell footer-inner">
@@ -152,7 +152,7 @@
                 <p id="type-error" class="field-error" hidden></p>
               </div>
               <div class="field">
-                <label for="contribution-semester">Semester or year</label>
+                <label for="contribution-semester">Semester or year <span id="semester-optional" class="optional" hidden>(optional)</span></label>
                 <input id="contribution-semester" name="semester" type="text" minlength="4" maxlength="20" placeholder="e.g. Fall 2026" required aria-describedby="semester-error">
                 <p id="semester-error" class="field-error" hidden></p>
               </div>
@@ -168,6 +168,7 @@
               <p id="file-error" class="field-error" hidden></p>
             </div>
             <div class="field">
+              <label id="credit-choice" class="credit-choice" hidden><input id="contribution-credit" type="checkbox">Show a public contributor name with this resource</label>
               <label for="contribution-contributor">Public contributor name <span class="optional">(optional)</span></label>
               <input id="contribution-contributor" name="contributor" type="text" maxlength="40" aria-describedby="contributor-help contributor-error" autocomplete="off">
               <p id="contributor-help" class="field-help">Shown with the resource. Leave blank to contribute anonymously.</p>
@@ -181,7 +182,7 @@
             </div>
           </fieldset>
           <div id="submission-status" class="form-status" role="status" tabindex="-1" hidden><p id="submission-message"></p><progress id="submission-progress" aria-label="Submitting your resource" hidden></progress></div>
-          <p class="field-help">Only share material you have permission to share. Uploaded files are accessible by direct link, including while awaiting review. Do not include private information.</p>
+          <p id="contribution-notice" class="field-help">Only share material you have permission to share. Uploaded files are accessible by direct link, including while awaiting review. Do not include private information.</p>
           <div class="form-actions">
             <button id="submit-resource" class="button" type="submit">Submit for review <svg class="arrow-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h12m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.5"/></svg></button>
             <button id="save-close" class="text-button" type="button">Keep draft &amp; close</button>
