@@ -25,5 +25,17 @@
     "private/v1/726f6f74-6172-4368-8000-000000000001/"
   ],
   "deletion_scope": "Only manifest-owned revisions through existing authenticated admin workflow; recheck current rows/object ownership before cleanup",
-  "current_state": "pending, private; awaiting authenticated browser review and approval"
+  "current_state": "published, version 4, title Synthetic staging 1 reviewed; awaiting owner unpublish for withdrawal verification",
+  "last_observed_at": "2026-11-14T11:55:52.436Z",
+  "publication_verified_at": "2026-11-14T11:56:53.728287+00:00",
+  "publication_checks": {
+    "public_catalog": 200,
+    "anonymous_get": 200,
+    "anonymous_head": 200,
+    "sha256_matches_fixture": true,
+    "safe_uuid_filename": true,
+    "no_store": true,
+    "private_path_denied": 404,
+    "admin_file_access_redirect": 302
+  }
 }

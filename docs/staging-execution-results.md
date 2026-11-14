@@ -1,6 +1,53 @@
 # Staging execution results — 14 November 2026
 
-## Group B small lifecycle — current checkpoint
+## Group B publication verified — current checkpoint
+
+**Group B: PARTIAL; real metadata editing, approval, listing and anonymous
+approved download PASS.** The owner reported `Approved`. At `11:55:52Z`, live
+read-only D1 queries confirmed submission and public snapshot both `published`,
+version 4, title `Synthetic staging 1 reviewed`, and the exact original manifest
+revision still ready in private R2. The real moderation audit records two
+`metadata_changed` events followed by `submission_approved` at `11:55:17.358Z`.
+Actor identities were deliberately excluded from evidence. No SQL publication
+or forged audit event was used.
+
+At `11:56:53Z`, fresh anonymous hosted requests independently verified:
+
+- Public catalog **200**: exactly the one manifest resource, edited title,
+  course `0401111`, expected API download URL and no next cursor. No private
+  identity or moderator fields were present.
+- Approved download GET and HEAD **200**, `image/png`, Content-Length 1,920,
+  safe filename `resource-726f6f74-6172-4368-8000-000000000001.png`, and
+  `private, no-store, max-age=0`. No cache HIT/stale response was observed.
+- GET body SHA256 exactly matches the approved fixture:
+  `1324f212d3fdc38a04671664d9e87bf203d9982696eeff2373ce4ea9f1251383`.
+  HEAD returns no body.
+- Direct private object path on the public API remains **404**; the admin
+  private-file route remains an Access **302**, without returning protected bytes.
+
+[Published state/audit evidence](staging-functional-published-state.json) and
+[anonymous publication/download evidence](staging-functional-published-http.json)
+retain actual observations. No security setting, infrastructure, source code,
+credential, student-auth flow or production resource was changed in this stage.
+Group A remains partial with the two specific negative-test categories deferred
+only for this synthetic campaign; it is not fully passed.
+
+**The independent `Start review` transition is not yet exercised:** the live
+audit contains no `review_started` event. Approval can legitimately proceed from
+pending; therefore this is missing test coverage, not a demonstrated failure.
+Exercise that action during the later withdrawn-record correction/replacement
+stage. Image editing/replacement, withdrawal, rejection/removal, cleanup,
+concurrency, pagination and recovery remain outstanding. No complete end-to-end
+campaign or contributor onboarding pass is claimed.
+
+**Next browser action:** in the existing portal's Published view, open
+`Synthetic staging 1 reviewed`, choose **Unpublish for re-review**, enter
+`Synthetic withdrawal` and confirm. Leave it unpublished; do not remove it yet.
+The executor will check catalog exclusion, fresh anonymous GET/HEAD denial, the
+unpublish audit event and continued private file retention before proceeding to
+destructive synthetic-only removal. No PIN, cookie or JWT sharing is needed.
+
+## Earlier Group B small lifecycle — pending checkpoint
 
 **Group A: PARTIAL, specific negative tests explicitly deferred by owner for
 synthetic staging only. Group B: PARTIAL / first fixture seeded and private.**
