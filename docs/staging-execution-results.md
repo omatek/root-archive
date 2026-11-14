@@ -1,6 +1,75 @@
 # Staging execution results — 14 November 2026
 
-## Owner-login continuation and PR consolidation — current checkpoint
+## Owner hostname verification — current checkpoint
+
+**Group A: BLOCKED by remaining authentication evidence, not a demonstrated
+security failure. Group B: NOT STARTED.** The owner has completed the manual
+hostname checks outside the Codex network. These close the TLS and alternate-host
+gates using **owner-observed hosted evidence**, alongside prior deployed routing
+and certificate inventory. No new network grant or repetition of these completed
+checks is needed for acceptance.
+
+- `admin.archive.rootamman.com`: the presented Google Trust Services **WE1**
+  certificate includes the exact admin hostname in its SANs; owner reports validity
+  from **14 November 2026 through 12 February 2027**.
+- `api-staging.rootamman.com`: the presented certificate includes the exact API
+  hostname in its SANs. The owner did not report its issuer or validity dates;
+  those are not inferred from the admin certificate. The preceding Cloudflare
+  inventory independently records active, unexpired API-host certificate coverage.
+- Both `root-archive-moderation-staging.omar-khldooon33.workers.dev` and
+  `bb9e96b3-root-archive-moderation-staging.omar-khldooon33.workers.dev` denied
+  access when opened directly in the owner's browser. **Exact HTTP statuses were
+  not captured**; no 401/403/404 or response-body assertion is invented. Prior live
+  API inventory also showed both routing flags and custom-domain previews disabled.
+- The owner reconfirms the earlier real Proton PIN login and successful session
+  JSON. No credentials or actual email were requested or recorded.
+
+The structured provenance is in
+[owner-hosted observations](staging-owner-hosted-evidence.json). Earlier Codex
+proxy failures remain historical transport observations, not origin denials.
+The previous custom-host access denials, staging-binding/private-storage checks
+and production/legacy baseline remain accepted; no drift or new failure is
+reported. This continuation changes documentation only and performs no hosted
+probe, migration, deployment, Access change or storage operation.
+
+### Remaining authentication evidence and minimum safe closure
+
+The inspected deployed validator is present and its noncomment executable lines
+match the reviewed bundle. Successful owner authentication exercises its positive
+path. Previously passing local signed-token tests remain supplementary evidence;
+neither establishes hosted rejection of every invalid assertion.
+
+| Case | Current limitation | Minimum safe way to close |
+| --- | --- | --- |
+| Missing/malformed assertion; invalid signature | Public admin requests are intercepted by Access; the public API rejects admin origin/paths before JWT verification | A separately approved, operator-only private invocation of the **existing deployed staging Worker**, using the unchanged admin URL and GET `/admin/api/session`, can send absent/malformed assertions or synthetic bad signatures and check the Worker's 401 response. It must have no public bypass route, mutation calls or new data bindings. No such invocation capability is currently available or created here. |
+| Issuer/audience rejection | Changing claims in an existing token invalidates its signature; that cannot isolate issuer/audience checks | The private invocation also needs appropriately signed genuine test inputs. To isolate a claim check, signature verification against the configured JWKS must first succeed. A token from another issuer may instead fail key/signature validation. No such inputs are available; a harness alone cannot supply them, and changing Worker issuer/AUD/JWKS is not permitted. |
+| JWT expiration rejection inside Worker | Access rejects an expired session before the Worker; no retained genuine test assertion is available | A trusted private runner could retain an operator-controlled genuine assertion in memory until after its actual expiry plus verifier tolerance, then invoke the unchanged Worker. Emit only case/status, never the assertion. No owner session export or token collection by Codex is requested. |
+| Exact allowlist rejection | The unchanged exact-email Access policy does not issue this app's token to a nonadministrator; editing an email breaks the signature; a different app's token can fail AUD first | Requires an otherwise valid, unexpired token for the configured issuer/AUD with a nonallowlisted email through an already legitimate issuance path. None is available under the preserved policy. The approved plan makes a real synthetic nonadministrator case **conditional on availability**; do not promote its absence into a new mandatory identity-setup requirement or weaken the policy to run it. |
+| Real expired/revoked Access-session denial | Owner success is confirmed, but an actual expired/revoked-session denial has not been reported | The owner can let the existing one-hour session expire naturally, then request `https://admin.archive.rootamman.com/admin/api/session` before signing in again. Record time and whether it redirects/requires login or denies access without returning the session JSON. An exact status is useful if available; no cookie, PIN or JWT is needed in evidence. This checks the gateway, not independent Worker expiry validation. |
+
+Worker JWT verification is offline: it checks the signed claims and expiration,
+without live per-request session introspection. Do not invent an immediate Worker
+JWT-revocation requirement; the existing gateway enforces session revocation at
+the public administrator hostname. The plan's real expired/revoked-session case
+can be closed by one genuine observed denial; both mechanisms need not be tested
+to satisfy that stated case.
+
+These limitations are **NOT EXERCISED / UNAVAILABLE**, not failed tests. No auth
+weakening, public diagnostic route, extra Access app/IdP, allowlist change or mock
+issuer is justified to obtain a pass. A private harness would require a concrete,
+separately approved scope and would initially close only the cases for which
+valid inputs exist. For a claim-isolated hosted case that the unchanged issuer
+cannot supply, closure needs an explicit owner decision on acceptable alternative
+evidence or a documented exception; source inspection/local tests must never be
+relabeled as hosted negative-test passes. No exception is assumed here.
+
+Group A therefore remains incomplete for independent negative-JWT evidence and
+the actual expired/revoked-session case. TLS, alternate-host denial and positive
+login are no longer blockers. Group B remains gated; contributor onboarding is
+still not ready. The owner need not repeat PIN login or share any authentication
+material to record the remaining session-denial observation.
+
+## Earlier owner-login continuation and PR consolidation
 
 **Group A: BLOCKED. Group B: NOT STARTED. Contributor onboarding: NO.**
 The owner now reports successful real Proton email-PIN login at the existing

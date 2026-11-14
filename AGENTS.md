@@ -16,12 +16,16 @@
   the deployment token's Access read restriction is not a security failure.
   Both D1 migrations were already applied; do not reapply them. R2 remains empty.
   Hosted custom/Access probes now reach staging: anonymous/forged administrator
-  requests are denied and public-host admin paths return 404. Group A still needs
-  independent JWT/session negative checks, direct edge TLS inspection and exact
-  workers.dev/version-host network grants/probes. The owner reports successful
-  real Proton email-PIN login, portal/empty queue and session JSON; this is
-  owner-observed hosted evidence, not executor-observed negative validation.
-  PR #27's evidence belongs with PR #26; preserve #27 open for the owner.
+  requests are denied and public-host admin paths return 404. The owner confirms
+  presented certificate SAN coverage for both custom hosts, valid WE1 admin TLS,
+  denial at both exact moderation alternate endpoints (statuses not captured),
+  real Proton email-PIN login, portal/empty queue and session JSON. These are
+  owner-observed hosted evidence, not Codex-executed probes. TLS/alternate-host
+  gates are closed; do not require extra network grants or repeat these checks.
+  Group A still needs independent Worker negative-JWT evidence and an actual
+  expired/revoked-session denial. A genuine nonadmin case is conditional on
+  availability under the approved plan; its absence is not a security failure.
+  PR #27's evidence is consolidated into PR #26; preserve #27 open for the owner.
   Group B has not
   started and requires every hosted security gate to pass. Read
   `docs/staging-execution-results.md` and `docs/staging-deployment.md` before
