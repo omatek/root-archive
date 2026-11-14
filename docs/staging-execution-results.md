@@ -1,5 +1,82 @@
 # Staging execution results — 14 November 2026
 
+## Direct-upload diagnosis — latest checkpoint
+
+Continued from `c967e007691d4ce1cc2e35c89fd015f7af4bd21e` under the
+owner's instruction to diagnose the protocol and retain email-PIN authentication.
+No D1 migration was reapplied. Source, config and assets still match reviewed
+`5f978552dc5a8ed0b515386b6a20bc8e3dcb00d0`; tested bundle SHA256 is unchanged.
+
+Compared the actual previous construction with
+[Cloudflare's official direct-upload protocol](https://developers.cloudflare.com/workers/static-assets/direct-upload/)
+and installed Wrangler 4.156.0's asset uploader:
+
+1. Manifest registration used the existing account and approved staging Worker
+   name, with the same ten verified asset hashes/sizes. Fresh registration
+   returned a three-segment session token and three buckets requesting ten files.
+2. The fresh transfer request used that returned session token as the bearer
+   credential, rather than the ordinary account API credential. The constructed
+   Request's authorization value was compared in memory with the session token;
+   only the boolean result was returned. This checks construction, not wire-level
+   forwarding. No bearer token, secret or complete header was printed or saved.
+3. Endpoint/method were the documented POST to
+   `/accounts/1b409400fea16e7142f62ac19ecd361d/workers/assets/upload?base64=true`.
+   Redirect following was disabled for diagnosis; no redirect occurred.
+4. Multipart body was constructed with FormData/Blob, hash-named file fields,
+   base64-encoded file bytes, and matching per-part MIME types. A cloned Request
+   was parsed back into FormData: expected fields, MIME types and lengths all
+   passed, and the multipart boundary was present. Source bytes/hashes were
+   rechecked locally against the previously verified artifact payload.
+5. The fresh token's decoded expiry was 3,599 seconds in the future, and its
+   single-asset-upload flag was false. Thus the bulk protocol and immediate use
+   matched this session; ordinary expiration and an accidentally selected
+   single-asset protocol do not explain this fresh failure. Decoding claims is
+   diagnostic only and does not establish the token's cryptographic validity.
+6. The first requested bucket returned **HTTP 401**, content type
+   `text/plain;charset=UTF-8`, exact body `Unauthorized`, server `cloudflare`,
+   Ray ID `a5a45c2ee8a9355d-WAW`. No uploads were acknowledged. Execution did not
+   proceed to other buckets and no completion token was received or substituted
+   with the initial session token. No Worker attachment/deployment was attempted.
+
+Read-only controls: connected domain reads succeeded; generic fetch without an
+explicit Authorization header returned successful JSON; a deliberately invalid
+synthetic credential returned JSON HTTP 400/code 9106. This demonstrates that an
+explicit header affects processing, but **does not prove** a real session JWT
+arrived unchanged at the asset service. A second registration inspected token
+shape only (no transfer): three segments and a non-placeholder 86-character
+signature component. Its header/expiry metadata could not be decoded by that
+diagnostic helper; it provides no proof of token validity or redaction.
+
+**Confirmed result, unresolved cause:** a fresh bulk asset transfer constructed
+according to the documented protocol is rejected with 401. Available evidence
+cannot distinguish connector transport/authorization handling from Cloudflare
+session-token validation. It does not establish insufficient account scopes,
+header stripping, payload corruption or a server-side defect. The supported
+`cloudflare.request` interface has no Authorization-header override; the generic
+fetch path permits construction but this upload authentication could not be
+completed or verified. No unsupported credential workaround was attempted.
+
+[Sanitized diagnostics](staging-upload-diagnostics.json) contain the observations,
+not tokens or complete headers. These diagnostic registrations may leave
+transient manifest/session state, but no asset transfer was acknowledged. No
+cleanup/deletion was attempted. Read-only postflight again shows only the legacy
+Worker and existing domain, unchanged legacy deployment/ETag and production Pages
+deployment, and an empty staging R2 bucket. Existing D1 ledger remains 0001/0002;
+application counts are zero. No Access, authentication-choice, DNS, TLS, Worker,
+R2 object or production mutation was made in this diagnostic continuation.
+
+Group A is still partially completed and blocked; all hosted security gates
+remain unverified. Group B has not started. Wrangler `whoami` still reports
+unauthenticated and no `CLOUDFLARE_API_TOKEN` environment secret is configured,
+so there is no authenticated Wrangler fallback available in this environment.
+
+Recommended next step: make an authorized Wrangler environment available through
+a secure environment-secret or supported OAuth-login mechanism, then resume the
+same approved deployment without reapplying migrations. Never paste token values
+in chat. Alternatively the integration provider must resolve/confirm its
+session-JWT upload support before another connector transfer is attempted.
+No administrator PIN interaction is needed until the portal is deployed.
+
 ## API deployment attempt — latest result
 
 This supersedes the earlier CLI-authentication stop recorded below. The owner
