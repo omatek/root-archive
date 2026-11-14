@@ -17,6 +17,9 @@ The same configured root-archive environment resumed on 14 November UTC.
 Read-only inventory began at `09:52:58Z`; subsequent live probes and source
 inspection are timestamped in the linked JSON. No remote migration, deployment,
 Access/policy change, storage write/delete, cleanup or production cutover occurred.
+This statement concerns direct execution: the later authorized feature-branch
+push triggered the existing automated Pages **preview** check, recorded below;
+production Pages was rechecked and remained on its original canonical deployment.
 
 | Gate | Observed evidence | Acceptance status |
 | --- | --- | --- |
@@ -131,6 +134,18 @@ and GitHub credentials from the process environment. These are explicitly
 - JSON parsing, sensitive-material checks, baseline comparisons and
   `git diff --check` pass. GitHub CI observations after push are recorded in
   [consolidation evidence](staging-pr-consolidation.json).
+
+All six GitHub checks passed on pushed continuation
+`a2ed5fb696665b7435775230688a5b6a92defea8`, including the five recorded required
+checks from their expected Apps: Repository/Worker/Frontend from `15368`,
+Cloudflare Pages from `85455`, and Submission policy from `5734145`. Trusted
+publication validation also passed. Existing Git integration generated Pages
+preview `902205f0-9393-4be0-bc99-c20a948b4b73`; no manual Pages deployment was
+issued. At `10:03:03Z`, production canonical Pages deployment/SHA and both
+legacy/staging active Worker deployments still matched their original baselines.
+Both PRs were verified open, draft and unmerged after the transfer; #27 retained
+its original head and base. The evidence-only follow-up records these named
+checks; the live PR page remains authoritative for subsequent commit checks.
 
 Evidence files: [HTTP probes](staging-security-resume-http.json),
 [read-only inventory](staging-security-resume-inventory.json),
