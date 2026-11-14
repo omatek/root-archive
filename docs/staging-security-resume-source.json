@@ -1,0 +1,29 @@
+{
+  "observed_at": "2026-11-14T09:58:26.645Z",
+  "inspection": "deployed source inspection, not hosted JWT behavioral tests",
+  "raw_bytes": 116479,
+  "raw_sha256": "addc4300d309566403c422bbff91572cb67fc5de61a37a30c418e65a52ddefe3",
+  "normalized_bytes": 114637,
+  "normalized_sha256": "28610cf9a1bd86932cee58fba5c46e334fee35ad501880371621a4c2c28d796e",
+  "normalization": "Remove only standalone top-level // comment lines, including bundler source paths and source-map reference",
+  "matches_reviewed_executable_lines": true,
+  "removed_comment_lines": 37,
+  "checks": {
+    "authorizeAdmin": true,
+    "jwtVerify": true,
+    "rs256": true,
+    "issuer": true,
+    "audience": true,
+    "requiredClaims": true,
+    "expiration": true,
+    "allowlist": true,
+    "workerFirstAuthorization": true
+  },
+  "local_bundle": {
+    "raw_bytes": 116371,
+    "raw_sha256": "080ac6521a239d769ed02ec2c0aab9f39feb80e23b307a798ff43fa9fd4747fd",
+    "normalized_bytes": 114637,
+    "normalized_sha256": "28610cf9a1bd86932cee58fba5c46e334fee35ad501880371621a4c2c28d796e",
+    "removed_standalone_top_level_comment_lines": 37
+  }
+}

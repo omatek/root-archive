@@ -1,0 +1,107 @@
+{
+  "observed_at": "2026-11-14T11:56:53.728287+00:00",
+  "kind": "actual hosted anonymous publication checks; no credentials; redirects disabled; TLS verification enabled",
+  "results": [
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/resources",
+      "method": "GET",
+      "status": 200,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Content-Length": "334",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a5d5d4bc216c35-DFW"
+      },
+      "body_bytes": 334,
+      "body_sha256": "bf90722776df986f4d653e4b76b86f212cc9acc73d43e2451cc3596cf0d65f6c",
+      "catalog": {
+        "resources": [
+          {
+            "id": "726f6f74-6172-4368-8000-000000000001",
+            "course_id": "0401111",
+            "type": "Summary",
+            "title": "Synthetic staging 1 reviewed",
+            "semester": "Synthetic",
+            "asset_url": "https://api-staging.rootamman.com/download/726f6f74-6172-4368-8000-000000000001"
+          }
+        ],
+        "next_cursor": null,
+        "resource_field_names": [
+          "asset_url",
+          "contributor",
+          "course_id",
+          "created_at",
+          "id",
+          "semester",
+          "title",
+          "type"
+        ]
+      }
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/download/726f6f74-6172-4368-8000-000000000001",
+      "method": "GET",
+      "status": 200,
+      "headers": {
+        "Content-Type": "image/png",
+        "Content-Length": "1920",
+        "Content-Disposition": "attachment; filename=\"resource-726f6f74-6172-4368-8000-000000000001.png\"",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a5d5d6cd276c35-DFW"
+      },
+      "body_bytes": 1920,
+      "body_sha256": "1324f212d3fdc38a04671664d9e87bf203d9982696eeff2373ce4ea9f1251383",
+      "matches_manifest": true
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/download/726f6f74-6172-4368-8000-000000000001",
+      "method": "HEAD",
+      "status": 200,
+      "headers": {
+        "Content-Type": "image/png",
+        "Content-Length": "1920",
+        "Content-Disposition": "attachment; filename=\"resource-726f6f74-6172-4368-8000-000000000001.png\"",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a5d5dddbcaf092-DFW"
+      },
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/private/v1/726f6f74-6172-4368-8000-000000000001/726f6f74-6172-4368-9000-000000000001.png",
+      "method": "GET",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Content-Length": "47",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a5d5e20a246c35-DFW"
+      },
+      "body_bytes": 47,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507"
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/files/726f6f74-6172-4368-9000-000000000001",
+      "method": "GET",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a5d5e39b06fcc1-DFW"
+      },
+      "body_bytes": 510,
+      "body_sha256": "e272fd5659bb5ecc47b28d7b90ef1a3d07130be2b32d6def93d0d1b7ebc87fa6",
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      }
+    }
+  ],
+  "failures": [],
+  "pass": true
+}

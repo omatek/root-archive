@@ -1,0 +1,177 @@
+{
+  "observed_date": "2026-11-14",
+  "before": {
+    "26": {
+      "number": 26,
+      "state": "open",
+      "draft": true,
+      "base": "main",
+      "head": "feat/private-moderation",
+      "head_sha": "1bcce0009c807167a2d4ade4c9845be99f0c8d58",
+      "commits": 12,
+      "changed_files": 39
+    },
+    "27": {
+      "number": 27,
+      "state": "open",
+      "draft": true,
+      "base": "feat/private-moderation",
+      "head": "acceptance/hosted-security-20261114",
+      "head_sha": "3a80a7fabb9169c9a7ab024858d8b15088ff6e66",
+      "commits": 1,
+      "changed_files": 4
+    }
+  },
+  "transfer": {
+    "source_commit": "3a80a7fabb9169c9a7ab024858d8b15088ff6e66",
+    "destination_original_head": "1bcce0009c807167a2d4ade4c9845be99f0c8d58",
+    "destination_copy_commit": "c0f13d5876be080fd016ea112b4c9b3c164f34ab",
+    "method": "one cherry-pick; no merge, force push, closure, deletion or retargeting",
+    "reason": "Avoid making PR #27 head reachable from its feature-branch base and possible automatic merged closure",
+    "full_tree_identity_verified": true,
+    "original_evidence_preserved": true,
+    "runtime_implementation_changes": false
+  },
+  "validation": {
+    "local": {
+      "catalogs": {
+        "courses": 127,
+        "resources": 0
+      },
+      "worker_tests": 71,
+      "frontend_tests": 37,
+      "repository_tests": 34,
+      "python_script_tests": 3,
+      "python_analytics_tests": 5,
+      "actionlint": "1.7.7 pinned checksum verified; passed",
+      "synthetic_analytics_regeneration": "passed",
+      "hosted_group_a": "BLOCKED; see staging-execution-results.md",
+      "hosted_group_b": "NOT STARTED"
+    },
+    "github": {
+      "checked_sha": "a2ed5fb696665b7435775230688a5b6a92defea8",
+      "status": "All six observed checks passed, including all five previously recorded required source-bound checks",
+      "checks": [
+        {
+          "id": 132412512684,
+          "name": "Submission policy",
+          "head_sha": "a2ed5fb696665b7435775230688a5b6a92defea8",
+          "status": "completed",
+          "conclusion": "success",
+          "app_id": 5734145,
+          "details_url": "https://github.com/omatek/root-archive/actions/runs/43583303266",
+          "completed_at": "2026-11-14T10:02:11Z"
+        },
+        {
+          "id": 132412493355,
+          "name": "Cloudflare Pages",
+          "head_sha": "a2ed5fb696665b7435775230688a5b6a92defea8",
+          "status": "completed",
+          "conclusion": "success",
+          "app_id": 85455,
+          "details_url": "https://dash.cloudflare.com/?to=/1b409400fea16e7142f62ac19ecd361d/pages/view/root-archive/902205f0-9393-4be0-bc99-c20a948b4b73",
+          "completed_at": "2026-11-14T10:02:05Z"
+        },
+        {
+          "id": 132412441621,
+          "name": "Frontend browser checks",
+          "head_sha": "a2ed5fb696665b7435775230688a5b6a92defea8",
+          "status": "completed",
+          "conclusion": "success",
+          "app_id": 15368,
+          "details_url": "https://github.com/omatek/root-archive/actions/runs/43583304742/job/132412441621",
+          "completed_at": "2026-11-14T10:02:48Z"
+        },
+        {
+          "id": 132412441590,
+          "name": "Worker checks",
+          "head_sha": "a2ed5fb696665b7435775230688a5b6a92defea8",
+          "status": "completed",
+          "conclusion": "success",
+          "app_id": 15368,
+          "details_url": "https://github.com/omatek/root-archive/actions/runs/43583304742/job/132412441590",
+          "completed_at": "2026-11-14T10:02:21Z"
+        },
+        {
+          "id": 132412441370,
+          "name": "Repository checks",
+          "head_sha": "a2ed5fb696665b7435775230688a5b6a92defea8",
+          "status": "completed",
+          "conclusion": "success",
+          "app_id": 15368,
+          "details_url": "https://github.com/omatek/root-archive/actions/runs/43583304742/job/132412441370",
+          "completed_at": "2026-11-14T10:02:07Z"
+        },
+        {
+          "id": 132412439199,
+          "name": "Trusted publication validation",
+          "head_sha": "a2ed5fb696665b7435775230688a5b6a92defea8",
+          "status": "completed",
+          "conclusion": "success",
+          "app_id": 15368,
+          "details_url": "https://github.com/omatek/root-archive/actions/runs/43583303266/job/132412439199",
+          "completed_at": "2026-11-14T10:02:15Z"
+        }
+      ],
+      "source_of_truth": "https://github.com/omatek/root-archive/pull/26/checks",
+      "note": "This evidence-only follow-up records the named parent's checks. The live PR page is authoritative for checks on subsequent evidence-only commits."
+    }
+  },
+  "owner_pr_27_disposition": "Leave open and draft; owner will decide after verifying transfer",
+  "after_initial_transfer": {
+    "26": {
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "base": "main",
+      "head": "feat/private-moderation",
+      "head_sha": "a2ed5fb696665b7435775230688a5b6a92defea8"
+    },
+    "27": {
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "base": "feat/private-moderation",
+      "head": "acceptance/hosted-security-20261114",
+      "head_sha": "3a80a7fabb9169c9a7ab024858d8b15088ff6e66"
+    }
+  },
+  "post_push_infrastructure": {
+    "observed_at": "2026-11-14T10:03:03.757Z",
+    "production_pages": {
+      "canonical_deployment": "60b32faf-7934-4e5b-8a34-c07c1cb0983d",
+      "commit": "4bb136b9a39423737be4ee30ba1239d735e221c9",
+      "production_branch": "main"
+    },
+    "legacy": {
+      "id": "88fef60a-22b0-434a-bbc2-89ac0d569629",
+      "versions": [
+        {
+          "version_id": "e8895ac0-b95b-409e-aff1-af3f549be94f",
+          "percentage": 100
+        }
+      ]
+    },
+    "staging": {
+      "id": "2eaa7db3-f51c-4747-a5ea-e8ec0b86c5a2",
+      "versions": [
+        {
+          "version_id": "bb9e96b3-e789-47b0-aa92-16168fe80db4",
+          "percentage": 100
+        }
+      ]
+    }
+  },
+  "automatic_pages_preview": {
+    "deployment_id": "902205f0-9393-4be0-bc99-c20a948b4b73",
+    "reason": "Existing Git integration triggered by authorized feature-branch push and required Pages check; no direct deploy command issued",
+    "production_canonical_unchanged": true
+  },
+  "durable_export": {
+    "pushed_to": "feat/private-moderation",
+    "pr": "https://github.com/omatek/root-archive/pull/26",
+    "bundle": "/workspace/root-archive-consolidated-acceptance.bundle",
+    "pr_27": "https://github.com/omatek/root-archive/pull/27",
+    "pr_27_owner_action": "Left open and draft; no changes to head, status or base"
+  }
+}

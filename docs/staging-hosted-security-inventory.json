@@ -1,0 +1,291 @@
+{
+  "observed_at": "2026-11-14T09:33:52.736Z",
+  "settings": {
+    "bindings": [
+      {
+        "name": "ACCESS_AUD",
+        "text": "0003d8d8ba905005bfed05fc441631de07c91985c3e2baab528bdb4bbb7ac5be",
+        "type": "plain_text"
+      },
+      {
+        "name": "ACCESS_ISSUER",
+        "text": "https://rootamman.cloudflareaccess.com",
+        "type": "plain_text"
+      },
+      {
+        "name": "ADMIN_EMAILS",
+        "type": "secret_text"
+      },
+      {
+        "name": "ADMIN_ORIGIN",
+        "text": "https://admin.archive.rootamman.com",
+        "type": "plain_text"
+      },
+      {
+        "name": "ALLOWED_ORIGIN",
+        "text": "https://archive-staging.rootamman.com",
+        "type": "plain_text"
+      },
+      {
+        "name": "ASSETS",
+        "type": "assets"
+      },
+      {
+        "name": "CLEANUP_ENABLED",
+        "text": "false",
+        "type": "plain_text"
+      },
+      {
+        "database_id": "f4aa2a8b-4b27-4ed3-b7a2-4e6e100a94c6",
+        "id": "f4aa2a8b-4b27-4ed3-b7a2-4e6e100a94c6",
+        "name": "DB",
+        "type": "d1"
+      },
+      {
+        "name": "GOOGLE_CLIENT_ID",
+        "text": "",
+        "type": "plain_text"
+      },
+      {
+        "bucket_name": "root-archive-private-staging",
+        "name": "PRIVATE_FILES",
+        "type": "r2_bucket"
+      },
+      {
+        "name": "PUBLIC_API_ORIGIN",
+        "text": "https://api-staging.rootamman.com",
+        "type": "plain_text"
+      },
+      {
+        "name": "SUBMISSIONS_ENABLED",
+        "text": "false",
+        "type": "plain_text"
+      }
+    ],
+    "compatibility_date": "2026-10-30"
+  },
+  "root-archive-moderation-staging/subdomain": {
+    "enabled": false,
+    "previews_enabled": false
+  },
+  "root-archive-moderation-staging/deployments": {
+    "deployments": [
+      {
+        "id": "2eaa7db3-f51c-4747-a5ea-e8ec0b86c5a2",
+        "source": "wrangler",
+        "strategy": "percentage",
+        "annotations": {
+          "workers/message": "Owner-approved isolated staging",
+          "workers/triggered_by": "deployment"
+        },
+        "versions": [
+          {
+            "version_id": "bb9e96b3-e789-47b0-aa92-16168fe80db4",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-11-14T08:32:53.290691Z"
+      }
+    ]
+  },
+  "root-archive-moderation-staging/versions": {
+    "items": [
+      {
+        "id": "bb9e96b3-e789-47b0-aa92-16168fe80db4",
+        "number": 1,
+        "metadata": {
+          "created_on": "2026-11-14T08:32:52.90709Z",
+          "source": "wrangler",
+          "has_preview": true
+        },
+        "annotations": {
+          "workers/message": "Owner-approved isolated staging",
+          "workers/triggered_by": "version_upload"
+        }
+      }
+    ]
+  },
+  "domains": [
+    {
+      "id": "580d38dcab623f69bd2edffa224340c4473435be",
+      "zone_id": "fc80d6a45a703d0fe4d1876f1380870f",
+      "zone_name": "rootamman.com",
+      "hostname": "admin.archive.rootamman.com",
+      "service": "root-archive-moderation-staging",
+      "environment": "production",
+      "cert_id": "ec66ad67-c346-4ff5-a5b1-dc3d59735aa9",
+      "previews_enabled": false,
+      "enabled": true
+    },
+    {
+      "id": "1fc544a0ed42618cfdde24bc360c4686a50675a8",
+      "zone_id": "fc80d6a45a703d0fe4d1876f1380870f",
+      "zone_name": "rootamman.com",
+      "hostname": "api-staging.rootamman.com",
+      "service": "root-archive-moderation-staging",
+      "environment": "production",
+      "cert_id": "2cdcbcd6-7862-46f9-bb0c-1e3ea3b30642",
+      "previews_enabled": false,
+      "enabled": true
+    }
+  ],
+  "apps": [
+    {
+      "id": "bebba566-18d3-42c5-a78e-50213ea2dad6",
+      "domain": "admin.archive.rootamman.com",
+      "destinations": [
+        {
+          "type": "public",
+          "uri": "admin.archive.rootamman.com"
+        }
+      ],
+      "type": "self_hosted"
+    }
+  ],
+  "app": {
+    "id": "bebba566-18d3-42c5-a78e-50213ea2dad6",
+    "domain": "admin.archive.rootamman.com",
+    "aud": "0003d8d8ba905005bfed05fc441631de07c91985c3e2baab528bdb4bbb7ac5be",
+    "allowed_idps": [
+      "0db90b4d-534a-4f75-ab0e-026016e0b1b9"
+    ],
+    "session_duration": "1h",
+    "http_only_cookie_attribute": true,
+    "enable_binding_cookie": true,
+    "options_preflight_bypass": false,
+    "policies": [
+      {
+        "id": "1fd4e71c-8a76-4969-8792-2772531ca2a9",
+        "decision": "allow",
+        "precedence": 1
+      }
+    ]
+  },
+  "policy": {
+    "id": "1fd4e71c-8a76-4969-8792-2772531ca2a9",
+    "decision": "allow",
+    "include": [
+      {
+        "kinds": [
+          "email"
+        ],
+        "exact_email": true
+      }
+    ],
+    "require_count": 0,
+    "exclude_count": 0,
+    "updated_at": "2026-11-13T23:30:28Z"
+  },
+  "domains/custom": {
+    "domains": []
+  },
+  "domains/managed": {
+    "enabled": false,
+    "bucketId": "1a5f949cc506496daa0ff5ff43333c72",
+    "domain": "pub-1a5f949cc506496daa0ff5ff43333c72.r2.dev"
+  },
+  "certificate_packs": [
+    {
+      "id": "2cdcbcd6-7862-46f9-bb0c-1e3ea3b30642",
+      "type": "advanced",
+      "hosts": [
+        "rootamman.com",
+        "api-staging.rootamman.com",
+        "*.api-staging.rootamman.com"
+      ],
+      "primary_certificate": "75f9dd8e-946b-455b-9062-504ebd33ed5d",
+      "status": "active",
+      "certificates": [
+        {
+          "id": "75f9dd8e-946b-455b-9062-504ebd33ed5d",
+          "hosts": [
+            "rootamman.com",
+            "api-staging.rootamman.com",
+            "*.api-staging.rootamman.com"
+          ],
+          "issuer": "GoogleTrustServices",
+          "signature": "SHA256WithRSA",
+          "status": "active",
+          "bundle_method": "ubiquitous",
+          "zone_id": "fc80d6a45a703d0fe4d1876f1380870f",
+          "uploaded_on": "2026-11-14T09:34:02.762960Z",
+          "modified_on": "2026-11-14T08:35:24.349090Z",
+          "expires_on": "2027-02-12T08:32:57.000000Z",
+          "priority": null
+        },
+        {
+          "id": "a21df817-d84a-4e89-9efd-554c5aa71dd5",
+          "hosts": [
+            "rootamman.com",
+            "api-staging.rootamman.com",
+            "*.api-staging.rootamman.com"
+          ],
+          "issuer": "GoogleTrustServices",
+          "signature": "ECDSAWithSHA256",
+          "status": "active",
+          "bundle_method": "ubiquitous",
+          "zone_id": "fc80d6a45a703d0fe4d1876f1380870f",
+          "uploaded_on": "2026-11-14T09:34:02.762986Z",
+          "modified_on": "2026-11-14T08:35:24.349090Z",
+          "expires_on": "2027-02-12T08:35:13.000000Z",
+          "priority": null
+        }
+      ],
+      "created_on": "2026-11-14T08:32:55.190062Z",
+      "validity_days": 90,
+      "validation_method": "txt",
+      "certificate_authority": "google"
+    },
+    {
+      "id": "ec66ad67-c346-4ff5-a5b1-dc3d59735aa9",
+      "type": "advanced",
+      "hosts": [
+        "rootamman.com",
+        "admin.archive.rootamman.com",
+        "*.admin.archive.rootamman.com"
+      ],
+      "primary_certificate": "71b30d79-c275-4f15-9434-3e72dac99f7a",
+      "status": "active",
+      "certificates": [
+        {
+          "id": "71b30d79-c275-4f15-9434-3e72dac99f7a",
+          "hosts": [
+            "rootamman.com",
+            "admin.archive.rootamman.com",
+            "*.admin.archive.rootamman.com"
+          ],
+          "issuer": "GoogleTrustServices",
+          "signature": "SHA256WithRSA",
+          "status": "active",
+          "bundle_method": "ubiquitous",
+          "zone_id": "fc80d6a45a703d0fe4d1876f1380870f",
+          "uploaded_on": "2026-11-14T09:34:02.770351Z",
+          "modified_on": "2026-11-14T08:35:23.881383Z",
+          "expires_on": "2027-02-12T08:32:57.000000Z",
+          "priority": null
+        },
+        {
+          "id": "d7755bfa-e251-45db-bfca-92034400b575",
+          "hosts": [
+            "rootamman.com",
+            "admin.archive.rootamman.com",
+            "*.admin.archive.rootamman.com"
+          ],
+          "issuer": "GoogleTrustServices",
+          "signature": "ECDSAWithSHA256",
+          "status": "active",
+          "bundle_method": "ubiquitous",
+          "zone_id": "fc80d6a45a703d0fe4d1876f1380870f",
+          "uploaded_on": "2026-11-14T09:34:02.770376Z",
+          "modified_on": "2026-11-14T08:35:23.881383Z",
+          "expires_on": "2027-02-12T08:35:12.000000Z",
+          "priority": null
+        }
+      ],
+      "created_on": "2026-11-14T08:32:55.145616Z",
+      "validity_days": 90,
+      "validation_method": "txt",
+      "certificate_authority": "google"
+    }
+  ]
+}

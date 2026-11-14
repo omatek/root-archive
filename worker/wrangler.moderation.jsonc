@@ -1,0 +1,44 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "root-archive-moderation-staging",
+  "account_id": "1b409400fea16e7142f62ac19ecd361d",
+  "main": "moderation.ts",
+  // Match the installed workerd test runtime; advance with a toolchain upgrade.
+  "compatibility_date": "2026-10-30",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [],
+  "assets": {
+    "directory": "../admin",
+    "binding": "ASSETS",
+    "run_worker_first": true
+  },
+  "vars": {
+    // Reserved for isolated staging until a separately approved production cutover.
+    "ADMIN_ORIGIN": "https://admin.archive.rootamman.com",
+    "PUBLIC_API_ORIGIN": "https://api-staging.rootamman.com",
+    "ALLOWED_ORIGIN": "https://archive-staging.rootamman.com",
+    "ACCESS_ISSUER": "https://rootamman.cloudflareaccess.com",
+    "ACCESS_AUD": "0003d8d8ba905005bfed05fc441631de07c91985c3e2baab528bdb4bbb7ac5be",
+    // Release config must remove this placeholder and supply an ADMIN_EMAILS secret.
+    "ADMIN_EMAILS": "",
+    "GOOGLE_CLIENT_ID": "",
+    "SUBMISSIONS_ENABLED": "false",
+    "CLEANUP_ENABLED": "false"
+  },
+  "d1_databases": [{
+    "binding": "DB",
+    "database_name": "root-archive-moderation-staging",
+    "database_id": "f4aa2a8b-4b27-4ed3-b7a2-4e6e100a94c6",
+    "migrations_dir": "migrations"
+  }],
+  "r2_buckets": [{
+    "binding": "PRIVATE_FILES",
+    "bucket_name": "root-archive-private-staging"
+  }],
+  "observability": {
+    "enabled": true,
+    "logs": {"enabled": true, "invocation_logs": false},
+    "traces": {"enabled": true, "head_sampling_rate": 0.1}
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "source": "5f978552dc5a8ed0b515386b6a20bc8e3dcb00d0",
+  "checkpoint": "c967e007691d4ce1cc2e35c89fd015f7af4bd21e",
+  "protocol_reference": "https://developers.cloudflare.com/workers/static-assets/direct-upload/",
+  "fresh_transfer": {
+    "success": false,
+    "diagnostics": {
+      "registered": true,
+      "jwt_present": true,
+      "jwt_three_segments": true,
+      "bucket_count": 3,
+      "requested_files": 10,
+      "expires_in_seconds": 3599,
+      "single_asset_upload_mode": false,
+      "jwt_has_whitespace": false,
+      "authorization_matches_session": true,
+      "multipart_boundary_present": true,
+      "file_parts_valid": true
+    },
+    "uploaded": 0,
+    "responses": [
+      {
+        "status": 401,
+        "content_type": "text/plain;charset=UTF-8",
+        "server": "cloudflare",
+        "ray": "a5a45c2ee8a9355d-WAW",
+        "redirected": false,
+        "response_path": "/client/v4/accounts/1b409400fea16e7142f62ac19ecd361d/workers/assets/upload",
+        "plain_unauthorized": true,
+        "completion_jwt_present": false
+      }
+    ]
+  },
+  "read_only_controls": {
+    "connected_read_success": true,
+    "outcomes": [
+      {
+        "mode": "no_explicit_header",
+        "status": 200,
+        "content_type": "application/json; charset=UTF-8",
+        "json_success": true,
+        "plain_unauthorized": false,
+        "redirect": false
+      },
+      {
+        "mode": "synthetic_invalid_header",
+        "status": 400,
+        "content_type": "application/json",
+        "json_success": false,
+        "error_codes": [
+          9106
+        ],
+        "plain_unauthorized": false,
+        "redirect": false
+      }
+    ]
+  },
+  "secondary_session_metadata": {
+    "registered": true,
+    "segments": 3,
+    "signature_characters": 86,
+    "signature_is_literal_placeholder": false,
+    "expires_in_seconds": null,
+    "bucket_count": 3,
+    "requested_files": 10
+  },
+  "postflight": {
+    "time": "2026-11-14T07:40:45.203Z",
+    "workers": [
+      {
+        "id": "root-archive-worker",
+        "etag": "444bf555ae095ef8e55bab96b9ba17cdd47c6426cd540ed004f2ca45d43b6b24"
+      }
+    ],
+    "domains": [
+      {
+        "id": "18ff115e80d1e21d3b74e146d72bf141227e6f23",
+        "zone_id": "fc80d6a45a703d0fe4d1876f1380870f",
+        "zone_name": "rootamman.com",
+        "hostname": "api.rootamman.com",
+        "service": "root-archive-worker",
+        "environment": "production",
+        "cert_id": "ddec1cda-d044-4ac4-9b49-f02c3534b6b4",
+        "previews_enabled": false,
+        "enabled": true
+      }
+    ],
+    "r2_objects": [],
+    "legacy_deployment": "88fef60a-22b0-434a-bbc2-89ac0d569629",
+    "production_pages": "60b32faf-7934-4e5b-8a34-c07c1cb0983d",
+    "production_sha": "4bb136b9a39423737be4ee30ba1239d735e221c9"
+  },
+  "conclusion": "Fresh correctly constructed bulk upload rejected with HTTP 401. Root cause cannot be established from available evidence; no proof of header stripping or insufficient account scopes. No further transfers or deployment attempted."
+}

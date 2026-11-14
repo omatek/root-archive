@@ -2,6 +2,45 @@
 
 ## Confirmed architecture
 
+- Private moderation replacement is implemented separately in `worker/moderation.ts`,
+  `worker/wrangler.moderation.jsonc`, `worker/migrations/` and `admin/`. Read
+  `docs/private-moderation.md` before changing this boundary. All revisions stay
+  in a new private bucket; D1 publication state gates every anonymous download.
+  Administrator assets and API share a Worker-first Access/allowlist gate.
+  Unpublish retains a private file for review; permanent removal revokes and
+  queues deletion. Do not restore public access using old catalogs or buckets.
+- Isolated private moderation staging is deployed through Wrangler; production
+  integration remains disabled. Version `bb9e96b3-e789-47b0-aa92-16168fe80db4`
+  serves the approved admin/API-staging custom domains with staging D1/R2 only.
+  Access app/policy/PIN/AUD were independently verified through the connector;
+  the deployment token's Access read restriction is not a security failure.
+  Both D1 migrations were already applied; do not reapply them. Group B now has
+  one owned synthetic submission and one private PNG; inspect
+  docs/staging-functional-manifest.json before writes or cleanup. Never reseed
+  or overwrite that UUID/key blindly.
+  Hosted custom/Access probes now reach staging: anonymous/forged administrator
+  requests are denied and public-host admin paths return 404. The owner confirms
+  presented certificate SAN coverage for both custom hosts, valid WE1 admin TLS,
+  denial at both exact moderation alternate endpoints (statuses not captured),
+  real Proton email-PIN login, portal/empty queue and session JSON. These are
+  owner-observed hosted evidence, not Codex-executed probes. TLS/alternate-host
+  gates are closed; do not require extra network grants or repeat these checks.
+  Group A still needs independent Worker negative-JWT evidence and an actual
+  expired/revoked-session denial. A genuine nonadmin case is conditional on
+  availability under the approved plan; its absence is not a security failure.
+  PR #27's evidence is consolidated into PR #26; preserve #27 open for the owner.
+  The owner explicitly accepts deferring the unverified independent hosted JWT
+  rejection and real expired/revoked-session cases for isolated synthetic-only
+  functional acceptance. Group A is not fully passed; authorization is unchanged.
+  Group B has started with n=1 only. Pending-file privacy/hash checks passed;
+  owner-operated metadata edits/approval and executor-observed public catalog,
+  anonymous PNG GET/HEAD/hash/safe filename/no-store checks passed. The fixture
+  is currently published, awaiting owner unpublish for withdrawal verification.
+  A separate review_started audit transition is not yet observed. Read
+  `docs/staging-execution-results.md` and `docs/staging-deployment.md` before
+  resuming. Legacy/production resources are unchanged; submissions and scheduled
+  cleanup remain disabled. Public `CONFIG.privateModeration` is false.
+
 - `site/`: static vanilla HTML/JS; `courses.json` is an array of `{id, name,
   tracks}`. `resources.json` is an array of `{id, course_id, type, title,
   semester, asset_url, contributor?, created_at}`. See `scripts/catalogs.mjs`.

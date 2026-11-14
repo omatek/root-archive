@@ -59,6 +59,20 @@ test('frontend resource types pass Worker validation and create matching catalog
   assert.equal(assets(bucket).length, before);
   assert.equal(github.prs.length, TYPES.length);
 });
+test('explicit legacy pause blocks uploads on every hostname while preserving authentication', async () => {
+  env.LEGACY_SUBMISSIONS_ENABLED = 'false';
+  const headers = {Origin: origin, Authorization: `Bearer ${await token()}`};
+  for (const host of ['https://api.rootamman.com', 'https://legacy.workers.dev', 'https://version-legacy.workers.dev']) {
+    for (const path of ['/', '/submit']) {
+      const response = await worker.fetch(new Request(host + path, {method: 'POST', headers, body: form()}), env);
+      assert.equal(response.status, 503);
+    }
+    assert.equal((await worker.fetch(new Request(host + '/auth/verify', {method: 'POST', headers}), env)).status, 200);
+  }
+  assert.equal(assets(bucket).length, 0);
+  assert.equal(github.prs.length, 0);
+  assert.equal(github.verifications.length, 0);
+});
 test('both frontend origins can verify and submit on the API domain using the existing Siteverify flow', async () => {
   env.ALLOWED_ORIGIN = workerConfig.vars.ALLOWED_ORIGIN;
   const jwt = await token();
