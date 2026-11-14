@@ -1,0 +1,455 @@
+{
+  "approved_source": "5f978552dc5a8ed0b515386b6a20bc8e3dcb00d0",
+  "worker_sha256": "080ac6521a239d769ed02ec2c0aab9f39feb80e23b307a798ff43fa9fd4747fd",
+  "assets": [
+    {
+      "path": "/README.md",
+      "hash": "bc5d9154c041221f50fcdb1bbc97e748",
+      "sha256": "7dee029823b05c162e636776d66270880cb3cb7a15580a856bc6972b7b992653",
+      "size": 2329,
+      "mime": "text/markdown"
+    },
+    {
+      "path": "/assets/fonts/Atkinson-LICENSE.txt",
+      "hash": "a8e75321a5300ef09a16c5e14cc35997",
+      "sha256": "474a034e99845062f661855caaa505880d0e9009deddc2727a92795eab374955",
+      "size": 4599,
+      "mime": "text/plain"
+    },
+    {
+      "path": "/assets/fonts/Barlow-LICENSE.txt",
+      "hash": "4167f87b4fb9feb6a7005bb82c54f29c",
+      "sha256": "56027070a748db90a33c074bf7b9b7f0df66dd38a8a0d3e3a951f79035f9c4a0",
+      "size": 6235,
+      "mime": "text/plain"
+    },
+    {
+      "path": "/assets/fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2",
+      "hash": "83f0cefc040d7402bface5fe56eb52d1",
+      "sha256": "18b2a1a39a2fa298b0ba5390aca68462669826c90925656f1c1f6796e0e1bbaf",
+      "size": 33996,
+      "mime": "font/woff2"
+    },
+    {
+      "path": "/assets/fonts/barlow-semi-condensed-latin-600-normal.woff2",
+      "hash": "689a28529e34c2dde6464bc7e8b9e342",
+      "sha256": "f158417e9207b5362f9b71a2fe779ce5bb836ad972f38445c3163af39d2c998d",
+      "size": 22984,
+      "mime": "font/woff2"
+    },
+    {
+      "path": "/assets/fonts/barlow-semi-condensed-latin-700-normal.woff2",
+      "hash": "2f33f5f6eb1a8bb77bbb64415279e307",
+      "sha256": "fb958c8c20a05552ac8a85d925d96028d52565792650e941a5fe96b6997aa5cb",
+      "size": 23244,
+      "mime": "font/woff2"
+    },
+    {
+      "path": "/index.html",
+      "hash": "cdd86a1273841d81c3b9e58f35183ccd",
+      "sha256": "bf6efee346aff63f73a19deafdccecb1ea01e885c0452cefd468bb952aa74b47",
+      "size": 11834,
+      "mime": "text/html"
+    },
+    {
+      "path": "/js/admin.mjs",
+      "hash": "538f15f53a579a7de404a5a3d5ebd4cc",
+      "sha256": "056c5cfaaad8b9cfc99897e0ac57e66f7f0275f34b5979048a5442e7d0d72c9d",
+      "size": 25923,
+      "mime": "application/javascript"
+    },
+    {
+      "path": "/js/image-editor.mjs",
+      "hash": "b9b272633fb46aa3644d8f56f003ddb9",
+      "sha256": "ba512a98e4e3923afe01cd7ff25f86a0863f12ca74e3342a43838f25a3b411a0",
+      "size": 5376,
+      "mime": "application/javascript"
+    },
+    {
+      "path": "/styles.css",
+      "hash": "686d357ef341ab3abe070abb0d67c560",
+      "sha256": "3f2d113556e0e85e5adce7d92ae9421b9cd1d0aa996a860bf96b98c94f37abd3",
+      "size": 7948,
+      "mime": "text/css"
+    }
+  ],
+  "migrations": [
+    {
+      "name": "0001_private_moderation.sql",
+      "sha256": "c7d7ec22e7bf186fa21e0049ad0fe58c8352094bb6ef94a33508fee9328b682d"
+    },
+    {
+      "name": "0002_catalog_generation.sql",
+      "sha256": "4a3c8d6bd19288c7645bc8c5ebc87e9c340e9f860574b67954080e05d00e4beb"
+    }
+  ],
+  "pre_migration_bookmark": "0000000a-00000000-00005123-85f5d60047382e3f32e50ee33f993a02",
+  "migration_2_verification": {
+    "applied": [
+      {
+        "success": true,
+        "changes": 0
+      },
+      {
+        "success": true,
+        "changes": 1
+      },
+      {
+        "success": true,
+        "changes": 0
+      },
+      {
+        "success": true,
+        "changes": 0
+      },
+      {
+        "success": true,
+        "changes": 0
+      },
+      {
+        "success": true,
+        "changes": 1
+      }
+    ],
+    "verification": {
+      "result": [
+        {
+          "results": [
+            {
+              "id": 1,
+              "name": "0001_private_moderation.sql",
+              "applied_at": "2026-11-14 03:48:56"
+            },
+            {
+              "id": 2,
+              "name": "0002_catalog_generation.sql",
+              "applied_at": "2026-11-14 03:49:12"
+            }
+          ],
+          "success": true,
+          "meta": {
+            "served_by": "v3-prod",
+            "served_by_region": "EEUR",
+            "served_by_colo": "FRA",
+            "served_by_primary": true,
+            "timings": {
+              "sql_duration_ms": 0.14
+            },
+            "duration": 0.14,
+            "changes": 0,
+            "last_row_id": 2,
+            "changed_db": false,
+            "size_after": 102400,
+            "rows_read": 2,
+            "rows_written": 0,
+            "total_attempts": 1
+          }
+        },
+        {
+          "results": [
+            {
+              "type": "index",
+              "name": "audit_submission"
+            },
+            {
+              "type": "index",
+              "name": "resources_catalog"
+            },
+            {
+              "type": "index",
+              "name": "revision_cleanup"
+            },
+            {
+              "type": "index",
+              "name": "revision_submission"
+            },
+            {
+              "type": "index",
+              "name": "submissions_course"
+            },
+            {
+              "type": "index",
+              "name": "submissions_queue"
+            },
+            {
+              "type": "table",
+              "name": "_cf_KV"
+            },
+            {
+              "type": "table",
+              "name": "catalog_state"
+            },
+            {
+              "type": "table",
+              "name": "cleanup_state"
+            },
+            {
+              "type": "table",
+              "name": "d1_migrations"
+            },
+            {
+              "type": "table",
+              "name": "file_revisions"
+            },
+            {
+              "type": "table",
+              "name": "moderation_audit"
+            },
+            {
+              "type": "table",
+              "name": "resources"
+            },
+            {
+              "type": "table",
+              "name": "submissions"
+            },
+            {
+              "type": "trigger",
+              "name": "catalog_delete"
+            },
+            {
+              "type": "trigger",
+              "name": "catalog_insert"
+            },
+            {
+              "type": "trigger",
+              "name": "catalog_update"
+            }
+          ],
+          "success": true,
+          "meta": {
+            "served_by": "v3-prod",
+            "served_by_region": "EEUR",
+            "served_by_colo": "FRA",
+            "served_by_primary": true,
+            "timings": {
+              "sql_duration_ms": 0.1114
+            },
+            "duration": 0.1114,
+            "changes": 0,
+            "last_row_id": 2,
+            "changed_db": false,
+            "size_after": 102400,
+            "rows_read": 41,
+            "rows_written": 0,
+            "total_attempts": 1
+          }
+        },
+        {
+          "results": [],
+          "success": true,
+          "meta": {
+            "served_by": "v3-prod",
+            "served_by_region": "EEUR",
+            "served_by_colo": "FRA",
+            "served_by_primary": true,
+            "timings": {
+              "sql_duration_ms": 0.0571
+            },
+            "duration": 0.0571,
+            "changes": 0,
+            "last_row_id": 2,
+            "changed_db": false,
+            "size_after": 102400,
+            "rows_read": 3,
+            "rows_written": 0,
+            "total_attempts": 1
+          }
+        },
+        {
+          "results": [
+            {
+              "submissions": 0,
+              "resources": 0,
+              "revisions": 0,
+              "audits": 0,
+              "cleanup_rows": 1,
+              "catalog_rows": 1
+            }
+          ],
+          "success": true,
+          "meta": {
+            "served_by": "v3-prod",
+            "served_by_region": "EEUR",
+            "served_by_colo": "FRA",
+            "served_by_primary": true,
+            "timings": {
+              "sql_duration_ms": 0.0915
+            },
+            "duration": 0.0915,
+            "changes": 0,
+            "last_row_id": 2,
+            "changed_db": false,
+            "size_after": 102400,
+            "rows_read": 2,
+            "rows_written": 0,
+            "total_attempts": 1
+          }
+        }
+      ],
+      "errors": [],
+      "messages": [],
+      "success": true
+    }
+  },
+  "upload_result": {
+    "success": false,
+    "stage": "upload_assets",
+    "uploaded_assets": 0,
+    "error": "SyntaxError: Unexpected token 'U', \"Unauthorized\" is not valid JSON"
+  },
+  "postflight": {
+    "verified_at": "2026-11-14T03:50:57.966Z",
+    "scripts": [
+      {
+        "id": "root-archive-worker",
+        "etag": "444bf555ae095ef8e55bab96b9ba17cdd47c6426cd540ed004f2ca45d43b6b24",
+        "modified_on": "2026-11-12T19:55:21.827727Z",
+        "has_assets": false
+      }
+    ],
+    "domains": [
+      {
+        "id": "18ff115e80d1e21d3b74e146d72bf141227e6f23",
+        "zone_id": "fc80d6a45a703d0fe4d1876f1380870f",
+        "zone_name": "rootamman.com",
+        "hostname": "api.rootamman.com",
+        "service": "root-archive-worker",
+        "environment": "production",
+        "cert_id": "ddec1cda-d044-4ac4-9b49-f02c3534b6b4",
+        "previews_enabled": false,
+        "enabled": true
+      }
+    ],
+    "dns": [
+      {
+        "id": "4d1cbc33b6585bfd21916d6d49ae0ccb",
+        "name": "archive.rootamman.com",
+        "content": "root-archive.pages.dev",
+        "modified_on": "2026-11-12T18:59:27.528501Z"
+      },
+      {
+        "id": "06182d8814d3f6187723db7df63c91e4",
+        "name": "assets.rootamman.com",
+        "content": "public.r2.dev",
+        "modified_on": "2026-11-12T19:31:11.13818Z"
+      },
+      {
+        "id": "b75429fff2288f3f2d53fe502ff2b94f",
+        "name": "api.rootamman.com",
+        "content": "100::",
+        "modified_on": "2026-11-12T19:02:47.896805Z"
+      }
+    ],
+    "app": {
+      "id": "bebba566-18d3-42c5-a78e-50213ea2dad6",
+      "aud": "0003d8d8ba905005bfed05fc441631de07c91985c3e2baab528bdb4bbb7ac5be",
+      "domain": "admin.archive.rootamman.com",
+      "updated_at": "2026-11-14T01:25:42Z",
+      "allowed_idps": [
+        "0db90b4d-534a-4f75-ab0e-026016e0b1b9"
+      ]
+    },
+    "policy": {
+      "id": "1fd4e71c-8a76-4969-8792-2772531ca2a9",
+      "updated_at": "2026-11-13T23:30:28Z",
+      "same_exact_email": true,
+      "decision": "allow"
+    },
+    "objects": [],
+    "legacy_deployment": "88fef60a-22b0-434a-bbc2-89ac0d569629",
+    "pages": {
+      "id": "60b32faf-7934-4e5b-8a34-c07c1cb0983d",
+      "sha": "4bb136b9a39423737be4ee30ba1239d735e221c9"
+    },
+    "schema": {
+      "result": [
+        {
+          "results": [
+            {
+              "id": 1,
+              "name": "0001_private_moderation.sql",
+              "applied_at": "2026-11-14 03:48:56"
+            },
+            {
+              "id": 2,
+              "name": "0002_catalog_generation.sql",
+              "applied_at": "2026-11-14 03:49:12"
+            }
+          ],
+          "success": true,
+          "meta": {
+            "served_by": "v3-prod",
+            "served_by_region": "EEUR",
+            "served_by_colo": "FRA",
+            "served_by_primary": true,
+            "timings": {
+              "sql_duration_ms": 0.7226
+            },
+            "duration": 0.7226,
+            "changes": 0,
+            "last_row_id": 0,
+            "changed_db": false,
+            "size_after": 102400,
+            "rows_read": 2,
+            "rows_written": 0,
+            "total_attempts": 1
+          }
+        },
+        {
+          "results": [
+            {
+              "submissions": 0,
+              "resources": 0,
+              "revisions": 0,
+              "audits": 0
+            }
+          ],
+          "success": true,
+          "meta": {
+            "served_by": "v3-prod",
+            "served_by_region": "EEUR",
+            "served_by_colo": "FRA",
+            "served_by_primary": true,
+            "timings": {
+              "sql_duration_ms": 0.3165
+            },
+            "duration": 0.3165,
+            "changes": 0,
+            "last_row_id": 0,
+            "changed_db": false,
+            "size_after": 102400,
+            "rows_read": 0,
+            "rows_written": 0,
+            "total_attempts": 1
+          }
+        },
+        {
+          "results": [],
+          "success": true,
+          "meta": {
+            "served_by": "v3-prod",
+            "served_by_region": "EEUR",
+            "served_by_colo": "FRA",
+            "served_by_primary": true,
+            "timings": {
+              "sql_duration_ms": 0.0633
+            },
+            "duration": 0.0633,
+            "changes": 0,
+            "last_row_id": 0,
+            "changed_db": false,
+            "size_after": 102400,
+            "rows_read": 3,
+            "rows_written": 0,
+            "total_attempts": 1
+          }
+        }
+      ],
+      "errors": [],
+      "messages": [],
+      "success": true
+    }
+  },
+  "group_b": "not_started"
+}

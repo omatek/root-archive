@@ -1,5 +1,70 @@
 # Staging execution results — 14 November 2026
 
+## API deployment attempt — latest result
+
+This supersedes the earlier CLI-authentication stop recorded below. The owner
+explicitly authorized replacing Wrangler execution with connected Cloudflare API
+operations while preserving source, SQL, resources and the security gate.
+
+- Source/configuration/admin assets match reviewed commit
+  `5f978552dc5a8ed0b515386b6a20bc8e3dcb00d0`. The current checkout differs from
+  that commit only in documentation/instructions. Worker typecheck, dry-run
+  bundles and 71/71 local Worker tests passed before remote writes.
+- Verified tested bundle SHA256:
+  `080ac6521a239d769ed02ec2c0aab9f39feb80e23b307a798ff43fa9fd4747fd`.
+  Ten admin asset files were hashed with SHA256 and the installed Wrangler's
+  BLAKE3 asset-manifest algorithm. All bytes were rechecked inside the API
+  execution runtime before upload. No source/security change was made.
+- Pre-migration Time Travel bookmark:
+  `0000000a-00000000-00005123-85f5d60047382e3f32e50ee33f993a02`.
+- **Migration 0001 succeeded at 03:48:56 UTC; 0002 at 03:49:12 UTC.** Exact
+  reviewed SQL was sent in order to staging D1
+  `f4aa2a8b-4b27-4ed3-b7a2-4e6e100a94c6`, with the compatible `d1_migrations`
+  schema and each filename inserted after its migration. Ledger IDs are 1/2.
+  All six application tables, indexes and three catalog triggers exist;
+  foreign-key check is clean. Only cleanup/catalog singleton rows are present.
+  Submissions, revisions, resources and audit tables each contain zero records.
+- The asset-upload session registration succeeded for
+  `root-archive-moderation-staging`. The first transfer using its upload-session
+  bearer token returned non-JSON text beginning **Unauthorized**; JSON parsing
+  failed. Zero asset uploads were acknowledged. The response HTTP status was not
+  retained, so this report does not invent a status code or assert the root
+  cause is a particular missing scope. Token-based asset transfer is blocked.
+- Execution stopped immediately: no retry, credential substitution, alternate
+  infrastructure, code upload, endpoint/domain change or TLS configuration.
+  The session token was neither returned nor saved in logs/evidence; registration
+  may leave transient manifest/session state. No cleanup/delete was attempted.
+
+[Sanitized API deployment evidence](staging-api-deployment-evidence.json)
+records the artifact manifest, migration checks and postflight inventory at
+`2026-11-14T03:50:57.966Z`. Only legacy `root-archive-worker` is listed; no
+moderation Worker/version/deployment ID exists. Existing production DNS/custom
+domain, Worker ETag/deployment, and canonical Pages deployment still match the
+baseline. R2 is empty; its contents were not modified. Access app, AUD, OTP
+provider and exact-email policy were unchanged by this attempt. No unexpected
+deletion or production mutation occurred.
+
+**Group A remains incomplete. Group B did not start.** Hosted administrator
+login, unauthorized-request denial, independent JWT/allowlist enforcement,
+alternate-host rejection, TLS and deployed binding inspection remain blocked.
+No synthetic test records/files were seeded or deleted. No real identities or
+academic materials were used. Submissions and scheduled cleanup were not enabled.
+
+Next action: resolve authorization of the documented asset-session upload flow
+in the connected integration, or use an authenticated Wrangler environment for
+the same approved account/resources. Do not recreate resources, rerun applied
+migrations or change authentication to get a pass. A genuine owner PIN login
+and every remaining Group A security check are still required before Group B.
+
+Recovery: no code/domain rollback is necessary because no Worker or hostname
+was deployed. Prefer retaining the compatible staging schema/ledger and fixing
+forward. D1 Time Travel restoration to the bookmark above remains a separate
+explicitly approved destructive recovery choice; no restore was performed.
+No asset, R2 object, historical preview or legacy resource deletion is authorized
+by this failed attempt.
+
+## Earlier email-PIN setup — historical checkpoint
+
 Approved deployment source: `5f978552dc5a8ed0b515386b6a20bc8e3dcb00d0`,
 branch `feat/private-moderation`, draft [PR #26](https://github.com/omatek/root-archive/pull/26).
 The owner approved Groups A/B in the [execution plan](staging-deployment.md),
