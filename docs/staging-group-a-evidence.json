@@ -1,0 +1,130 @@
+{
+  "verified_at": "2026-11-14T01:26:13.895Z",
+  "app": {
+    "id": "bebba566-18d3-42c5-a78e-50213ea2dad6",
+    "aud": "0003d8d8ba905005bfed05fc441631de07c91985c3e2baab528bdb4bbb7ac5be",
+    "domain": "admin.archive.rootamman.com",
+    "allowed_idps": [
+      "0db90b4d-534a-4f75-ab0e-026016e0b1b9"
+    ],
+    "session_duration": "1h",
+    "http_only_cookie_attribute": true,
+    "enable_binding_cookie": true,
+    "options_preflight_bypass": false,
+    "updated_at": "2026-11-14T01:25:42Z"
+  },
+  "policy": {
+    "id": "1fd4e71c-8a76-4969-8792-2772531ca2a9",
+    "updated_at": "2026-11-13T23:30:28Z",
+    "decision": "allow",
+    "exact_email_count": 1,
+    "total_rules": 1,
+    "require": [],
+    "exclude": []
+  },
+  "identity_providers": [
+    {
+      "id": "5fa52c35-ad8a-45ae-8d02-b3383047ee85",
+      "type": "cloudflare",
+      "name": ""
+    },
+    {
+      "id": "0db90b4d-534a-4f75-ab0e-026016e0b1b9",
+      "type": "onetimepin",
+      "name": "Archive staging email PIN"
+    }
+  ],
+  "schema": {
+    "result": [
+      {
+        "results": [
+          {
+            "type": "table",
+            "name": "_cf_KV"
+          }
+        ],
+        "success": true,
+        "meta": {
+          "served_by": "v3-prod",
+          "served_by_region": "EEUR",
+          "served_by_colo": "FRA",
+          "served_by_primary": true,
+          "timings": {
+            "sql_duration_ms": 0.4022
+          },
+          "duration": 0.4022,
+          "changes": 0,
+          "last_row_id": 0,
+          "changed_db": false,
+          "size_after": 12288,
+          "rows_read": 2,
+          "rows_written": 0,
+          "total_attempts": 1
+        }
+      }
+    ],
+    "errors": [],
+    "messages": [],
+    "success": true
+  },
+  "objects": [],
+  "scripts": [
+    {
+      "id": "root-archive-worker",
+      "modified_on": "2026-11-12T19:55:21.827727Z",
+      "etag": "444bf555ae095ef8e55bab96b9ba17cdd47c6426cd540ed004f2ca45d43b6b24"
+    }
+  ],
+  "worker_domains": [
+    {
+      "id": "18ff115e80d1e21d3b74e146d72bf141227e6f23",
+      "zone_id": "fc80d6a45a703d0fe4d1876f1380870f",
+      "zone_name": "rootamman.com",
+      "hostname": "api.rootamman.com",
+      "service": "root-archive-worker",
+      "environment": "production",
+      "cert_id": "ddec1cda-d044-4ac4-9b49-f02c3534b6b4",
+      "previews_enabled": false,
+      "enabled": true
+    }
+  ],
+  "dns": [
+    {
+      "id": "4d1cbc33b6585bfd21916d6d49ae0ccb",
+      "name": "archive.rootamman.com",
+      "type": "CNAME",
+      "content": "root-archive.pages.dev",
+      "modified_on": "2026-11-12T18:59:27.528501Z"
+    },
+    {
+      "id": "06182d8814d3f6187723db7df63c91e4",
+      "name": "assets.rootamman.com",
+      "type": "CNAME",
+      "content": "public.r2.dev",
+      "modified_on": "2026-11-12T19:31:11.13818Z"
+    },
+    {
+      "id": "b75429fff2288f3f2d53fe502ff2b94f",
+      "name": "api.rootamman.com",
+      "type": "AAAA",
+      "content": "100::",
+      "modified_on": "2026-11-12T19:02:47.896805Z"
+    }
+  ],
+  "legacy_deployment": "88fef60a-22b0-434a-bbc2-89ac0d569629",
+  "legacy_version": [
+    {
+      "version_id": "e8895ac0-b95b-409e-aff1-af3f549be94f",
+      "percentage": 100
+    }
+  ],
+  "pages": {
+    "canonical_deployment": "60b32faf-7934-4e5b-8a34-c07c1cb0983d",
+    "sha": "4bb136b9a39423737be4ee30ba1239d735e221c9",
+    "production_branch": "main",
+    "domains": [
+      "root-archive.pages.dev",
+      "archive.rootamman.com"
+    ]
+  }
+}

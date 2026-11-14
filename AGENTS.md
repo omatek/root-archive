@@ -11,8 +11,11 @@
   queues deletion. Do not restore public access using old catalogs or buckets.
 - The private system is NOT deployed. Staging D1/R2 provisioning is documented;
   Access app `admin.archive` now exists for `admin.archive.rootamman.com`;
-  identity-provider repair and staging DNS/TLS/deployment remain pending. See
-  `docs/staging-deployment.md` for the verified inventory and approval gate.
+  email one-time PIN is configured; staging DNS/TLS/deployment remain blocked
+  on CLI authentication. See `docs/staging-execution-results.md` for partial
+  Group A evidence and `docs/staging-deployment.md` for the approval scope.
+  Groups A/B are owner-approved, but Group B requires every hosted security
+  gate to pass. It has not started; no remote migration/deployment occurred.
   Public `CONFIG.privateModeration` is false.
   The legacy architecture below remains active pending explicit production
   approval and live integration checks. Its owner-controlled pause switch is
