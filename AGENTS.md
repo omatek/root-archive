@@ -12,7 +12,11 @@
 - The private system is NOT deployed. Staging D1/R2 provisioning is documented;
   Access app `admin.archive` now exists for `admin.archive.rootamman.com`;
   email one-time PIN is configured; both remote staging D1 migrations are applied.
-  API asset-transfer authorization failed; Worker/DNS/TLS remain undeployed.
+  API asset-transfer authorization previously failed; Worker/DNS/TLS remain
+  undeployed. The 14 November Cloud environment authenticates Wrangler against
+  the expected account, but its token cannot read the existing Access reusable
+  policy (HTTP 403, code 1010, `auth.forbidden`). Resume stopped at preflight;
+  token permission repair is required before the approved deployment.
   See `docs/staging-execution-results.md` for partial
   Group A evidence and `docs/staging-deployment.md` for the approval scope.
   Groups A/B are owner-approved, but Group B requires every hosted security

@@ -1,5 +1,60 @@
 # Staging execution results — 14 November 2026
 
+## Authenticated Wrangler resume — current checkpoint
+
+Resumed the existing owner-approved Groups A/B in a newly selected Codex Cloud
+environment on 14 November 2026 UTC. This supersedes the earlier assertion that
+no authenticated Wrangler environment is available. **Wrangler authentication:
+PASS. Group A: BLOCKED by token permissions. Group B: NOT STARTED.**
+
+- Fetched `feat/private-moderation` and checked out exact checkpoint
+  `3c72dc82ae1c45c6b5e35631766eb76e56a6f989` with a clean working tree.
+  GitHub confirms PR #26 is open, draft and unmerged at that head.
+- Read the current deployment plan, execution results, private moderation guide
+  and moderation Wrangler configuration. `git diff --exit-code
+  5f978552dc5a8ed0b515386b6a20bc8e3dcb00d0 -- worker admin site scripts tests
+  package.json package-lock.json` passed. Both migration SHA256 values match
+  the approved plan. No implementation, asset, dependency or configuration
+  change was needed.
+- Node `v24.22.1`; installed existing locked Worker dependencies with
+  `npm ci --prefix worker --cache /tmp/root-archive-npm` (42 packages).
+  Local Wrangler `4.156.0` help confirms the planned deploy and secrets-file
+  options. No migration command was run.
+- `XDG_CONFIG_HOME=/tmp/root-archive-config WRANGLER_SEND_METRICS=false
+  worker/node_modules/.bin/wrangler whoami` exited 0 and reported User API Token
+  authentication through the configured `CLOUDFLARE_API_TOKEN` environment
+  secret, with expected account `1b409400fea16e7142f62ac19ecd361d` listed.
+  No credential or token value was displayed or saved in evidence.
+- The first remote preflight request, authenticated using that same configured
+  secret, was `GET /accounts/1b409400fea16e7142f62ac19ecd361d/access/policies/
+  1fd4e71c-8a76-4969-8792-2772531ca2a9` (one continuous API path). Cloudflare
+  returned **HTTP 403**, error code **1010**, `auth.forbidden`. This blocks
+  revalidating the existing exact-email policy and securely deriving the
+  matching Worker allowlist. It is not an asset-session upload failure.
+- Stopped immediately under the owner's instruction to stop on insufficient
+  permissions. No later inventory request, protected allowlist file creation,
+  deploy, migration, asset upload, DNS/TLS mutation or hosted test occurred.
+  Worker/custom-domain deployment permissions have not been exercised.
+
+[Sanitized resume evidence](staging-wrangler-resume-evidence.json) records the
+exact blocker. Repair the environment token's access to the existing account:
+the reusable-policy GET accepts **Access: Apps and Policies Read** (or Write).
+Use secure environment-secret configuration; never paste a token into chat.
+The remaining inventory/deployment operations may require other permissions;
+this run does not claim they have been validated. No connector fallback or
+repeat upload investigation was attempted.
+
+All hosted Group A gates remain unverified in this run: actual owner PIN login,
+anonymous asset/API denials, independent JWT/allowlist enforcement, alternate
+endpoint protection, deployed staging bindings and valid HTTPS. No PIN
+interaction is needed until the portal is deployed. Group B has no fixture
+writes or deletions. The previously recorded applied migrations and empty
+staging storage were preserved by issuing no writes; their remote state was
+not re-read after the permission failure. No production/legacy mutation was
+issued, and their current remote identifiers were not revalidated in this run.
+Access policy, email-PIN provider and AUD were not modified; submissions,
+scheduled cleanup and public integration remain disabled in source.
+
 ## Direct-upload diagnosis — latest checkpoint
 
 Continued from `c967e007691d4ce1cc2e35c89fd015f7af4bd21e` under the
