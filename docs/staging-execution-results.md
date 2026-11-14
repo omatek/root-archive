@@ -1,5 +1,69 @@
 # Staging execution results — 14 November 2026
 
+## Wrangler deployment — current checkpoint
+
+Continued from `048b998102279d1945870ad5a1226c502ea34841` using the owner's
+explicit authorization to split Access verification from deployment credentials.
+The earlier policy-read 403 is a deployment-token scope limitation, not a failed
+security control. The connected Cloudflare integration independently verified
+app `bebba566-18d3-42c5-a78e-50213ea2dad6`, unchanged AUD, existing single exact-email
+Allow policy, PIN provider `0db90b4d-534a-4f75-ab0e-026016e0b1b9`, one-hour session,
+HttpOnly/binding cookies, no preflight bypass and no overlapping Access apps.
+No Access setting was changed. The exact existing policy email was transferred
+in encrypted form and supplied only through a mode-0600 temporary secrets file;
+that file and the temporary transfer key were removed after deployment.
+
+Preflight confirmed both migrations recorded, zero submissions/revisions/resources/
+audit rows, clean foreign keys, empty private R2, disabled r2.dev and no R2 custom
+domains. Reviewed implementation/config/assets still match `5f978552…` exactly.
+No migration was reapplied. Locked dependencies were restored with `npm ci`;
+Wrangler 4.156.0 release-config dry-run and real deploy succeeded.
+
+At `2026-11-14T08:32:53Z`, Wrangler uploaded all ten administrator assets and deployed:
+
+- Worker `root-archive-moderation-staging`.
+- Version `bb9e96b3-e789-47b0-aa92-16168fe80db4` at 100%; deployment
+  `2eaa7db3-f51c-4747-a5ea-e8ec0b86c5a2`.
+- Admin custom domain `580d38dcab623f69bd2edffa224340c4473435be`, managed DNS
+  `60487f52f1b055e739042149d60f8e45`, certificate reference
+  `ec66ad67-c346-4ff5-a5b1-dc3d59735aa9`.
+- API-staging custom domain `1fc544a0ed42618cfdde24bc360c4686a50675a8`, managed DNS
+  `6b07023fca7347ba5d83c67fda5322a4`, certificate reference
+  `2cdcbcd6-7862-46f9-bb0c-1e3ea3b30642`.
+
+Postflight confirms only staging D1 `f4aa2a8b-4b27-4ed3-b7a2-4e6e100a94c6`,
+R2 `root-archive-private-staging` and ASSETS bindings, ADMIN_EMAILS as a secret,
+correct issuer/AUD/origins, and submissions/cleanup false. workers.dev and version
+previews are disabled; both custom domains have preview routing false. R2 remains
+empty. Legacy deployment/version, production Pages canonical deployment/SHA and
+three existing production DNS records remain unchanged. No legacy/public R2,
+production DNS or Pages mutation was issued.
+
+**Group A remains BLOCKED at hosted verification; Group B has NOT STARTED.**
+Cloud-shell HTTPS probes fail before reaching the origin: curl exit 56,
+`CONNECT tunnel failed, response 403`, HTTP `000`. The integration's generic fetch
+also denies the new hostnames; a control `/resources` request returns
+`Forbidden: requests to api-staging.rootamman.com are not allowed`. These are
+network-policy limitations, not evidence of Access denial or a security failure.
+Do not count the attempted admin HTML/asset/API probes as passed security tests.
+Certificate references and routing creation do not prove valid hosted TLS.
+The zone certificate-pack listing has not yet exposed the new certificates.
+
+The running environment needs HTTPS access to `admin.archive.rootamman.com`,
+`api-staging.rootamman.com`, `rootamman.cloudflareaccess.com`, and the exact
+moderation workers.dev/version hosts under `omar-khldooon33.workers.dev` for the
+required probes. No environment-change tool is offered; edit the running
+machine's network settings. Then complete anonymous/forged-token/alternate-host
+checks, actual TLS verification and owner-operated email-PIN login. Independent
+hosted JWT/allowlist enforcement and session-negative cases remain unverified.
+No authentication bypass or synthetic writes are authorized before that gate.
+
+[Sanitized deployment evidence](staging-wrangler-deployment-evidence.json) records
+bindings, domain/DNS/certificate identities and unchanged production checkpoints.
+The original rollback plan now applies to the two recorded new custom-domain IDs;
+no rollback was performed. Access PIN configuration is retained. PR #26 stays
+draft/unmerged and public integration remains disabled.
+
 ## Authenticated Wrangler resume — current checkpoint
 
 Resumed the existing owner-approved Groups A/B in a newly selected Codex Cloud

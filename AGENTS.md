@@ -9,22 +9,18 @@
   Administrator assets and API share a Worker-first Access/allowlist gate.
   Unpublish retains a private file for review; permanent removal revokes and
   queues deletion. Do not restore public access using old catalogs or buckets.
-- The private system is NOT deployed. Staging D1/R2 provisioning is documented;
-  Access app `admin.archive` now exists for `admin.archive.rootamman.com`;
-  email one-time PIN is configured; both remote staging D1 migrations are applied.
-  API asset-transfer authorization previously failed; Worker/DNS/TLS remain
-  undeployed. The 14 November Cloud environment authenticates Wrangler against
-  the expected account, but its token cannot read the existing Access reusable
-  policy (HTTP 403, code 1010, `auth.forbidden`). Resume stopped at preflight;
-  token permission repair is required before the approved deployment.
-  See `docs/staging-execution-results.md` for partial
-  Group A evidence and `docs/staging-deployment.md` for the approval scope.
-  Groups A/B are owner-approved, but Group B requires every hosted security
-  gate to pass. It has not started; no Worker deployment occurred.
-  Public `CONFIG.privateModeration` is false.
-  The legacy architecture below remains active pending explicit production
-  approval and live integration checks. Its owner-controlled pause switch is
-  `LEGACY_SUBMISSIONS_ENABLED=false` (default preserves the old workflow).
+- Isolated private moderation staging is deployed through Wrangler; production
+  integration remains disabled. Version `bb9e96b3-e789-47b0-aa92-16168fe80db4`
+  serves the approved admin/API-staging custom domains with staging D1/R2 only.
+  Access app/policy/PIN/AUD were independently verified through the connector;
+  the deployment token's Access read restriction is not a security failure.
+  Both D1 migrations were already applied; do not reapply them. R2 remains empty.
+  Group A hosted verification is blocked by environment hostname network grants
+  and still requires actual owner PIN login/TLS/auth checks. Group B has not
+  started and requires every hosted security gate to pass. Read
+  `docs/staging-execution-results.md` and `docs/staging-deployment.md` before
+  resuming. Legacy/production resources are unchanged; submissions and scheduled
+  cleanup remain disabled. Public `CONFIG.privateModeration` is false.
 
 - `site/`: static vanilla HTML/JS; `courses.json` is an array of `{id, name,
   tracks}`. `resources.json` is an array of `{id, course_id, type, title,
