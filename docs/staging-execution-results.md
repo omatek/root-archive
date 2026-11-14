@@ -1,6 +1,75 @@
-# Staging execution results — 14 November 2026
+# Staging execution results
 
-## Fixture 3 interruption resume, private editing and stale-write check — current checkpoint
+## Fixture 3 edited replacement approved and republished — 15 November 2026, Asia/Amman
+
+**Replacement approval, exact edited public download and unused-original cleanup
+PASS. Group B remains PARTIAL.** The owner reported `Approved replacement`.
+The real `submission_approved` event is at `2026-11-14T21:50:54.833Z`
+(15 November, 00:50:54 Asia/Amman). Read-only D1/R2 verification confirms n=3
+published/version 4, title `Synthetic staging 3 conflict A`, with the public
+snapshot selecting the exact edited revision
+`fa34866f-cd12-4be7-a3fe-fe4a18cc0a45`.
+
+The unused original is now `deleted`, filename scrubbed and ETag cleared, with
+one deletion attempt and no error. Its exact R2 key returns actual Cloudflare
+404/code 10007. The revision row remains for history; its retained ID is not an
+active file. Only the approved 2,025-byte replacement remains in R2, ready with
+the previously verified ETag. No direct SQL publication/deletion was performed.
+[Actual approval and cleanup state](staging-functional-fixture3-approved-state.json).
+
+Fresh anonymous hosted checks at 00:52:53 Asia/Amman confirm:
+
+- Catalog 200, exactly one known synthetic resource, tab A's successful title,
+  correct public URL and no private identity/moderator fields.
+- Download GET/HEAD 200, `image/png`, Content-Length 2,025, safe filename
+  `resource-726f6f74-6172-4368-8000-000000000003.png`, and no-store headers.
+- GET SHA256 exactly
+  `f7a2816a18d53b3db6a505a75ceaa01fb0cd3606d7a4f424ca0466beadbfda0b`,
+  proving the public bytes are the inspected rotated/redacted replacement rather
+  than the original. HEAD has no body.
+- Direct private replacement path on the public API still returns 404.
+- The previously accepted constructed cursor now returns actual
+  `409 {code:"catalog_changed"}` after publication. This is supplementary hosted
+  generation invalidation, **not** a completed API-issued 201-resource traversal.
+
+[Actual public download and cursor results](staging-functional-fixture3-approved-http.json).
+No confirmed failure was observed; authentication, infrastructure, migrations,
+production/legacy resources and onboarding settings remain unchanged.
+
+### Same-ID republication PASS
+
+The owner then unpublished and reapproved n=3 through the real portal. Live D1
+records `resource_unpublished` at `2026-11-14T21:54:39.626Z` followed by
+`submission_approved` at `21:56:01.163Z`; the record is published/version 6.
+The resource UUID, public download URL, selected edited revision and file hash
+remain unchanged. At 01:00:58 Asia/Amman, fresh anonymous catalog/GET/HEAD all
+returned 200 and GET still matched the same 2,025-byte edited PNG. The original
+stays deleted and only the ready approved replacement remains in R2. This closes
+the earlier independently unverified republication case. The brief private
+interval was not independently sampled; n=1's withdrawal-denial proof remains
+the observed revocation test.
+[Real republication/audit state](staging-functional-fixture3-republished-state.json)
+and [same-ID public responses](staging-functional-fixture3-republished-http.json).
+
+**Next owner action:** permanently remove n=3 with reason `Synthetic cleanup 3`.
+Pre-cleanup inventory contains only the three owned submissions (two terminal),
+the known deleted originals and one exact manifest-owned approved replacement;
+there are no unknown live objects. The executor will verify physical deletion,
+continued public denial and retained history. No database row deletion or restore
+is authorized or needed.
+
+Full multi-page publication/withdrawal consistency, overlapping mutation/upload
+races, and actual client-interruption recovery remain outstanding. They require
+authenticated operator/browser actions; no available tool controls the user's
+authenticated side browser. The owner is being asked whether they can operate a
+reviewable, strictly scoped same-origin functional API client to avoid hundreds
+of manual UI actions. No new pagination fixtures are being seeded until an
+executable path is chosen. Such a client is not an auth bypass or deployed service;
+no client code or successful bulk result is claimed at this checkpoint.
+No cookie, JWT or PIN is requested. Group A's limited
+deferred negative cases remain unverified, and contributor onboarding is inactive.
+
+## Earlier fixture 3 interruption resume and private editing checkpoint
 
 **Group B remains PARTIAL. Fixture 3 was already fully seeded; it was not
 recreated. Rotation/redaction/private replacement and stale-write protection

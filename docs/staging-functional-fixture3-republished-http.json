@@ -1,0 +1,33 @@
+{
+  "observed_at": "2026-11-14T22:00:58.096690+00:00",
+  "kind": "Actual anonymous same-ID republication checks; credentials omitted; TLS verified",
+  "results": [
+    {
+      "path": "/resources",
+      "method": "GET",
+      "status": 200,
+      "cache_control": "private, no-store, max-age=0",
+      "body_bytes": 336,
+      "sha256": "0d3ce4b0598325438f9e3ca7a54d0e294d425d8989ce76e61c6d27813a8f079b",
+      "same_resource_id_and_url": true
+    },
+    {
+      "path": "/download/726f6f74-6172-4368-8000-000000000003",
+      "method": "GET",
+      "status": 200,
+      "cache_control": "private, no-store, max-age=0",
+      "body_bytes": 2025,
+      "sha256": "f7a2816a18d53b3db6a505a75ceaa01fb0cd3606d7a4f424ca0466beadbfda0b",
+      "same_edited_bytes": true
+    },
+    {
+      "path": "/download/726f6f74-6172-4368-8000-000000000003",
+      "method": "HEAD",
+      "status": 200,
+      "cache_control": "private, no-store, max-age=0",
+      "body_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "pass": true
+}

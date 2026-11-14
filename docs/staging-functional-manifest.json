@@ -56,8 +56,8 @@
     "private/v1/726f6f74-6172-4368-8000-000000000003/"
   ],
   "deletion_scope": "Only manifest-owned revisions through existing authenticated admin workflow; recheck current rows/object ownership before cleanup",
-  "current_state": "n=1 removed and n=2 rejected/deleted with histories retained; n=3 private edited candidate ready at version 3 after a successful stale-write check; awaiting replacement approval",
-  "last_observed_at": "2026-11-14T20:36:20.390Z",
+  "current_state": "n=1 removed and n=2 rejected/deleted with histories retained; n=3 edited candidate republished at version 6 on same UUID/URL and same bytes, original deleted; awaiting final owned cleanup",
+  "last_observed_at": "2026-11-14T22:00:58.096690+00:00",
   "publication_verified_at": "2026-11-14T11:56:53.728287+00:00",
   "publication_checks": {
     "public_catalog": 200,
@@ -83,14 +83,16 @@
       "r2_object_absent": true
     },
     "726f6f74-6172-4368-8000-000000000003": {
-      "status": "pending",
-      "version": 3,
+      "status": "published",
+      "version": 6,
       "original_revision_id": "726f6f74-6172-4368-9000-000000000003",
-      "original_ready_and_unchanged": true,
+      "original_ready_and_unchanged": false,
       "candidate_revision_id": "fa34866f-cd12-4be7-a3fe-fe4a18cc0a45",
       "candidate_status": "ready",
-      "public_snapshot_exists": false,
-      "title": "Synthetic staging 3 conflict A"
+      "public_snapshot_exists": true,
+      "title": "Synthetic staging 3 conflict A",
+      "original_revision_status": "deleted",
+      "original_r2_object_absent": true
     }
   },
   "withdrawal_checks": {
@@ -111,7 +113,7 @@
     "tombstones_and_audit_retained": true
   },
   "review_started_verified": true,
-  "last_observed_local": "2026-11-14T23:31:00.801447+03:00",
+  "last_observed_local": "2026-11-15T01:00:58.096690+03:00",
   "rejection_checks": {
     "state": "rejected",
     "version": 3,
@@ -144,5 +146,30 @@
     "owner_observed_conflict": true,
     "http_status_directly_captured_by_codex": false,
     "public_snapshot_exists": false
+  },
+  "replacement_publication_checks": {
+    "revision_id": "fa34866f-cd12-4be7-a3fe-fe4a18cc0a45",
+    "anonymous_get": 200,
+    "anonymous_head": 200,
+    "bytes": 2025,
+    "sha256": "f7a2816a18d53b3db6a505a75ceaa01fb0cd3606d7a4f424ca0466beadbfda0b",
+    "safe_uuid_filename": true,
+    "no_store": true,
+    "unused_original_deleted": true,
+    "only_approved_revision_remains_in_r2": true,
+    "old_constructed_cursor_status": 409,
+    "old_constructed_cursor_code": "catalog_changed",
+    "full_pagination_pass": false
+  },
+  "republication_checks": {
+    "same_submission_id": true,
+    "same_public_url": true,
+    "same_selected_revision": "fa34866f-cd12-4be7-a3fe-fe4a18cc0a45",
+    "same_edited_sha256": "f7a2816a18d53b3db6a505a75ceaa01fb0cd3606d7a4f424ca0466beadbfda0b",
+    "real_unpublish_and_approval_audits": true,
+    "anonymous_get": 200,
+    "anonymous_head": 200,
+    "version": 6,
+    "private_interval_independently_sampled": false
   }
 }

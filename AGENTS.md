@@ -17,8 +17,9 @@
   Both D1 migrations were already applied; do not reapply them. Group B now has
   three owned synthetic submissions: n=1 removed and n=2 rejected, both R2 files
   deleted with audit/tombstones preserved; n=3 reconciled without reseeding and
-  now has a verified private edited candidate, unchanged original, and version 3
-  after a real two-tab stale-write check. Inspect
+  now has a published verified edited candidate at version 6 after a real two-tab
+  stale-write check. Its unused original has been physically deleted; only the
+  approved replacement remains in R2. Inspect
   docs/staging-functional-manifest.json before writes or cleanup. Never reseed
   or overwrite that UUID/key blindly.
   Hosted custom/Access probes now reach staging: anonymous/forged administrator
@@ -42,8 +43,9 @@
   cleanup. The n=2 Start review/rejection and physical deletion pass. The side
   browser is visible in context, but browser control tools are not exposed in
   this execution session; no separate browser shares its authenticated session.
-  Image rotation/redaction/private replacement and stale-write protection pass;
-  await owner approval of n=3's edited candidate. Full pagination, overlapping
+  Image rotation/redaction/replacement, stale-write protection, replacement
+  approval/public hash, original cleanup and same-ID republication pass. Await
+  owner final removal of n=3's remaining edited file. Full pagination, overlapping
   operation races and interrupted-request recovery remain open. Read
   `docs/staging-execution-results.md` and `docs/staging-deployment.md` before
   resuming. Legacy/production resources are unchanged; submissions and scheduled
