@@ -1,0 +1,142 @@
+{
+  "observed_at": "2026-11-14T22:10:23.900Z",
+  "kind": "Read-only verification of owner final fixture-3 removal; no new seeds or client execution",
+  "results": [
+    {
+      "rows": [
+        {
+          "id": "726f6f74-6172-4368-8000-000000000003",
+          "status": "removed",
+          "version": 7,
+          "title": "Removed material",
+          "semester": "",
+          "contributor": null,
+          "contributor_email": null,
+          "contributor_sub": null,
+          "original_revision_id": null,
+          "candidate_revision_id": null
+        }
+      ],
+      "rows_written": 0
+    },
+    {
+      "rows": [
+        {
+          "id": "726f6f74-6172-4368-8000-000000000003",
+          "status": "removed",
+          "revision_id": null,
+          "title": "Removed material"
+        }
+      ],
+      "rows_written": 0
+    },
+    {
+      "rows": [
+        {
+          "id": "726f6f74-6172-4368-9000-000000000003",
+          "kind": "original",
+          "object_key": "private/v1/726f6f74-6172-4368-8000-000000000003/726f6f74-6172-4368-9000-000000000003.png",
+          "status": "deleted",
+          "filename": "removed",
+          "etag": null,
+          "delete_attempts": 1,
+          "last_delete_error": null,
+          "deleted_at": "2026-11-14T21:50:54.922Z"
+        },
+        {
+          "id": "fa34866f-cd12-4be7-a3fe-fe4a18cc0a45",
+          "kind": "replacement",
+          "object_key": "private/v1/726f6f74-6172-4368-8000-000000000003/fa34866f-cd12-4be7-a3fe-fe4a18cc0a45.png",
+          "status": "deleted",
+          "filename": "removed",
+          "etag": null,
+          "delete_attempts": 1,
+          "last_delete_error": null,
+          "deleted_at": "2026-11-14T22:01:58.011Z"
+        }
+      ],
+      "rows_written": 0
+    },
+    {
+      "rows": [
+        {
+          "action": "file_replaced",
+          "created_at": "2026-11-14T20:29:17.598Z",
+          "reason": null
+        },
+        {
+          "action": "metadata_changed",
+          "created_at": "2026-11-14T20:33:14.425Z",
+          "reason": null
+        },
+        {
+          "action": "submission_approved",
+          "created_at": "2026-11-14T21:50:54.833Z",
+          "reason": null
+        },
+        {
+          "action": "resource_unpublished",
+          "created_at": "2026-11-14T21:54:39.626Z",
+          "reason": "Synthetic republication check"
+        },
+        {
+          "action": "submission_approved",
+          "created_at": "2026-11-14T21:56:01.163Z",
+          "reason": null
+        },
+        {
+          "action": "resource_removed",
+          "created_at": "2026-11-14T22:01:57.983Z",
+          "reason": "Synthetic cleanup 3"
+        }
+      ],
+      "rows_written": 0
+    },
+    {
+      "rows": [
+        {
+          "id": "726f6f74-6172-4368-8000-000000000001",
+          "status": "removed",
+          "version": 6
+        },
+        {
+          "id": "726f6f74-6172-4368-8000-000000000002",
+          "status": "rejected",
+          "version": 3
+        },
+        {
+          "id": "726f6f74-6172-4368-8000-000000000003",
+          "status": "removed",
+          "version": 7
+        }
+      ],
+      "rows_written": 0
+    },
+    {
+      "rows": [
+        {
+          "submission_id": "726f6f74-6172-4368-8000-000000000001",
+          "count": 5
+        },
+        {
+          "submission_id": "726f6f74-6172-4368-8000-000000000002",
+          "count": 2
+        },
+        {
+          "submission_id": "726f6f74-6172-4368-8000-000000000003",
+          "count": 6
+        }
+      ],
+      "rows_written": 0
+    },
+    {
+      "rows": [],
+      "rows_written": 0
+    }
+  ],
+  "r2_inventory": {
+    "count": 0,
+    "keys": []
+  },
+  "edited_key_missing": true
+}

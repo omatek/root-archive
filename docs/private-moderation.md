@@ -4,6 +4,14 @@ Work is on `feat/private-moderation`. This is a staged replacement, not an
 approved production cutover. The legacy Worker/configuration, publication App,
 required checks and static public catalog remain operational until release.
 
+Current hosted state supersedes the historical checkpoints below: isolated
+staging is deployed and both migrations are already applied. Read
+[execution results](staging-execution-results.md) before acting. Three owned
+synthetic lifecycles have completed and their files are deleted. Group B remains
+partial; the [browser client](staging-browser-client.md) is prepared only, awaiting
+independent review and execution approval. Do not seed further fixtures yet.
+Production integration and real contributor onboarding remain inactive.
+
 ## Checkpoint verification — 13 November 2026
 
 Milestones A–C have local implementations: private backend/schema/authentication,

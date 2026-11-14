@@ -12,6 +12,13 @@ the identifiers, limits, private staging bindings and deletion boundaries below
 still apply. No production activation or real academic upload is authorized.
 See the current execution results for completed operations and remaining actions.
 
+Latest owner instruction: prepare the scoped browser client and instructions for
+independent review, **without execution or additional seeding yet**. The prepared
+[review candidate and phase instructions](staging-browser-client.md) do not
+authorize execution. n=1..3 are terminal with staging R2 empty; n=4..205 remain
+unseeded. Independent review and separate owner execution approval are pending;
+destructive cleanup remains a separate gate.
+
 Verified 14 November 2026 (Asia/Amman; Cloudflare observations began on
 13 November UTC). This plan does **not** authorize remote execution. Stop before
 any migration, deployment, Access/DNS/routing change or persistent staging write.

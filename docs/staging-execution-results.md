@@ -1,5 +1,72 @@
 # Staging execution results
 
+## Final fixture 3 cleanup and browser-client preparation — 14 November 2026 UTC
+
+**Fixture 3 permanent removal PASS; Group B PARTIAL. Client prepared, NOT RUN;
+independent review PENDING. No new fixtures seeded.**
+
+The owner reported `Removed 3`. Read-only Cloudflare verification at
+`2026-11-14T22:10:23.900Z` confirms removed/version 7, scrubbed title/semester,
+null identity/candidate/original pointers and a scrubbed removed resource
+tombstone. Both n=3 revision rows are `deleted`, each with one deletion attempt
+and no error. The exact replacement key is absent and the complete staging R2
+inventory has **zero objects**. Six actual audit events remain, including
+`resource_removed` at `22:01:57.983Z`, reason `Synthetic cleanup 3`.
+All three submissions are terminal: n=1 removed/v6, n=2 rejected/v3, n=3
+removed/v7; audit counts are 5/2/6 and foreign-key checking returns no violations.
+All verification SQL reports zero writes. At `22:13:46Z` fresh anonymous hosted
+catalog GET returns 200/empty and n=3 download GET/HEAD both return 404.
+[Actual D1/R2 evidence](staging-functional-fixture3-final-removal.json) and
+[anonymous denial evidence](staging-functional-fixture3-final-removal-http.json).
+
+The owner agreed to operate a tightly scoped client in their existing
+administrator browser, but explicitly requested the **complete script and
+instructions first, independent review, and no execution or seeding yet**.
+The [complete client](../scripts/staging-group-b-browser.js) and
+[phase-by-phase instructions/review checklist](staging-browser-client.md) are
+prepared for that review. Loading defines commands with zero requests; reads,
+mutations and separately gated destructive cleanup are distinct. The only write
+scopes are future n=4 recovery/races and n=5..205 pagination. The script uses
+normal same-origin administrator requests without reading authentication
+material. No browser, server or authentication configuration was changed.
+
+Preparation checks: `node --check scripts/staging-group-b-browser.js` passed;
+`node --test --test-isolation=none scripts/staging-group-b-browser.test.mjs`
+passed **9/9 offline client guard tests**. Normal `node --test
+scripts/staging-group-b-browser.test.mjs` also passed. The tests use an isolated
+VM and fake transport only; they are not hosted application acceptance or
+independent review. `git diff --check` passed. Client SHA256:
+`81fca68992a49b0dc5619166d0e3fe5592853edc889213b59b40302c6f0ae1b6`.
+
+The full `node --test --test-isolation=none scripts/*.test.mjs` suite passed
+**43/43**. Its first sandboxed run hit `spawnSync git EPERM` in the existing
+temporary-Git-repository tests; rerunning with the approved subprocess capability
+passed without changing test/application behavior. No network or live client
+was involved. Existing PR checks will also run on the pushed review candidate.
+
+**Outstanding:** actual 201-record pagination/publication/withdrawal consistency,
+overlapping metadata/decision/upload races, idempotent approval replay and real
+client-interruption reconciliation. Those remain unexecuted; the previously
+passed two-tab stale-write case is not a simultaneous race. Hosted artificial
+D1/R2 outages remain outside the approved fault scope. Deferred Group A
+independent JWT and expired/revoked-session negatives stay unverified, not failed.
+No confirmed failure was observed in this checkpoint.
+
+**Next owner action:** have an independent reviewer inspect the exact client
+commit/hash and instructions, record findings, and approve execution separately.
+Do not run it or seed n=4..205 yet. Cleanup is separately reviewed/gated even
+after execution approval. Work remains in PR #26; no other PR is created/merged.
+
+**Contributor onboarding: NO.** After synthetic acceptance, the minimum separate
+setup/approval is a staging student frontend with staging Google authorized
+origins/client and Turnstile, then an authorized eligible student identity doing
+an actual synthetic UI upload through `/submit`. Verify pending confidentiality,
+admin approval/public download, withdrawal/takedown and the submission-disable
+switch. Synthetic inserts prove none of Google, Turnstile or `/submit`.
+Production private storage/deployment/cutover and real academic uploads still
+require explicit owner approval; none is activated here.
+
+
 ## Fixture 3 edited replacement approved and republished — 15 November 2026, Asia/Amman
 
 **Replacement approval, exact edited public download and unused-original cleanup
@@ -51,7 +118,7 @@ the observed revocation test.
 [Real republication/audit state](staging-functional-fixture3-republished-state.json)
 and [same-ID public responses](staging-functional-fixture3-republished-http.json).
 
-**Next owner action:** permanently remove n=3 with reason `Synthetic cleanup 3`.
+**Historical next action, now completed above:** permanently remove n=3 with reason `Synthetic cleanup 3`.
 Pre-cleanup inventory contains only the three owned submissions (two terminal),
 the known deleted originals and one exact manifest-owned approved replacement;
 there are no unknown live objects. The executor will verify physical deletion,

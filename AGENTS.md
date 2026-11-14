@@ -17,10 +17,10 @@
   Both D1 migrations were already applied; do not reapply them. Group B now has
   three owned synthetic submissions: n=1 removed and n=2 rejected, both R2 files
   deleted with audit/tombstones preserved; n=3 reconciled without reseeding and
-  now has a published verified edited candidate at version 6 after a real two-tab
-  stale-write check. Its unused original has been physically deleted; only the
-  approved replacement remains in R2. Inspect
-  docs/staging-functional-manifest.json before writes or cleanup. Never reseed
+  passed editing, replacement publication, same-ID republication and a real
+  two-tab stale-write check, then permanent removal at version 7. All four
+  campaign revisions are deleted and staging R2 is empty; audit/tombstones remain.
+  Inspect docs/staging-functional-manifest.json before writes or cleanup. Never reseed
   or overwrite that UUID/key blindly.
   Hosted custom/Access probes now reach staging: anonymous/forged administrator
   requests are denied and public-host admin paths return 404. The owner confirms
@@ -44,9 +44,12 @@
   browser is visible in context, but browser control tools are not exposed in
   this execution session; no separate browser shares its authenticated session.
   Image rotation/redaction/replacement, stale-write protection, replacement
-  approval/public hash, original cleanup and same-ID republication pass. Await
-  owner final removal of n=3's remaining edited file. Full pagination, overlapping
-  operation races and interrupted-request recovery remain open. Read
+  approval/public hash, original cleanup, same-ID republication and final n=3
+  removal pass. Full pagination, overlapping operation races and interrupted-
+  request recovery remain open. The owner requested a reviewable browser client
+  but explicitly prohibited execution/new seeding until independent review and
+  approval. Read docs/staging-browser-client.md. The client is prepared only;
+  independent review is pending. Keep n=4..205 unseeded for now. Read
   `docs/staging-execution-results.md` and `docs/staging-deployment.md` before
   resuming. Legacy/production resources are unchanged; submissions and scheduled
   cleanup remain disabled. Public `CONFIG.privateModeration` is false.

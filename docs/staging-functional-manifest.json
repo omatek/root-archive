@@ -46,7 +46,9 @@
       "size": 2025,
       "sha256": "f7a2816a18d53b3db6a505a75ceaa01fb0cd3606d7a4f424ca0466beadbfda0b",
       "kind": "replacement",
-      "created_via": "real authenticated portal image editor"
+      "created_via": "real authenticated portal image editor",
+      "current_status": "deleted",
+      "r2_object_absent": true
     }
   ],
   "allowed_bucket": "root-archive-private-staging",
@@ -56,8 +58,8 @@
     "private/v1/726f6f74-6172-4368-8000-000000000003/"
   ],
   "deletion_scope": "Only manifest-owned revisions through existing authenticated admin workflow; recheck current rows/object ownership before cleanup",
-  "current_state": "n=1 removed and n=2 rejected/deleted with histories retained; n=3 edited candidate republished at version 6 on same UUID/URL and same bytes, original deleted; awaiting final owned cleanup",
-  "last_observed_at": "2026-11-14T22:00:58.096690+00:00",
+  "current_state": "n=1 removed/v6, n=2 rejected/v3, n=3 removed/v7; all four campaign revisions deleted, zero R2 objects; audit/tombstones retained. Browser client prepared only, independent review pending, n=4..205 unseeded.",
+  "last_observed_at": "2026-11-14T22:13:46.785805+00:00",
   "publication_verified_at": "2026-11-14T11:56:53.728287+00:00",
   "publication_checks": {
     "public_catalog": 200,
@@ -83,16 +85,20 @@
       "r2_object_absent": true
     },
     "726f6f74-6172-4368-8000-000000000003": {
-      "status": "published",
-      "version": 6,
-      "original_revision_id": "726f6f74-6172-4368-9000-000000000003",
+      "status": "removed",
+      "version": 7,
+      "original_revision_id": null,
       "original_ready_and_unchanged": false,
-      "candidate_revision_id": "fa34866f-cd12-4be7-a3fe-fe4a18cc0a45",
-      "candidate_status": "ready",
-      "public_snapshot_exists": true,
-      "title": "Synthetic staging 3 conflict A",
+      "candidate_revision_id": null,
+      "candidate_status": "deleted",
+      "public_snapshot_exists": false,
+      "title": "Removed material",
       "original_revision_status": "deleted",
-      "original_r2_object_absent": true
+      "original_r2_object_absent": true,
+      "r2_object_absent": true,
+      "resource_tombstone_status": "removed",
+      "replacement_revision_status": "deleted",
+      "audit_events_retained": 6
     }
   },
   "withdrawal_checks": {
@@ -113,7 +119,7 @@
     "tombstones_and_audit_retained": true
   },
   "review_started_verified": true,
-  "last_observed_local": "2026-11-15T01:00:58.096690+03:00",
+  "last_observed_local": "2026-11-15T01:13:46.785805+03:00",
   "rejection_checks": {
     "state": "rejected",
     "version": 3,
@@ -171,5 +177,26 @@
     "anonymous_head": 200,
     "version": 6,
     "private_interval_independently_sampled": false
+  },
+  "fixture3_final_removal_checks": {
+    "status": "removed",
+    "version": 7,
+    "original_and_replacement_deleted": true,
+    "r2_inventory_count": 0,
+    "exact_replacement_key_absent": true,
+    "audit_events_retained": 6,
+    "metadata_scrubbed": true,
+    "foreign_key_violations": 0,
+    "anonymous_get": 404,
+    "anonymous_head": 404,
+    "catalog_empty": true
+  },
+  "browser_client": {
+    "status": "prepared_not_executed",
+    "independent_review": "pending",
+    "new_seeding_authorized_now": false,
+    "unseeded_ids": "n=4..205",
+    "path": "scripts/staging-group-b-browser.js",
+    "sha256": "81fca68992a49b0dc5619166d0e3fe5592853edc889213b59b40302c6f0ae1b6"
   }
 }
