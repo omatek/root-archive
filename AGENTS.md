@@ -15,8 +15,10 @@
   Access app/policy/PIN/AUD were independently verified through the connector;
   the deployment token's Access read restriction is not a security failure.
   Both D1 migrations were already applied; do not reapply them. R2 remains empty.
-  Group A hosted verification is blocked by environment hostname network grants
-  and still requires actual owner PIN login/TLS/auth checks. Group B has not
+  Hosted custom/Access probes now reach staging: anonymous/forged administrator
+  requests are denied and public-host admin paths return 404. Group A still needs
+  real owner PIN login, independent JWT/session checks, direct edge TLS inspection
+  and workers.dev/version-host network grants/probes. Group B has not
   started and requires every hosted security gate to pass. Read
   `docs/staging-execution-results.md` and `docs/staging-deployment.md` before
   resuming. Legacy/production resources are unchanged; submissions and scheduled

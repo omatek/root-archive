@@ -1,5 +1,76 @@
 # Staging execution results — 14 November 2026
 
+## Hosted security resume — latest checkpoint
+
+Resumed exact handoff `1bcce0009c807167a2d4ade4c9845be99f0c8d58` in a
+separate worktree. **Group A: INCOMPLETE. Group B: NOT STARTED.** No
+migration, deployment, Access change, fixture seed, cleanup or production/legacy
+mutation was issued. This run used actual hosted requests, without local tests
+or mocked results.
+
+At approximately 09:33–09:34 UTC, 119 live requests covered all ten files under
+`admin/`, root/unknown paths, session/courses/list/detail/private-file routes,
+all eight mutation routes, GET/HEAD, POST/OPTIONS, forged assertion/email
+headers and a deliberately invalid synthetic session cookie. Redirects were
+not followed. POST bodies were deliberately invalid JSON so an unexpected
+authentication failure could not execute an operation.
+
+- All 49 non-OPTIONS administrator probes returned 302 to the expected Access
+  login origin/path. No protected asset, API or private file was returned.
+- All 57 corresponding probes on the public API hostname returned the Worker's
+  JSON 404, including every asset/admin path and forged-header probe.
+- Eight bare administrator OPTIONS requests returned 400 HTML. A subsequent
+  browser-style OPTIONS request to `/admin/api/session`, with the administrator
+  Origin and preflight method/header fields, returned 403. These are denials;
+  they do not establish authorized CORS/session behavior.
+- `/resources` returned 200, an empty catalog and `private, no-store, max-age=0`.
+  Missing synthetic-ID download GET/HEAD returned 404 with the same cache policy.
+  Access JWKS returned 200 and two keys; no assertion was collected.
+- HTTPS verification remained enabled: curl returned `ssl_verify_result=0` for
+  admin, public API and Access JWKS. The managed proxy presents its own OpenAI
+  certificate, including the requested admin SAN. Cloudflare's read-only API
+  separately reports both recorded custom-domain certificate packs active,
+  exact hostname coverage, Google Trust Services issuance and expiry on
+  12 February 2027. **The actual edge certificate chain/SANs were not observed
+  directly through this intercepting proxy; that portion of the TLS gate remains
+  unverified.**
+- workers.dev `/` failed at proxy CONNECT with 403; it did not reach the origin.
+  The updated environment permits the three custom/Access hosts, but lacks
+  moderation workers.dev/version-host grants. This is not an alternate-host pass.
+  API inventory still shows workers.dev and previews disabled and both custom
+  domains' preview routing false. The sole version has `has_preview=true` metadata;
+  no preview was created or enabled, and no actual preview-host denial is claimed.
+- Read-only inventory confirms the original deployment/version and staging-only
+  bindings, secret ADMIN_EMAILS binding, correct issuer/AUD/origins, disabled
+  submissions/cleanup, private R2 domains disabled/absent, and one exact-email
+  Access Allow policy with the existing PIN provider and no overlapping app.
+  This checks configuration, not genuine administrator login or JWT execution.
+
+Evidence: [hosted probes](staging-hosted-security-evidence.json) and
+[sanitized read-only inventory](staging-hosted-security-inventory.json).
+No cookies, OTPs, assertions, actual administrator email or response content
+from protected pages were retained. The configured Cloudflare API secret was
+not sent to staging. The original workspace checkout was preserved.
+
+**Stop for real administrator interaction:** open
+`https://admin.archive.rootamman.com/`, enter the existing approved Proton
+administrator address, request the email code and enter it in the Cloudflare
+Access page. Confirm the portal loads, then visit
+`https://admin.archive.rootamman.com/admin/api/session` in the same browser and
+confirm a successful JSON session response. Never paste the PIN, cookies or JWT
+into chat. An owner-browser success alone does not create a session in the
+Codex browser; subsequent authenticated acceptance needs that same real session
+in the browser used for testing.
+
+Administrator login, genuine expired/revoked-session checks, independent hosted
+Worker JWT/allowlist enforcement, direct edge TLS inspection and workers.dev/
+version-host probes remain outstanding. Access interception of forged assertions
+does not prove that the Worker's independent validator ran. Do not weaken Access,
+change the allowlist, deploy a diagnostic endpoint or seed fixtures to complete
+these gates. Grant the existing moderation workers.dev/version hostnames under
+`omar-khldooon33.workers.dev` in the environment for remaining alternate-host
+probes. Group B stays blocked until every Group A gate is evidenced as passed.
+
 ## Wrangler deployment — current checkpoint
 
 Continued from `048b998102279d1945870ad5a1226c502ea34841` using the owner's
