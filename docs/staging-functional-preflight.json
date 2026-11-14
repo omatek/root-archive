@@ -1,0 +1,252 @@
+{
+  "observed_at": "2026-11-14T11:38:53.404Z",
+  "settings": {
+    "bindings": [
+      {
+        "name": "ACCESS_AUD",
+        "text": "0003d8d8ba905005bfed05fc441631de07c91985c3e2baab528bdb4bbb7ac5be",
+        "type": "plain_text"
+      },
+      {
+        "name": "ACCESS_ISSUER",
+        "text": "https://rootamman.cloudflareaccess.com",
+        "type": "plain_text"
+      },
+      {
+        "name": "ADMIN_EMAILS",
+        "type": "secret_text"
+      },
+      {
+        "name": "ADMIN_ORIGIN",
+        "text": "https://admin.archive.rootamman.com",
+        "type": "plain_text"
+      },
+      {
+        "name": "ALLOWED_ORIGIN",
+        "text": "https://archive-staging.rootamman.com",
+        "type": "plain_text"
+      },
+      {
+        "name": "ASSETS",
+        "type": "assets"
+      },
+      {
+        "name": "CLEANUP_ENABLED",
+        "text": "false",
+        "type": "plain_text"
+      },
+      {
+        "database_id": "f4aa2a8b-4b27-4ed3-b7a2-4e6e100a94c6",
+        "id": "f4aa2a8b-4b27-4ed3-b7a2-4e6e100a94c6",
+        "name": "DB",
+        "type": "d1"
+      },
+      {
+        "name": "GOOGLE_CLIENT_ID",
+        "text": "",
+        "type": "plain_text"
+      },
+      {
+        "bucket_name": "root-archive-private-staging",
+        "name": "PRIVATE_FILES",
+        "type": "r2_bucket"
+      },
+      {
+        "name": "PUBLIC_API_ORIGIN",
+        "text": "https://api-staging.rootamman.com",
+        "type": "plain_text"
+      },
+      {
+        "name": "SUBMISSIONS_ENABLED",
+        "text": "false",
+        "type": "plain_text"
+      }
+    ],
+    "compatibility_date": "2026-10-30"
+  },
+  "deployment": [
+    {
+      "id": "2eaa7db3-f51c-4747-a5ea-e8ec0b86c5a2",
+      "versions": [
+        {
+          "version_id": "bb9e96b3-e789-47b0-aa92-16168fe80db4",
+          "percentage": 100
+        }
+      ]
+    }
+  ],
+  "subdomain": {
+    "enabled": false,
+    "previews_enabled": false
+  },
+  "domains": [
+    {
+      "id": "18ff115e80d1e21d3b74e146d72bf141227e6f23",
+      "zone_id": "fc80d6a45a703d0fe4d1876f1380870f",
+      "zone_name": "rootamman.com",
+      "hostname": "api.rootamman.com",
+      "service": "root-archive-worker",
+      "environment": "production",
+      "cert_id": "ddec1cda-d044-4ac4-9b49-f02c3534b6b4",
+      "previews_enabled": false,
+      "enabled": true
+    },
+    {
+      "id": "580d38dcab623f69bd2edffa224340c4473435be",
+      "zone_id": "fc80d6a45a703d0fe4d1876f1380870f",
+      "zone_name": "rootamman.com",
+      "hostname": "admin.archive.rootamman.com",
+      "service": "root-archive-moderation-staging",
+      "environment": "production",
+      "cert_id": "ec66ad67-c346-4ff5-a5b1-dc3d59735aa9",
+      "previews_enabled": false,
+      "enabled": true
+    },
+    {
+      "id": "1fc544a0ed42618cfdde24bc360c4686a50675a8",
+      "zone_id": "fc80d6a45a703d0fe4d1876f1380870f",
+      "zone_name": "rootamman.com",
+      "hostname": "api-staging.rootamman.com",
+      "service": "root-archive-moderation-staging",
+      "environment": "production",
+      "cert_id": "2cdcbcd6-7862-46f9-bb0c-1e3ea3b30642",
+      "previews_enabled": false,
+      "enabled": true
+    }
+  ],
+  "access": {
+    "id": "bebba566-18d3-42c5-a78e-50213ea2dad6",
+    "domain": "admin.archive.rootamman.com",
+    "aud": "0003d8d8ba905005bfed05fc441631de07c91985c3e2baab528bdb4bbb7ac5be",
+    "allowed_idps": [
+      "0db90b4d-534a-4f75-ab0e-026016e0b1b9"
+    ],
+    "options_preflight_bypass": false,
+    "policies": [
+      {
+        "id": "1fd4e71c-8a76-4969-8792-2772531ca2a9",
+        "decision": "allow"
+      }
+    ]
+  },
+  "r2_managed": {
+    "enabled": false,
+    "bucketId": "1a5f949cc506496daa0ff5ff43333c72",
+    "domain": "pub-1a5f949cc506496daa0ff5ff43333c72.r2.dev"
+  },
+  "r2_custom": {
+    "domains": []
+  },
+  "r2_objects": {
+    "count": 0,
+    "keys": []
+  },
+  "d1": [
+    {
+      "results": [
+        {
+          "name": "submissions",
+          "count": 0
+        },
+        {
+          "name": "file_revisions",
+          "count": 0
+        },
+        {
+          "name": "resources",
+          "count": 0
+        },
+        {
+          "name": "moderation_audit",
+          "count": 0
+        }
+      ],
+      "success": true,
+      "meta": {
+        "served_by": "v3-prod",
+        "served_by_region": "EEUR",
+        "served_by_colo": "FRA",
+        "served_by_primary": true,
+        "timings": {
+          "sql_duration_ms": 1.0052
+        },
+        "duration": 1.0052,
+        "changes": 0,
+        "last_row_id": 0,
+        "changed_db": false,
+        "size_after": 102400,
+        "rows_read": 4,
+        "rows_written": 0,
+        "total_attempts": 1
+      }
+    },
+    {
+      "results": [
+        {
+          "id": 1,
+          "name": "0001_private_moderation.sql"
+        },
+        {
+          "id": 2,
+          "name": "0002_catalog_generation.sql"
+        }
+      ],
+      "success": true,
+      "meta": {
+        "served_by": "v3-prod",
+        "served_by_region": "EEUR",
+        "served_by_colo": "FRA",
+        "served_by_primary": true,
+        "timings": {
+          "sql_duration_ms": 0.1207
+        },
+        "duration": 0.1207,
+        "changes": 0,
+        "last_row_id": 0,
+        "changed_db": false,
+        "size_after": 102400,
+        "rows_read": 2,
+        "rows_written": 0,
+        "total_attempts": 1
+      }
+    },
+    {
+      "results": [],
+      "success": true,
+      "meta": {
+        "served_by": "v3-prod",
+        "served_by_region": "EEUR",
+        "served_by_colo": "FRA",
+        "served_by_primary": true,
+        "timings": {
+          "sql_duration_ms": 0.4069
+        },
+        "duration": 0.4069,
+        "changes": 0,
+        "last_row_id": 0,
+        "changed_db": false,
+        "size_after": 102400,
+        "rows_read": 3,
+        "rows_written": 0,
+        "total_attempts": 1
+      }
+    }
+  ],
+  "bookmark": {
+    "bookmark": "00000016-00000000-00005123-41c840126dabd1cc1a286c61be1b91d7"
+  },
+  "legacy": {
+    "id": "88fef60a-22b0-434a-bbc2-89ac0d569629",
+    "versions": [
+      {
+        "version_id": "e8895ac0-b95b-409e-aff1-af3f549be94f",
+        "percentage": 100
+      }
+    ]
+  },
+  "production_pages": {
+    "canonical": "60b32faf-7934-4e5b-8a34-c07c1cb0983d",
+    "sha": "4bb136b9a39423737be4ee30ba1239d735e221c9",
+    "production_branch": "main"
+  }
+}

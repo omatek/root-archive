@@ -14,7 +14,10 @@
   serves the approved admin/API-staging custom domains with staging D1/R2 only.
   Access app/policy/PIN/AUD were independently verified through the connector;
   the deployment token's Access read restriction is not a security failure.
-  Both D1 migrations were already applied; do not reapply them. R2 remains empty.
+  Both D1 migrations were already applied; do not reapply them. Group B now has
+  one owned synthetic pending submission and one private PNG; inspect
+  docs/staging-functional-manifest.json before writes or cleanup. Never reseed
+  or overwrite that UUID/key blindly.
   Hosted custom/Access probes now reach staging: anonymous/forged administrator
   requests are denied and public-host admin paths return 404. The owner confirms
   presented certificate SAN coverage for both custom hosts, valid WE1 admin TLS,
@@ -26,8 +29,11 @@
   expired/revoked-session denial. A genuine nonadmin case is conditional on
   availability under the approved plan; its absence is not a security failure.
   PR #27's evidence is consolidated into PR #26; preserve #27 open for the owner.
-  Group B has not
-  started and requires every hosted security gate to pass. Read
+  The owner explicitly accepts deferring the unverified independent hosted JWT
+  rejection and real expired/revoked-session cases for isolated synthetic-only
+  functional acceptance. Group A is not fully passed; authorization is unchanged.
+  Group B has started with n=1 only. Pending-file privacy/hash checks passed;
+  authenticated review/approval awaits the owner's browser. Read
   `docs/staging-execution-results.md` and `docs/staging-deployment.md` before
   resuming. Legacy/production resources are unchanged; submissions and scheduled
   cleanup remain disabled. Public `CONFIG.privateModeration` is false.

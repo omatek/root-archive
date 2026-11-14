@@ -1,5 +1,123 @@
 # Staging execution results — 14 November 2026
 
+## Group B small lifecycle — current checkpoint
+
+**Group A: PARTIAL, specific negative tests explicitly deferred by owner for
+synthetic staging only. Group B: PARTIAL / first fixture seeded and private.**
+The owner accepts the risk of deferring hosted independent Worker JWT rejection
+and real expired/revoked-session negatives for this functional campaign. These
+remain unverified, not failed or passed. This authorization supersedes the earlier
+requirement to block all Group B work, without changing Access, independent
+authorization, production approval or the documented deletion boundaries.
+
+At `11:38:53Z`, live preflight reconfirmed the recorded Worker version/deployment,
+exact staging bindings, private R2 endpoints disabled, empty application tables
+and bucket, clean foreign keys and the two migration ledger entries. Access
+app/AUD/PIN/policy reference were unchanged. Legacy deployment/version and
+production Pages canonical deployment/SHA matched the existing baseline.
+No migration, redeployment, production/legacy change or new test infrastructure
+was needed. [Preflight and pre-seed Time Travel bookmark](staging-functional-preflight.json).
+
+### Actual completed functional steps
+
+Only **n=1** from the approved 205-entry manifest was seeded:
+
+- Submission: `726f6f74-6172-4368-8000-000000000001`, course `0401111`,
+  type Summary, title `Synthetic staging 1`, semester Synthetic. All contributor
+  identity/credit fields are null. State `pending`, initial version 1.
+- Revision: `726f6f74-6172-4368-9000-000000000001`, ready original PNG,
+  1,920 bytes; the exact private key is in the [active ownership manifest](staging-functional-manifest.json).
+- The approved 128×128 synthetic canvas contains only artificial shapes and
+  `SYNTHETIC`. SHA256
+  `1324f212d3fdc38a04671664d9e87bf203d9982696eeff2373ce4ea9f1251383`.
+- Absence and ownership were checked immediately before insertion/PUT. Both
+  upload-intent inserts and both ready/pending updates changed exactly one row.
+  R2 readback through the authenticated management API matched all 1,920 bytes
+  and the SHA256. No public snapshot or manufactured submission audit was created.
+- Actual anonymous hosted `/download/<submission UUID>` GET and HEAD return
+  **404**, with `private, no-store, max-age=0`. The private object path on the
+  API host also returns **404**. The actual admin private-file GET/HEAD redirect
+  **302** to Access. The public catalog returns **200**, empty with no cursor.
+
+Thus synthetic pending-record creation, private storage byte integrity, exclusion
+from the public catalog and anonymous pending-file denial **PASS**. This is not
+a pass for Google sign-in, Turnstile, `/submit`, administrator moderation,
+publication/download, withdrawal, rejection/removal or cleanup. Those require
+the real application transitions; none will be simulated with direct SQL updates.
+
+### Corrected execution issues
+
+After the four successful seed writes, the final read-only D1 query combined
+multiple statements with parameters, which the REST API rejects (HTTP 400/code
+7400). It was corrected to a read-only query batch; the expected pending/ready
+state, empty public/audit tables and clean foreign keys were verified. **No insert,
+PUT or update was replayed.** This was an execution-query error, not a failure of
+the application lifecycle. [Seed attempt and successful reconciliation](staging-functional-seed-evidence.json).
+
+Initial anonymous probes using Python's default User-Agent received plaintext
+403s; their catalog parser consequently failed. The established acceptance
+User-Agent and a browser User-Agent each returned the expected catalog 200.
+Repeating the narrow pending-file probes with the established client produced
+the expected 404/302/200 results above. No security setting was changed. The
+specific edge rule is not established; the initial 403s are not counted as
+Worker privacy evidence. Both the [initial results](staging-functional-pending-http.json)
+and [verified client results](staging-functional-pending-http-verified.json) are retained.
+
+### Smallest required owner action
+
+In the existing authenticated browser at `https://admin.archive.rootamman.com/`:
+
+1. Open `Synthetic staging 1` in the Pending queue; confirm course `0401111`.
+2. Choose **Preview image** and confirm the artificial SYNTHETIC image.
+3. Choose **Start review**. Change the title to `Synthetic staging 1 reviewed`
+   and **Save candidate metadata**.
+4. Tick the inspection checkbox, choose **Approve selected candidate**, and
+   **leave it published**. Report success or the exact visible error, without
+   sending credentials or private logs.
+
+The executor will then verify the real audit/state transition, public catalog,
+anonymous PNG GET/HEAD, safe filename, no-store headers and exact file hash.
+Only after that observation should the owner unpublish the same record; the
+executor will verify new downloads fail while the file remains private. Removal
+and rejection will follow with ownership checks and retained audit/tombstone
+evidence. Do not unpublish/remove immediately after approval, because that would
+skip the independently observed publication/download phase.
+
+The owner-browser session is not present in this executor. No PIN, cookie or JWT
+export is requested, no bypass is introduced, and no new authentication harness
+is being pursued. Additional 204 initial fixtures and all replacement revisions
+remain unseeded until the small lifecycle works. Unknown objects/records must
+still stop the campaign. The known pending fixture is intentionally retained for
+this next action; do not delete its D1 rows or apply a database restore. The
+pre-seed bookmark is recovery evidence, not authorization for destructive restore.
+
+### Contributor rollout: minimum remaining work
+
+**Not ready for real uploads.** Complete the small hosted lifecycle, then the
+approved replacement/image-edit, conflict, pagination and recovery/cleanup cases.
+The next contributor-authentication experiment needs an owner-authorized eligible
+student identity, a real staging Google client, staging Turnstile configuration
+and a staging student frontend. Current live Google client is empty, Turnstile
+secret is absent, submissions are false and no student frontend is deployed.
+Direct database seeding cannot satisfy that experiment. Use a synthetic file
+through the actual UI, then verify pending privacy, admin approval, public
+download, withdrawal and removal. No real academic material is needed for auth
+acceptance.
+
+Production rollout still needs separately approved production D1/private R2 and
+configuration; never promote staging records/storage to production. Verify the
+actual student Google/Turnstile/upload path before admitting the trusted group.
+The existing `SUBMISSIONS_ENABLED=false` server switch is the minimum emergency
+pause; setting it requires an authorized deployment/configuration action and
+must be verified on every active submission entrypoint before rollout. Do not
+treat a frontend toggle as a server pause or assume this moderation switch also
+pauses the legacy Worker. The existing cutover sequence in
+`private-moderation.md` remains the authority for later production/legacy work.
+No rollout, new identity setup or production activation is performed here.
+
+The requested short course-project architecture explanation remains secondary
+to completing the hosted lifecycle; no presentation package is being generated.
+
 ## Owner hostname verification — current checkpoint
 
 **Group A: BLOCKED by remaining authentication evidence, not a demonstrated

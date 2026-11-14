@@ -1,0 +1,250 @@
+{
+  "risk_acceptance": {
+    "source": "Explicit owner instruction in this continuation",
+    "scope": "Isolated synthetic-only Group B functional acceptance",
+    "deferred": [
+      "Hosted independent Worker JWT rejection tests",
+      "Real expired/revoked-session negative test"
+    ],
+    "group_a_fully_passed": false,
+    "authentication_changes_authorized": false,
+    "production_activation_authorized": false,
+    "real_academic_material_authorized": false
+  },
+  "seed_attempt": {
+    "observed_at": "2026-11-14T11:40:40.035Z",
+    "kind": "owner-approved Group B synthetic seed, first lifecycle case only",
+    "record": {
+      "id": "726f6f74-6172-4368-8000-000000000001",
+      "revision": "726f6f74-6172-4368-9000-000000000001",
+      "key": "private/v1/726f6f74-6172-4368-8000-000000000001/726f6f74-6172-4368-9000-000000000001.png",
+      "course_id": "0401111",
+      "title": "Synthetic staging 1",
+      "mime": "image/png",
+      "size": 1920
+    },
+    "expected_sha256": "1324f212d3fdc38a04671664d9e87bf203d9982696eeff2373ce4ea9f1251383",
+    "phases": [
+      {
+        "phase": "absence-and-fixture-preflight",
+        "pass": true
+      },
+      {
+        "phase": "insert-upload-intent",
+        "results": [
+          {
+            "success": true,
+            "changes": 1,
+            "rows_written": 4
+          },
+          {
+            "success": true,
+            "changes": 1,
+            "rows_written": 5
+          }
+        ],
+        "upload_deadline": "2026-11-14T12:40:41.259Z"
+      },
+      {
+        "phase": "r2-put",
+        "result": {
+          "key": "private/v1/726f6f74-6172-4368-8000-000000000001/726f6f74-6172-4368-9000-000000000001.png",
+          "size": "1920",
+          "etag": "7b144745bbdb75d47eac1614d0f81ac5",
+          "version": "7e5e2623e928ff1dbd9b9b686937db38",
+          "uploaded": "2026-11-14T11:40:42.114Z",
+          "storage_class": "Standard"
+        }
+      },
+      {
+        "phase": "private-r2-readback",
+        "bytes": 1920,
+        "sha256": "1324f212d3fdc38a04671664d9e87bf203d9982696eeff2373ce4ea9f1251383",
+        "hash_matches": true
+      },
+      {
+        "phase": "mark-ready-and-pending",
+        "results": [
+          {
+            "success": true,
+            "changes": 1,
+            "rows_written": 2
+          },
+          {
+            "success": true,
+            "changes": 1,
+            "rows_written": 3
+          }
+        ]
+      }
+    ],
+    "complete": false,
+    "error": "Error: Cloudflare API error: POST /accounts/1b409400fea16e7142f62ac19ecd361d/d1/database/f4aa2a8b-4b27-4ed3-b7a2-4e6e100a94c6/query returned HTTP 400 (Ray ID a5a5be306fef265d-WAW).\n\n{\n  \"messages\": [],\n  \"result\": null,\n  \"success\": false,\n  \"errors\": [\n    {\n      \"code\": 7400,\n      \"message\": \"The request is malformed: params with multiple statements is not supported\"\n    }\n  ]\n}",
+    "recovery": "Do not repeat PUT or delete blindly. Reconcile the recorded UUID/revision/key against D1 and private R2; retain upload intent and fixture."
+  },
+  "read_only_reconciliation": {
+    "observed_at": "2026-11-14T11:41:22.328Z",
+    "kind": "Read-only reconciliation after unsupported multi-statement params; no write replay",
+    "results": [
+      {
+        "results": [
+          {
+            "id": "726f6f74-6172-4368-8000-000000000001",
+            "course_id": "0401111",
+            "type": "Summary",
+            "title": "Synthetic staging 1",
+            "semester": "Synthetic",
+            "status": "pending",
+            "version": 1,
+            "original_revision_id": "726f6f74-6172-4368-9000-000000000001",
+            "candidate_revision_id": "726f6f74-6172-4368-9000-000000000001",
+            "contributor": null,
+            "contributor_email": null,
+            "contributor_sub": null,
+            "last_operation": "staging-seed-726f6f74-6172-4368-8000-000000000001"
+          }
+        ],
+        "success": true,
+        "meta": {
+          "served_by": "v3-prod",
+          "served_by_region": "EEUR",
+          "served_by_colo": "FRA",
+          "served_by_primary": true,
+          "timings": {
+            "sql_duration_ms": 0.4724
+          },
+          "duration": 0.4724,
+          "changes": 0,
+          "last_row_id": 0,
+          "changed_db": false,
+          "size_after": 102400,
+          "rows_read": 1,
+          "rows_written": 0,
+          "total_attempts": 1
+        }
+      },
+      {
+        "results": [
+          {
+            "id": "726f6f74-6172-4368-9000-000000000001",
+            "submission_id": "726f6f74-6172-4368-8000-000000000001",
+            "object_key": "private/v1/726f6f74-6172-4368-8000-000000000001/726f6f74-6172-4368-9000-000000000001.png",
+            "kind": "original",
+            "filename": "synthetic.png",
+            "mime": "image/png",
+            "size": 1920,
+            "etag": "7b144745bbdb75d47eac1614d0f81ac5",
+            "status": "ready",
+            "created_by": "synthetic-fixture",
+            "upload_deadline": "2026-11-14T12:40:41.259Z"
+          }
+        ],
+        "success": true,
+        "meta": {
+          "served_by": "v3-prod",
+          "served_by_region": "EEUR",
+          "served_by_colo": "FRA",
+          "served_by_primary": true,
+          "timings": {
+            "sql_duration_ms": 0.2835
+          },
+          "duration": 0.2835,
+          "changes": 0,
+          "last_row_id": 0,
+          "changed_db": false,
+          "size_after": 102400,
+          "rows_read": 1,
+          "rows_written": 0,
+          "total_attempts": 1
+        }
+      },
+      {
+        "results": [
+          {
+            "count": 0
+          }
+        ],
+        "success": true,
+        "meta": {
+          "served_by": "v3-prod",
+          "served_by_region": "EEUR",
+          "served_by_colo": "FRA",
+          "served_by_primary": true,
+          "timings": {
+            "sql_duration_ms": 0.0901
+          },
+          "duration": 0.0901,
+          "changes": 0,
+          "last_row_id": 0,
+          "changed_db": false,
+          "size_after": 102400,
+          "rows_read": 0,
+          "rows_written": 0,
+          "total_attempts": 1
+        }
+      },
+      {
+        "results": [
+          {
+            "count": 0
+          }
+        ],
+        "success": true,
+        "meta": {
+          "served_by": "v3-prod",
+          "served_by_region": "EEUR",
+          "served_by_colo": "FRA",
+          "served_by_primary": true,
+          "timings": {
+            "sql_duration_ms": 0.4344
+          },
+          "duration": 0.4344,
+          "changes": 0,
+          "last_row_id": 0,
+          "changed_db": false,
+          "size_after": 102400,
+          "rows_read": 0,
+          "rows_written": 0,
+          "total_attempts": 1
+        }
+      },
+      {
+        "results": [],
+        "success": true,
+        "meta": {
+          "served_by": "v3-prod",
+          "served_by_region": "EEUR",
+          "served_by_colo": "FRA",
+          "served_by_primary": true,
+          "timings": {
+            "sql_duration_ms": 0.0716
+          },
+          "duration": 0.0716,
+          "changes": 0,
+          "last_row_id": 0,
+          "changed_db": false,
+          "size_after": 102400,
+          "rows_read": 3,
+          "rows_written": 0,
+          "total_attempts": 1
+        }
+      }
+    ]
+  },
+  "assessment": {
+    "synthetic_seed": "PASS",
+    "private_r2_hash_readback": "PASS",
+    "pending_ready_record": "PASS after corrected read-only query",
+    "student_submit_google_turnstile": "NOT TESTED; direct synthetic seeding only",
+    "authenticated_moderation": "WAITING for owner browser actions",
+    "publication_and_public_download": "NOT YET TESTED",
+    "withdrawal_rejection_removal_cleanup": "NOT YET TESTED"
+  },
+  "recovery": {
+    "bookmark": "00000016-00000000-00005123-41c840126dabd1cc1a286c61be1b91d7",
+    "destructive_restore_authorized": false,
+    "no_write_replay": true,
+    "reusable_fixture": "work/staging/fixture.png (local generated synthetic fixture)",
+    "original_manifest": "work/staging/manifest.json (205 reserved entries; only n=1 seeded)"
+  }
+}

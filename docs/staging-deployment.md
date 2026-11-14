@@ -1,5 +1,17 @@
 # Isolated moderation staging — approval required
 
+## Current owner authorization — synthetic functional acceptance
+
+The owner explicitly accepts deferring the unverified hosted independent JWT
+rejection and expired/revoked-session negative tests **only for isolated,
+synthetic-only staging functional acceptance**. Group A is not fully passed.
+This supersedes the earlier instruction to wait for every hosted security case
+before Group B. Access and independent Worker authorization remain unchanged.
+Begin with one reserved lifecycle fixture before scaling the existing campaign;
+the identifiers, limits, private staging bindings and deletion boundaries below
+still apply. No production activation or real academic upload is authorized.
+See the current execution results for completed operations and remaining actions.
+
 Verified 14 November 2026 (Asia/Amman; Cloudflare observations began on
 13 November UTC). This plan does **not** authorize remote execution. Stop before
 any migration, deployment, Access/DNS/routing change or persistent staging write.
