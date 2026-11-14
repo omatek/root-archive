@@ -1,0 +1,67 @@
+{
+  "observed_at": "2026-11-14T20:26:47.766129+00:00",
+  "kind": "Actual anonymous fixture-3 reconciliation/privacy checks; no credentials; same current staging deployment; TLS verified; redirects disabled",
+  "results": [
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/download/726f6f74-6172-4368-8000-000000000003",
+      "method": "GET",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a8c0c86b6e5e24-DFW"
+      },
+      "body_bytes": 52,
+      "body_sha256": "cf72421b0be259620fbb222f1cc2656a1e1d799ad13875d73f80b5ffd7bf34bd"
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/download/726f6f74-6172-4368-8000-000000000003",
+      "method": "HEAD",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a8c0cb2896915e-DFW"
+      },
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/resources",
+      "method": "GET",
+      "status": 200,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a8c0cd494f6b6a-DFW"
+      },
+      "body_bytes": 35,
+      "body_sha256": "6ef2e67caee31da95619fd58bb5f42b8b6a17823d86a735ed2f5f2bd412803ab",
+      "catalog": {
+        "resources": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000003/files/726f6f74-6172-4368-9000-000000000003",
+      "method": "GET",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a8c0d05c325136-DFW"
+      },
+      "body_bytes": 143,
+      "body_sha256": "12755429beb15d5eb57eafa45b8dba326343dd099bf0552038694c3856e8860e",
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      }
+    }
+  ],
+  "pass": true
+}

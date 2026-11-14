@@ -1,0 +1,29 @@
+{
+  "observed_at": "2026-11-14T20:31:00.801447+00:00",
+  "kind": "Actual anonymous confidentiality after saved private replacement",
+  "results": [
+    {
+      "path": "/resources",
+      "method": "GET",
+      "status": 200,
+      "cache_control": "private, no-store, max-age=0",
+      "catalog": {
+        "resources": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "path": "/download/726f6f74-6172-4368-8000-000000000003",
+      "method": "GET",
+      "status": 404,
+      "cache_control": "private, no-store, max-age=0"
+    },
+    {
+      "path": "/download/726f6f74-6172-4368-8000-000000000003",
+      "method": "HEAD",
+      "status": 404,
+      "cache_control": "private, no-store, max-age=0"
+    }
+  ],
+  "pass": true
+}

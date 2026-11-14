@@ -1,0 +1,109 @@
+{
+  "observed_at": "2026-11-14T12:32:49.047Z",
+  "kind": "Actual post-rejection state, preserved histories and private R2 deletion; audit actors omitted",
+  "results": [
+    {
+      "rows": [
+        {
+          "id": "726f6f74-6172-4368-8000-000000000002",
+          "status": "rejected",
+          "version": 3,
+          "title": "Removed material",
+          "semester": "",
+          "contributor": null,
+          "contributor_sub": null,
+          "contributor_email": null,
+          "original_revision_id": null,
+          "candidate_revision_id": null
+        }
+      ],
+      "rows_written": 0,
+      "changed_db": false
+    },
+    {
+      "rows": [
+        {
+          "id": "726f6f74-6172-4368-9000-000000000002",
+          "status": "deleted",
+          "object_key": "private/v1/726f6f74-6172-4368-8000-000000000002/726f6f74-6172-4368-9000-000000000002.png",
+          "filename": "removed",
+          "size": 1920,
+          "etag": null,
+          "delete_attempts": 1,
+          "last_delete_error": null,
+          "deleted_at": "2026-11-14T12:31:07.044Z"
+        }
+      ],
+      "rows_written": 0,
+      "changed_db": false
+    },
+    {
+      "rows": [
+        {
+          "action": "review_started",
+          "created_at": "2026-11-14T12:29:38.794Z",
+          "reason": null
+        },
+        {
+          "action": "submission_rejected",
+          "created_at": "2026-11-14T12:31:07.001Z",
+          "reason": "Synthetic rejection (and echo 1)"
+        }
+      ],
+      "rows_written": 0,
+      "changed_db": false
+    },
+    {
+      "rows": [
+        {
+          "count": 0
+        }
+      ],
+      "rows_written": 0,
+      "changed_db": false
+    },
+    {
+      "rows": [
+        {
+          "id": "726f6f74-6172-4368-8000-000000000001",
+          "status": "removed",
+          "version": 6
+        },
+        {
+          "id": "726f6f74-6172-4368-8000-000000000002",
+          "status": "rejected",
+          "version": 3
+        }
+      ],
+      "rows_written": 0,
+      "changed_db": false
+    },
+    {
+      "rows": [
+        {
+          "submission_id": "726f6f74-6172-4368-8000-000000000001",
+          "count": 5
+        },
+        {
+          "submission_id": "726f6f74-6172-4368-8000-000000000002",
+          "count": 2
+        }
+      ],
+      "rows_written": 0,
+      "changed_db": false
+    },
+    {
+      "rows": [],
+      "rows_written": 0,
+      "changed_db": false
+    }
+  ],
+  "r2_inventory": {
+    "count": 0,
+    "keys": []
+  },
+  "owned_object_read": {
+    "missing": true,
+    "error": "Error: Cloudflare API error: GET /accounts/1b409400fea16e7142f62ac19ecd361d/r2/buckets/root-archive-private-staging/objects/private%2Fv1%2F726f6f74-6172-4368-8000-000000000002%2F726f6f74-6172-4368-9000-000000000002.png returned HTTP 404 (Ray ID a5a60a7ffc81bf58-WAW).\n\n{\n  \"success\": false,\n  \"errors\": [\n    {\n      \"code\": 10007,\n      \"message\": \"The specified key does not exist.\"\n    }\n  ],\n  \"messages\": [],\n  \"result\": null\n}"
+  }
+}

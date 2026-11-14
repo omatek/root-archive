@@ -1,0 +1,203 @@
+{
+  "observed_at": "2026-11-14T20:25:22.696Z",
+  "kind": "Interruption reconciliation; read-only D1/R2; audit actors omitted",
+  "results": [
+    {
+      "rows": [
+        {
+          "id": "726f6f74-6172-4368-8000-000000000001",
+          "status": "removed",
+          "version": 6
+        },
+        {
+          "id": "726f6f74-6172-4368-8000-000000000002",
+          "status": "rejected",
+          "version": 3
+        },
+        {
+          "id": "726f6f74-6172-4368-8000-000000000003",
+          "status": "pending",
+          "version": 1
+        }
+      ],
+      "rows_written": 0,
+      "changed_db": false
+    },
+    {
+      "rows": [
+        {
+          "id": "726f6f74-6172-4368-8000-000000000003",
+          "status": "pending",
+          "version": 1,
+          "title": "Synthetic staging 3",
+          "course_id": "0401111",
+          "type": "Summary",
+          "semester": "Synthetic",
+          "original_revision_id": "726f6f74-6172-4368-9000-000000000003",
+          "candidate_revision_id": "726f6f74-6172-4368-9000-000000000003"
+        }
+      ],
+      "rows_written": 0,
+      "changed_db": false
+    },
+    {
+      "rows": [
+        {
+          "id": "726f6f74-6172-4368-9000-000000000003",
+          "submission_id": "726f6f74-6172-4368-8000-000000000003",
+          "object_key": "private/v1/726f6f74-6172-4368-8000-000000000003/726f6f74-6172-4368-9000-000000000003.png",
+          "kind": "original",
+          "filename": "synthetic.png",
+          "mime": "image/png",
+          "size": 1920,
+          "etag": "7b144745bbdb75d47eac1614d0f81ac5",
+          "status": "ready",
+          "upload_deadline": "2026-11-14T13:34:45.524Z",
+          "delete_attempts": 0,
+          "last_delete_error": null,
+          "deleted_at": null
+        }
+      ],
+      "rows_written": 0,
+      "changed_db": false
+    },
+    {
+      "rows": [],
+      "rows_written": 0,
+      "changed_db": false
+    },
+    {
+      "rows": [],
+      "rows_written": 0,
+      "changed_db": false
+    },
+    {
+      "rows": [
+        {
+          "submission_id": "726f6f74-6172-4368-8000-000000000001",
+          "count": 5
+        },
+        {
+          "submission_id": "726f6f74-6172-4368-8000-000000000002",
+          "count": 2
+        }
+      ],
+      "rows_written": 0,
+      "changed_db": false
+    },
+    {
+      "rows": [],
+      "rows_written": 0,
+      "changed_db": false
+    },
+    {
+      "rows": [
+        {
+          "id": 1,
+          "name": "0001_private_moderation.sql"
+        },
+        {
+          "id": 2,
+          "name": "0002_catalog_generation.sql"
+        }
+      ],
+      "rows_written": 0,
+      "changed_db": false
+    }
+  ],
+  "objects": [
+    {
+      "key": "private/v1/726f6f74-6172-4368-8000-000000000003/726f6f74-6172-4368-9000-000000000003.png",
+      "size": 1920,
+      "etag": "7b144745bbdb75d47eac1614d0f81ac5"
+    }
+  ],
+  "original_readback": {
+    "bytes": 1920,
+    "sha256": "1324f212d3fdc38a04671664d9e87bf203d9982696eeff2373ce4ea9f1251383",
+    "matches_manifest": true
+  },
+  "staging_deployment": {
+    "id": "2eaa7db3-f51c-4747-a5ea-e8ec0b86c5a2",
+    "versions": [
+      {
+        "version_id": "bb9e96b3-e789-47b0-aa92-16168fe80db4",
+        "percentage": 100
+      }
+    ]
+  },
+  "staging_bindings": [
+    {
+      "name": "ACCESS_AUD",
+      "text": "0003d8d8ba905005bfed05fc441631de07c91985c3e2baab528bdb4bbb7ac5be",
+      "type": "plain_text"
+    },
+    {
+      "name": "ACCESS_ISSUER",
+      "text": "https://rootamman.cloudflareaccess.com",
+      "type": "plain_text"
+    },
+    {
+      "name": "ADMIN_EMAILS",
+      "type": "secret_text"
+    },
+    {
+      "name": "ADMIN_ORIGIN",
+      "text": "https://admin.archive.rootamman.com",
+      "type": "plain_text"
+    },
+    {
+      "name": "ALLOWED_ORIGIN",
+      "text": "https://archive-staging.rootamman.com",
+      "type": "plain_text"
+    },
+    {
+      "name": "ASSETS",
+      "type": "assets"
+    },
+    {
+      "name": "CLEANUP_ENABLED",
+      "text": "false",
+      "type": "plain_text"
+    },
+    {
+      "database_id": "f4aa2a8b-4b27-4ed3-b7a2-4e6e100a94c6",
+      "id": "f4aa2a8b-4b27-4ed3-b7a2-4e6e100a94c6",
+      "name": "DB",
+      "type": "d1"
+    },
+    {
+      "name": "GOOGLE_CLIENT_ID",
+      "text": "",
+      "type": "plain_text"
+    },
+    {
+      "bucket_name": "root-archive-private-staging",
+      "name": "PRIVATE_FILES",
+      "type": "r2_bucket"
+    },
+    {
+      "name": "PUBLIC_API_ORIGIN",
+      "text": "https://api-staging.rootamman.com",
+      "type": "plain_text"
+    },
+    {
+      "name": "SUBMISSIONS_ENABLED",
+      "text": "false",
+      "type": "plain_text"
+    }
+  ],
+  "legacy_deployment": {
+    "id": "88fef60a-22b0-434a-bbc2-89ac0d569629",
+    "versions": [
+      {
+        "version_id": "e8895ac0-b95b-409e-aff1-af3f549be94f",
+        "percentage": 100
+      }
+    ]
+  },
+  "production_pages": {
+    "canonical": "60b32faf-7934-4e5b-8a34-c07c1cb0983d",
+    "sha": "4bb136b9a39423737be4ee30ba1239d735e221c9"
+  }
+}

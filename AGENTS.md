@@ -15,7 +15,10 @@
   Access app/policy/PIN/AUD were independently verified through the connector;
   the deployment token's Access read restriction is not a security failure.
   Both D1 migrations were already applied; do not reapply them. Group B now has
-  one owned synthetic submission and one private PNG; inspect
+  three owned synthetic submissions: n=1 removed and n=2 rejected, both R2 files
+  deleted with audit/tombstones preserved; n=3 reconciled without reseeding and
+  now has a verified private edited candidate, unchanged original, and version 3
+  after a real two-tab stale-write check. Inspect
   docs/staging-functional-manifest.json before writes or cleanup. Never reseed
   or overwrite that UUID/key blindly.
   Hosted custom/Access probes now reach staging: anonymous/forged administrator
@@ -32,11 +35,16 @@
   The owner explicitly accepts deferring the unverified independent hosted JWT
   rejection and real expired/revoked-session cases for isolated synthetic-only
   functional acceptance. Group A is not fully passed; authorization is unchanged.
-  Group B has started with n=1 only. Pending-file privacy/hash checks passed;
+  Group B has started with n=1..3 only. Pending-file privacy/hash checks passed;
   owner-operated metadata edits/approval and executor-observed public catalog,
   anonymous PNG GET/HEAD/hash/safe filename/no-store checks passed. The fixture
-  is currently published, awaiting owner unpublish for withdrawal verification.
-  A separate review_started audit transition is not yet observed. Read
+  passed withdrawal denial/private retention and permanent removal/physical R2
+  cleanup. The n=2 Start review/rejection and physical deletion pass. The side
+  browser is visible in context, but browser control tools are not exposed in
+  this execution session; no separate browser shares its authenticated session.
+  Image rotation/redaction/private replacement and stale-write protection pass;
+  await owner approval of n=3's edited candidate. Full pagination, overlapping
+  operation races and interrupted-request recovery remain open. Read
   `docs/staging-execution-results.md` and `docs/staging-deployment.md` before
   resuming. Legacy/production resources are unchanged; submissions and scheduled
   cleanup remain disabled. Public `CONFIG.privateModeration` is false.

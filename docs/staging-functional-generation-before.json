@@ -1,0 +1,17 @@
+{
+  "observed_at": "2026-11-14T20:33:27.234118+00:00",
+  "kind": "Supplementary hosted generation-guard setup; constructed read-only cursor, not an API-issued next-page traversal",
+  "generation_source": {
+    "observed_at": "2026-11-14T20:33:22.763Z",
+    "generation": "40a549f6f66a1c77918e8ed947a17f09",
+    "rows_written": 0
+  },
+  "constructed_cursor": "WzEsIjQwYTU0OWY2ZjY2YTFjNzc5MThlOGVkOTQ3YTE3ZjA5IiwyMDAsIiJd",
+  "offset": 200,
+  "status": 200,
+  "body": {
+    "resources": [],
+    "next_cursor": null
+  },
+  "full_201_resource_pagination_test": false
+}

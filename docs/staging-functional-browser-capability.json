@@ -1,0 +1,14 @@
+{
+  "requested_surface": "User's existing Codex side browser at https://admin.archive.rootamman.com/",
+  "ambient_browser_context_received": true,
+  "programmatic_control_tool_exposed": false,
+  "available_browser_js_or_cua_tool_names": [],
+  "connected_document_sessions": 0,
+  "environment_id": "ccarenv_b64_Y2NhcmVudl8zYmZiOTJiM2U0NTg4MTkxYWJhNDQxMTcwNjYyZTU5ZQ",
+  "remote_desktop_advertised_enabled": true,
+  "remote_desktop_observed_state": "unknown",
+  "authenticated_session_programmatically_confirmed": false,
+  "separate_browser_launched": false,
+  "cookies_tokens_pins_accessed": false,
+  "consequence": "Owner performs authenticated UI steps in their existing tab; Codex independently checks staging D1/R2, pixels and anonymous hosted behavior. An exposed control tool attached to that same tab is needed for programmatic UI/bulk actions."
+}

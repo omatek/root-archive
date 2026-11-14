@@ -1,0 +1,104 @@
+{
+  "observed_at": "2026-11-14T12:20:13.260Z",
+  "kind": "Approved reserved n=2 synthetic rejection case; n=1 removed tombstones preserved",
+  "record": {
+    "id": "726f6f74-6172-4368-8000-000000000002",
+    "revision": "726f6f74-6172-4368-9000-000000000002",
+    "key": "private/v1/726f6f74-6172-4368-8000-000000000002/726f6f74-6172-4368-9000-000000000002.png",
+    "course_id": "0401111",
+    "title": "Synthetic staging 2",
+    "mime": "image/png",
+    "size": 1920
+  },
+  "expected_sha256": "1324f212d3fdc38a04671664d9e87bf203d9982696eeff2373ce4ea9f1251383",
+  "phases": [
+    {
+      "phase": "ownership-and-absence",
+      "pass": true,
+      "existing_records": "Only n=1 removed/deleted tombstones; bucket empty",
+      "audit_rows_retained": 5
+    },
+    {
+      "phase": "insert-intent",
+      "changes": [
+        1,
+        1
+      ],
+      "upload_deadline": "2026-11-14T13:20:14.656Z"
+    },
+    {
+      "phase": "private-r2-put",
+      "result": {
+        "key": "private/v1/726f6f74-6172-4368-8000-000000000002/726f6f74-6172-4368-9000-000000000002.png",
+        "size": "1920",
+        "etag": "7b144745bbdb75d47eac1614d0f81ac5",
+        "version": "7e5e25ffb261051efc7e73eb54b0a85c",
+        "uploaded": "2026-11-14T12:20:15.464Z",
+        "storage_class": "Standard"
+      }
+    },
+    {
+      "phase": "private-r2-readback",
+      "bytes": 1920,
+      "sha256": "1324f212d3fdc38a04671664d9e87bf203d9982696eeff2373ce4ea9f1251383",
+      "matches": true
+    },
+    {
+      "phase": "ready-pending",
+      "changes": [
+        1,
+        1
+      ]
+    }
+  ],
+  "postflight": [
+    {
+      "rows": [
+        {
+          "id": "726f6f74-6172-4368-8000-000000000002",
+          "status": "pending",
+          "version": 1,
+          "title": "Synthetic staging 2",
+          "candidate_revision_id": "726f6f74-6172-4368-9000-000000000002",
+          "contributor": null,
+          "contributor_email": null,
+          "contributor_sub": null
+        }
+      ],
+      "rows_written": 0
+    },
+    {
+      "rows": [
+        {
+          "id": "726f6f74-6172-4368-9000-000000000002",
+          "status": "ready",
+          "size": 1920,
+          "etag": "7b144745bbdb75d47eac1614d0f81ac5",
+          "object_key": "private/v1/726f6f74-6172-4368-8000-000000000002/726f6f74-6172-4368-9000-000000000002.png"
+        }
+      ],
+      "rows_written": 0
+    },
+    {
+      "rows": [
+        {
+          "count": 0
+        }
+      ],
+      "rows_written": 0
+    },
+    {
+      "rows": [
+        {
+          "count": 0
+        }
+      ],
+      "rows_written": 0
+    },
+    {
+      "rows": [],
+      "rows_written": 0
+    }
+  ],
+  "complete": true
+}

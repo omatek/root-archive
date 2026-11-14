@@ -1,6 +1,204 @@
 # Staging execution results — 14 November 2026
 
-## Group B publication verified — current checkpoint
+## Fixture 3 interruption resume, private editing and stale-write check — current checkpoint
+
+**Group B remains PARTIAL. Fixture 3 was already fully seeded; it was not
+recreated. Rotation/redaction/private replacement and stale-write protection
+now PASS on the actual deployment. Replacement approval is the next action.**
+
+Read-only reconciliation found three submissions: n=1 removed/version 6, n=2
+rejected/version 3, and n=3 pending/version 1. Both old files were deleted with
+their five/two audit rows preserved. n=3 had exactly one ready 1,920-byte original
+under its reserved key, matching fixture SHA256
+`1324f212d3fdc38a04671664d9e87bf203d9982696eeff2373ce4ea9f1251383`.
+It had no replacement, audit event or public snapshot. The old upload deadline
+had elapsed, but the revision was **ready**, not an abandoned uploading intent;
+no deadline reset, write replay, new fixture or migration was required.
+Current Worker version/bindings and production/legacy deployment IDs remain at
+the recorded baseline. [Live interruption reconciliation](staging-functional-fixture3-reconciliation.json).
+
+Current anonymous n=3 GET/HEAD returned 404, catalog 200/empty, and private admin
+file access redirected to Access. [Hosted pending/privacy checks](staging-functional-fixture3-pending-http.json).
+
+### Shared side-browser capability
+
+The user explicitly offered the existing Codex side-browser tab and personal PIN
+entry. Ambient context identifies the admin URL, but no Browser `js`, CUA desktop
+action, click or tab-control tool is exposed to this executor. Document-control
+discovery found no connected session. Environment metadata advertises a desktop
+capability; that does not prove a controllable connection to the user's tab.
+The executor cannot programmatically inspect/use that authenticated session.
+No separate Playwright browser was launched; cookies, JWTs and PINs were never
+read, printed or exported. The owner operates the actual portal; Codex verifies
+D1/R2, pixels and anonymous responses independently.
+[Capability evidence](staging-functional-browser-capability.json).
+
+### Real private image editing/replacement
+
+The owner used the existing portal editor to rotate right once, redact
+`X=60, Y=30, Width=20, Height=20`, inspect, and save privately. Actual D1 now
+records `file_replaced`, version 2, and a new ready selected revision
+`fa34866f-cd12-4be7-a3fe-fe4a18cc0a45`, 2,025 bytes, inside the owned n=3 prefix.
+The original is still ready and byte-identical; both files remain private and
+there is still no public snapshot.
+
+Read-only analysis of the actual replacement bytes confirms 128×128 output,
+all 400 redaction pixels fully opaque black, and **zero** differences outside
+that rectangle from the original rotated 90° clockwise. The red shape and
+background match the expected positions. PNG chunks are only IHDR/IDAT/IEND,
+with no text or EXIF chunks. This verifies the exported output; the original
+synthetic fixture itself contained no private metadata. Replacement SHA256:
+`f7a2816a18d53b3db6a505a75ceaa01fb0cd3606d7a4f424ca0466beadbfda0b`.
+Anonymous resource GET/HEAD remains 404 and catalog empty.
+[Private revision evidence](staging-functional-fixture3-private-edit.json),
+[pixel analysis](staging-functional-fixture3-pixels.json), and
+[post-edit public confidentiality](staging-functional-fixture3-edited-private-http.json).
+
+### Real two-tab stale-write protection
+
+The owner opened two copies at version 2. Tab A saved
+`Synthetic staging 3 conflict A`. Tab B submitted a different title without
+reloading and displayed the expected conflict/draft-retention message. Live D1
+confirms version 3, tab A's title, exactly one `metadata_changed` event, and the
+same edited candidate. Tab B did not overwrite the successful edit or publish
+anything. This is a hosted stale-write protection pass; simultaneous in-flight
+races are not claimed. The 409-specific UI text is owner-observed; Codex did not
+capture that authenticated HTTP response directly.
+[Stale-write evidence](staging-functional-fixture3-stale-write.json).
+
+**Next owner action:** use tab A, inspect the selected cleaned PNG, tick the
+publication checkbox and **Approve selected candidate**. Leave it published for
+independent catalog/download/hash and unused-original-deletion checks. Do not
+resave tab B's stale draft. All revision keys/hashes are now recorded in the
+ownership manifest before approval's authorized cleanup effects.
+
+A supplementary generation-guard check has also accepted a constructed valid
+offset-200 cursor against the current empty catalog. It is explicitly **not** an
+API-issued page traversal or a substitute for the 201-resource pagination case.
+Its reuse after publication will test generation invalidation separately.
+[Prepublication cursor setup](staging-functional-generation-before.json).
+
+### Corrected recovered progress and remaining scope
+
+The interrupted workspace contained uncommitted evidence proving n=2 review,
+rejection and physical R2 deletion, despite older summaries still awaiting them.
+That evidence is preserved and consolidated in PR #26. The recovered n=1 audit
+shows approval, withdrawal and removal; it does not record a second approval.
+Same-ID republication therefore remains independently unverified and will be
+covered on n=3 rather than assumed from the resume summary.
+
+Only three initial fixtures and one replacement exist in the campaign; the
+remaining 202 initial fixtures are unseeded. Full 201-record page traversal under
+publication/withdrawal, overlapping mutations/uploads, and actual interrupted
+request recovery still need authenticated operations. Public reads and storage
+inspection alone cannot execute them. No auth bypass, direct SQL publication,
+mock result or new security harness is substituted. Previously deferred Group A
+JWT/session negatives stay deferred only for synthetic staging, not marked passed.
+Production and contributor onboarding remain inactive. After functional acceptance,
+the minimum real-upload gates remain staging Google client/authorized origin,
+staging Turnstile and frontend, an authorized eligible student identity, and an
+actual synthetic UI upload through `/submit`, followed by private moderation and
+revocation checks. Production storage/cutover and real-material onboarding need
+separate owner approval.
+
+## Earlier Group B withdrawal and permanent removal checkpoint
+
+**The n=1 lifecycle through permanent removal/cleanup PASS. Group B remains
+PARTIAL overall.** The owner reported `Unpublished`, then performed the requested
+removal and reported `Removed` through the in-progress browser-action handoff.
+Both actions used the real protected admin workflow; the executor performed only
+read-only verification of those transitions. No SQL status/audit fabrication,
+authentication change, redeployment, migration or production operation was used.
+
+### Withdrawal
+
+The real audit records `resource_unpublished` at `12:15:02.183Z`. At `12:15:37Z`,
+submission and public snapshot were both `unpublished`, version 5. The original
+revision remained ready, with zero deletion attempts and no error. A live read
+of the exact owned private R2 key returned the original 1,920-byte PNG with its
+matching manifest SHA256. Global inventory contained only that known owned object.
+
+Fresh anonymous requests at `12:16:14Z` returned an empty public catalog **200**,
+and **404** for both GET and HEAD on the **same URL previously downloaded with
+200**. Responses retain `private, no-store, max-age=0`; no cache HIT/stale result
+was observed. The private object path stayed **404**, and the protected admin
+file route stayed an Access **302**. This verifies new-request revocation after
+the observed withdrawal; no subsecond revocation latency was measured.
+
+[Withdrawal D1/private-object evidence](staging-functional-unpublished-state.json)
+and [actual hosted responses](staging-functional-unpublished-http.json).
+
+### Permanent removal and actual cleanup
+
+Before asking for removal, the exact UUID/key/size/ETag/hash and global inventory
+were checked against the ownership manifest; no unknown records/objects existed.
+The reusable locally generated synthetic fixture also still matched its hash.
+Removal was within the already approved synthetic deletion scope; no real
+materials or unrelated files were eligible. The real audit records
+`resource_removed` at `12:17:48.457Z`.
+
+At `12:18:31Z`, actual storage checks confirmed:
+
+- Submission `removed`, version 6; title `Removed material`, empty semester,
+  null contributor/email/subject and null original/candidate pointers.
+- Resource tombstone retained as `removed`, with revision pointer cleared and
+  title/semester/credit scrubbed.
+- Revision retained as `deleted`, filename `removed`, ETag cleared, exactly one
+  deletion attempt, no deletion error, deleted at `12:17:48.495Z`.
+- Private R2 listing empty; an authenticated read of the exact former key returns
+  actual Cloudflare **404/code 10007**, confirming that it is physically absent.
+- All five real moderation audit events and the submission/revision/resource
+  tombstones remain; foreign keys are clean. No D1 rows were deleted or restored.
+
+At `12:19:24Z`, fresh anonymous GET/HEAD remained **404** and the catalog remained
+empty **200**, with no-store headers. Automatic cleanup from the real removal
+request worked; manual retry, injected storage failure and late-PUT recovery are
+not claimed as tested.
+
+[Removal state/storage evidence](staging-functional-removed-state.json) and
+[post-removal public responses](staging-functional-removed-http.json).
+
+### Next small case: review and rejection
+
+Only reserved **n=2**, `Synthetic staging 2`, has now been seeded as a second
+case, using the same synthetic PNG and approved per-record key structure.
+Immediately before writes, checks established that staging contained only n=1's
+removed/deleted tombstones, its five audit rows, and an empty bucket. Both new
+inserts and both ready/pending updates changed exactly one row; n=1 history was
+preserved. Private R2 readback matches the manifest hash. n=2 starts pending at
+version 1, with no public snapshot or manufactured submission audit. New anonymous
+n=2 GET/HEAD returns **404**, the catalog is empty, and its admin file requires
+Access. [Rejection seed](staging-functional-rejection-seed.json) and
+[pending confidentiality](staging-functional-rejection-pending-http.json).
+
+The owner initially reported waiting for review and showed the Pending/version-1
+header. After locating **Start review** beside Save candidate metadata, the owner
+confirmed the expected Under review state. Live D1 at `12:30:43Z` confirms
+`under_review`, version 2, a real `review_started` event at `12:29:38.794Z`, and
+zero resource rows for n=2. No application fix or authentication change was
+needed. **Start review PASS**; the initial wait was not a demonstrated application
+failure. [Review transition evidence](staging-functional-review-state.json).
+
+The only live object is now n=2's manifest-owned PNG. The remaining **203**
+initial fixtures and all replacement revisions are unseeded. **Next browser
+action:** on `Synthetic staging 2`, choose **Reject submission**, reason
+`Synthetic rejection`, and confirm. Do not approve it. The executor will verify
+the rejection audit transition,
+no public snapshot, metadata scrubbing and actual object deletion. No credential
+sharing, manual database deletion or infrastructure change is needed.
+
+Overall progress: pending privacy, metadata editing, approval, publication,
+anonymous exact-file download, withdrawal/private retention, permanent removal
+and automatic durable cleanup have live evidence. Explicit Start review now also
+passes on n=2. Rejection, replacement/image preparation, same-ID republication, conflicts,
+pagination and interruption/recovery still require their own observations.
+Google/Turnstile/real `/submit` are not tested by these seeds. Contributor
+onboarding remains **NO**, pending functional completion, actual contributor-auth
+acceptance and the separate production approval. The two specific security
+negative-test categories remain deferred only for synthetic staging; Group A
+has not been relabeled fully passed.
+
+## Earlier Group B publication checkpoint
 
 **Group B: PARTIAL; real metadata editing, approval, listing and anonymous
 approved download PASS.** The owner reported `Approved`. At `11:55:52Z`, live
