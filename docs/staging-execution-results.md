@@ -44,6 +44,16 @@ temporary-Git-repository tests; rerunning with the approved subprocess capabilit
 passed without changing test/application behavior. No network or live client
 was involved. Existing PR checks will also run on the pushed review candidate.
 
+Review candidate `508c433cf57058b6c9c998a60d7f0276bd4af89c` is pushed to
+PR #26; all GitHub checks completed successfully, including the five required
+checks with their recorded App identities. A verified incremental Git bundle
+is retained at `/workspace/root-archive-browser-review.bundle` (requires the
+previous `a9f644bd7df2a99f1f6b1c0a324d42dc88904edf` checkpoint).
+Read-only PR metadata also corrects the earlier handoff: #27 is already
+closed/unmerged, with `closed_at=2026-11-14T11:52:52Z`, before this continuation.
+This task did not close, merge or reopen it. Its evidence remains in #26.
+[Sanitized review-candidate CI/PR postflight](staging-browser-client-postflight.json).
+
 **Outstanding:** actual 201-record pagination/publication/withdrawal consistency,
 overlapping metadata/decision/upload races, idempotent approval replay and real
 client-interruption reconciliation. Those remain unexecuted; the previously

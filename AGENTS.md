@@ -32,7 +32,9 @@
   Group A still needs independent Worker negative-JWT evidence and an actual
   expired/revoked-session denial. A genuine nonadmin case is conditional on
   availability under the approved plan; its absence is not a security failure.
-  PR #27's evidence is consolidated into PR #26; preserve #27 open for the owner.
+  PR #27's evidence is consolidated into PR #26. Current read-only GitHub
+  metadata shows #27 closed/unmerged since 14 November 11:52:52Z; do not change
+  its state. This acceptance continuation did not close, merge or reopen it.
   The owner explicitly accepts deferring the unverified independent hosted JWT
   rejection and real expired/revoked-session cases for isolated synthetic-only
   functional acceptance. Group A is not fully passed; authorization is unchanged.

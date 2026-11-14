@@ -1,0 +1,62 @@
+{
+  "kind": "Read-only postflight; client remains unexecuted; no new seeding",
+  "review_candidate_commit": "508c433cf57058b6c9c998a60d7f0276bd4af89c",
+  "client_sha256": "81fca68992a49b0dc5619166d0e3fe5592853edc889213b59b40302c6f0ae1b6",
+  "independent_review": "pending",
+  "pr26": {
+    "state": "open",
+    "draft": true,
+    "head_branch": "feat/private-moderation"
+  },
+  "pr27": {
+    "state": "closed",
+    "draft": true,
+    "merged": false,
+    "closed_at": "2026-11-14T11:52:52Z",
+    "note": "Observed pre-existing closure; this continuation did not change PR27 state"
+  },
+  "checks": [
+    {
+      "name": "Submission policy",
+      "status": "completed",
+      "conclusion": "success",
+      "app_id": 5734145
+    },
+    {
+      "name": "Trusted publication validation",
+      "status": "completed",
+      "conclusion": "success",
+      "app_id": 15368
+    },
+    {
+      "name": "Cloudflare Pages",
+      "status": "completed",
+      "conclusion": "success",
+      "app_id": 85455
+    },
+    {
+      "name": "Frontend browser checks",
+      "status": "completed",
+      "conclusion": "success",
+      "app_id": 15368
+    },
+    {
+      "name": "Worker checks",
+      "status": "completed",
+      "conclusion": "success",
+      "app_id": 15368
+    },
+    {
+      "name": "Repository checks",
+      "status": "completed",
+      "conclusion": "success",
+      "app_id": 15368
+    },
+    {
+      "name": "Trusted publication validation",
+      "status": "completed",
+      "conclusion": "success",
+      "app_id": 15368
+    }
+  ]
+}
