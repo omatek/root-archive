@@ -17,8 +17,12 @@
   Both D1 migrations were already applied; do not reapply them. R2 remains empty.
   Hosted custom/Access probes now reach staging: anonymous/forged administrator
   requests are denied and public-host admin paths return 404. Group A still needs
-  real owner PIN login, independent JWT/session checks, direct edge TLS inspection
-  and workers.dev/version-host network grants/probes. Group B has not
+  independent JWT/session negative checks, direct edge TLS inspection and exact
+  workers.dev/version-host network grants/probes. The owner reports successful
+  real Proton email-PIN login, portal/empty queue and session JSON; this is
+  owner-observed hosted evidence, not executor-observed negative validation.
+  PR #27's evidence belongs with PR #26; preserve #27 open for the owner.
+  Group B has not
   started and requires every hosted security gate to pass. Read
   `docs/staging-execution-results.md` and `docs/staging-deployment.md` before
   resuming. Legacy/production resources are unchanged; submissions and scheduled

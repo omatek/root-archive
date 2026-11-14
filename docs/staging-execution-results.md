@@ -1,6 +1,159 @@
 # Staging execution results — 14 November 2026
 
-## Hosted security resume — latest checkpoint
+## Owner-login continuation and PR consolidation — current checkpoint
+
+**Group A: BLOCKED. Group B: NOT STARTED. Contributor onboarding: NO.**
+The owner now reports successful real Proton email-PIN login at the existing
+administrator hostname, the correct authenticated identity, the empty queue,
+and successful `/admin/api/session` JSON containing the approved email. This
+is accepted as **owner-observed hosted positive-login evidence**. No exact
+login timestamp, cookie, assertion, PIN or actual email was requested or saved.
+It supersedes the earlier request for the owner to demonstrate login; another
+login is not needed to establish that observation.
+
+### Group A evidence and limits
+
+The same configured root-archive environment resumed on 14 November UTC.
+Read-only inventory began at `09:52:58Z`; subsequent live probes and source
+inspection are timestamped in the linked JSON. No remote migration, deployment,
+Access/policy change, storage write/delete, cleanup or production cutover occurred.
+
+| Gate | Observed evidence | Acceptance status |
+| --- | --- | --- |
+| Real administrator authentication | Owner reports genuine PIN delivery/login, correct identity, loaded portal/empty queue and successful session JSON | PASS, owner-observed |
+| Unauthorized custom-host access | Fresh anonymous GET/HEAD across every admin file, root/unknown paths, session/list/private-file routes: Access redirects; forged assertion also redirects; browser-style preflight 403 | PASS for these hosted cases |
+| Public API cannot serve admin content | The same paths on API-staging return Worker JSON 404, including forged assertion and OPTIONS | PASS |
+| HTTPS and valid certificate coverage | Verified HTTPS requests reach both hosts; recorded Cloudflare certificate packs active, exact hostname coverage and unexpired Google Trust Services certificates | PARTIAL: the managed proxy presents its own certificate; direct edge chain/SAN verification is unavailable |
+| Independent Worker JWT signature/issuer/audience/expiry checks | Deployed source contains RS256 verification with pinned issuer/AUD, required claims and expiry checks; owner session succeeds | BLOCKED: invalid-assertion rejection inside the Worker was not observed |
+| Explicit Worker administrator allowlist | Secret binding present; deployed code checks exact normalized email inclusion; historical deployment evidence pins the policy email; owner's allowed identity succeeds | BLOCKED for a genuine signed nonadministrator negative case |
+| Expired/revoked real session | No real testing session or expired/revoked session is available in this execution environment | NOT EXERCISED; invalid synthetic cookies from the earlier run are not equivalent |
+| workers.dev and version-preview protection | Both routing flags false; both custom-domain preview flags false; one version enumerated; exact hostname probes fail at environment CONNECT | BLOCKED: proxy denial is not origin denial |
+| Staging bindings/private storage | Only approved staging D1/R2 and ASSETS; zero application rows/objects; two migrations recorded; foreign-key check clean; private R2 has no public endpoint | PASS, live read-only inventory |
+| Production and legacy infrastructure | Legacy deployment/version/ETag, production Pages deployment/SHA, and all three production DNS IDs/targets/timestamps equal the prior baseline; legacy public R2 domain configuration remains enabled as previously recorded | PASS for recorded infrastructure baseline; no historical file bytes were downloaded |
+
+The fresh script issued **79 actual hosted requests**: 31 Access 302s, 34 public
+API 404s, one denied preflight 403, one empty-catalog 200 and 12 alternate-host
+transport failures. `/resources` and missing-ID download GET/HEAD retain
+`private, no-store, max-age=0`. These requests use no real authentication
+material, follow no redirects and perform no application writes. The original
+120-request evidence is preserved separately without changing its observations.
+
+Independent negative JWT tests cannot be isolated through the present public
+administrator entrypoint: Access rejects requests without its valid session
+before the Worker executes. The unprotected public API entrypoint rejects the
+administrator path/origin before JWT validation. No current internal invocation
+path or valid signed negative-test assertions are available. An unsigned forged
+assertion stopped by Access does not prove signature, issuer, audience, expiry
+or allowlist rejection by the Worker. A nonadministrator is also blocked by the
+fixed exact-email Access policy before reaching the Worker. Do not request the
+owner's tokens, cookies or PIN; do not relax the policy or enable alternate hosts
+to manufacture these cases. Completing those branches requires a separately
+scoped hosted test method that can invoke the deployed staging Worker with
+controlled assertions while retaining all existing public protections. No such
+harness, service binding, diagnostic endpoint or new infrastructure was created.
+
+The deployed JavaScript was downloaded read-only, without returning its source
+or source map in the evidence. Raw deployed JS is 116,479 bytes, SHA256
+`addc4300d309566403c422bbff91572cb67fc5de61a37a30c418e65a52ddefe3`.
+The reproduced reviewed dry-run bundle is 116,371 bytes, SHA256
+`080ac6521a239d769ed02ec2c0aab9f39feb80e23b307a798ff43fa9fd4747fd`.
+Removing only the 37 standalone top-level `//` comment lines from each gives
+114,637 identical bytes, SHA256
+`28610cf9a1bd86932cee58fba5c46e334fee35ad501880371621a4c2c28d796e`.
+Thus noncomment executable lines match; raw bundle identity is not claimed.
+This is deployed-source inspection, not successful hosted negative JWT testing.
+
+### Exact missing capabilities
+
+Keep the existing custom-host grants. Only these **two additional HTTPS hosts**
+are needed for the enumerated moderation alternate endpoints:
+
+- `root-archive-moderation-staging.omar-khldooon33.workers.dev`
+- `bb9e96b3-root-archive-moderation-staging.omar-khldooon33.workers.dev`
+
+The second is derived from the sole recorded version and Wrangler 4.156.0's
+eight-character version-prefix rule. It is a probe of the existing version, not
+a newly created preview. No account-wide `*.workers.dev` grant is required.
+For direct edge certificate inspection, provide policy-supported TLS passthrough
+for **only** `admin.archive.rootamman.com:443` and
+`api-staging.rootamman.com:443`, or record an independent direct TLS inspection
+of those two hosts. Do not disable certificate verification or bypass the
+managed network policy. Network grants alone will not unblock the independent
+JWT negative tests described above. Later authenticated Group B actions also
+need an owner-operated real session in the test browser; an external owner
+browser login does not create a session in Codex. No session export is requested.
+
+### PR #26 / #27 transfer
+
+Before transfer, live GitHub metadata and fetched Git objects agree:
+
+- PR #26: open draft, `feat/private-moderation` into `main`, head
+  `1bcce0009c807167a2d4ade4c9845be99f0c8d58`, 12 commits/39 changed files.
+- PR #27: open draft, `acceptance/hosted-security-20261114` into
+  `feat/private-moderation`, head `3a80a7fabb9169c9a7ab024858d8b15088ff6e66`,
+  exactly one commit/four changed files. All four are instructions/evidence;
+  there are no runtime changes or separate test implementation to transfer.
+
+PR #27's evidence belongs in PR #26. Advancing its base to include its exact
+head could cause GitHub to mark #27 merged automatically. To preserve the owner's
+instruction that #27 remain open, its one patch was cherry-picked once onto
+`1bcce000…` as `c0f13d5876be080fd016ea112b4c9b3c164f34ab` in a separate
+worktree. `git diff --exit-code 3a80a7f… c0f13d5…` passed: complete tree
+identity, including all old evidence. The original commit is retained on #27;
+the PR #26 lineage has one copy of that patch. This continuation adds the
+owner-observed login, current evidence and a repeatable read-only probe script.
+No implementation file, SQL, dependency lockfile or existing evidence artifact
+is changed. Neither PR is merged, closed, deleted or retargeted by this work.
+
+### CI and retained artifacts
+
+The required CI commands were run locally on the consolidated implementation,
+with Node `v24.22.1`, Python `3.12.14` and locked dependencies. Sandbox attempts
+were blocked by local socket restrictions; permitted reruns removed Cloudflare
+and GitHub credentials from the process environment. These are explicitly
+**local/mock/emulated checks**, not hosted acceptance:
+
+- `node scripts/catalogs.mjs`: 127 courses, zero resources.
+- `node --test scripts/*.test.mjs`: 34/34.
+- `npm --prefix worker run check` with `XDG_CONFIG_HOME=/tmp/root-archive-acceptance-config`
+  and `WRANGLER_SEND_METRICS=false`: generated types, TypeScript, both dry-run
+  bundles and 71/71 tests. No deployment or migration command was run.
+- `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/chromium npm run test:frontend`:
+  37/37 browser tests with mocked external services.
+- `python3 -m unittest discover -s scripts/tests -v`: 3/3.
+- `python3 -m unittest discover -s analytics/tests -v`: 5/5.
+- `python3 analytics/generate.py --count 200 --seed 42 --output analytics/output/events.jsonl`
+  and `python3 analytics/analyze.py analytics/output/events.jsonl --output analytics/output/report`:
+  succeeded, synthetic output only.
+- CI-pinned actionlint 1.7.7, verified SHA256
+  `023070a287cd8cccd71515fedc843f1985bf96c436b7effaecce67290e7e0757`:
+  `.github/workflows/*.yml` and `scripts/fixtures/spoof-publication-check.yml` pass.
+- JSON parsing, sensitive-material checks, baseline comparisons and
+  `git diff --check` pass. GitHub CI observations after push are recorded in
+  [consolidation evidence](staging-pr-consolidation.json).
+
+Evidence files: [HTTP probes](staging-security-resume-http.json),
+[read-only inventory](staging-security-resume-inventory.json),
+[deployed-source inspection](staging-security-resume-source.json).
+Reproduce the read-only hosted matrix with
+`python3 scripts/staging-security-probes.py`; this overwrites only the current
+resume HTTP evidence and never uses real credentials or initiates PIN login.
+
+### Group B and contributor readiness
+
+No Group B fixture has been seeded or published. Staging remains empty and the
+synthetic-only lifecycle/replacement/image-edit/concurrency/recovery/pagination/
+cleanup campaign is **NOT STARTED**, because mandatory Group A checks remain
+unverified. Local lifecycle tests do not change that status. Even after this
+gate, synthetic D1 seeding cannot establish Google sign-in or Turnstile behavior.
+Staging Google client configuration remains empty, contributor frontend/Turnstile
+setup has not been accepted, and submissions/scheduled cleanup remain false.
+Public `CONFIG.privateModeration` remains false. Contributor onboarding is **NO**
+until Group A and hosted Group B pass, real contributor-authentication acceptance
+has its separately approved setup, and the owner approves any later production
+cutover/activation. No production configuration change is authorized by this report.
+
+## Earlier hosted security resume
 
 Resumed exact handoff `1bcce0009c807167a2d4ade4c9845be99f0c8d58` in a
 separate worktree. **Group A: INCOMPLETE. Group B: NOT STARTED.** No

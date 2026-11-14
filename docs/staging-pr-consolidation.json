@@ -1,0 +1,57 @@
+{
+  "observed_date": "2026-11-14",
+  "before": {
+    "26": {
+      "number": 26,
+      "state": "open",
+      "draft": true,
+      "base": "main",
+      "head": "feat/private-moderation",
+      "head_sha": "1bcce0009c807167a2d4ade4c9845be99f0c8d58",
+      "commits": 12,
+      "changed_files": 39
+    },
+    "27": {
+      "number": 27,
+      "state": "open",
+      "draft": true,
+      "base": "feat/private-moderation",
+      "head": "acceptance/hosted-security-20261114",
+      "head_sha": "3a80a7fabb9169c9a7ab024858d8b15088ff6e66",
+      "commits": 1,
+      "changed_files": 4
+    }
+  },
+  "transfer": {
+    "source_commit": "3a80a7fabb9169c9a7ab024858d8b15088ff6e66",
+    "destination_original_head": "1bcce0009c807167a2d4ade4c9845be99f0c8d58",
+    "destination_copy_commit": "c0f13d5876be080fd016ea112b4c9b3c164f34ab",
+    "method": "one cherry-pick; no merge, force push, closure, deletion or retargeting",
+    "reason": "Avoid making PR #27 head reachable from its feature-branch base and possible automatic merged closure",
+    "full_tree_identity_verified": true,
+    "original_evidence_preserved": true,
+    "runtime_implementation_changes": false
+  },
+  "validation": {
+    "local": {
+      "catalogs": {
+        "courses": 127,
+        "resources": 0
+      },
+      "worker_tests": 71,
+      "frontend_tests": 37,
+      "repository_tests": 34,
+      "python_script_tests": 3,
+      "python_analytics_tests": 5,
+      "actionlint": "1.7.7 pinned checksum verified; passed",
+      "synthetic_analytics_regeneration": "passed",
+      "hosted_group_a": "BLOCKED; see staging-execution-results.md",
+      "hosted_group_b": "NOT STARTED"
+    },
+    "github": {
+      "source_of_truth": "https://github.com/omatek/root-archive/pull/26/checks",
+      "status": "not yet observed for continuation commit"
+    }
+  },
+  "owner_pr_27_disposition": "Leave open and draft; owner will decide after verifying transfer"
+}
