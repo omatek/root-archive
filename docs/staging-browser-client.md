@@ -3,8 +3,11 @@
 The owner requested preparation and **independent review before execution or
 any additional seeding**. That hold remains in force. No command below is
 authorization to execute now. This is a test operator tool, not a deployed
-application feature. Independent review is **PENDING**; author checks are not
-independent review or hosted acceptance.
+application feature. The initial independent review found two client defects.
+The corrected candidate
+adds winning-payload/candidate assertions and reviewed boundary continuation;
+complete-diff re-review evidence belongs in PR #26. Execution still requires
+separate owner approval. Offline checks establish no hosted acceptance.
 
 Review the complete [client](../scripts/staging-group-b-browser.js) and
 [offline guard tests](../scripts/staging-group-b-browser.test.mjs) at the same
@@ -19,7 +22,7 @@ owner would operate their existing authenticated tab themselves.
 | Load | Paste the reviewed file as a DevTools Snippet | Defines `window.rootArchiveStagingAcceptance`; zero requests |
 | Read only | `inspect`, `inspectRecovery`, `readCatalog`, `cleanupPlan`, `report` | GET requests or in-memory receipt; no POST |
 | Mutations | `metadataRace`, `replacementRace`, `interruptReplacement`, `approvalRace` | n=4 only; normal moderation API; temporary synthetic publication |
-| Mutations | `publishPagination`, `withdrawBoundary`, `republishBoundary` | n=5..205 only; 201 approvals, two withdrawals, two reapprovals |
+| Mutations | `publishPagination`, `withdrawBoundary`, `republishBoundary`, `continueBoundary` | n=5..205 only; 201 approvals, two withdrawals, two reapprovals |
 | Destructive, separately gated | `cleanup` | Permanent removal of one explicit scope, version/hash checked; retained tombstones/audit |
 
 Only `https://admin.archive.rootamman.com` in a top-level tab is accepted.
@@ -30,7 +33,9 @@ headers, session/local storage, or the session API; it uses no external imports,
 analytics, clipboard, download/export, persistent state or arbitrary URLs.
 Private detail responses stay in function-local memory; output contains fixed
 messages and synthetic IDs/statuses/versions only, never raw audit actors,
-moderator identities or response bodies. No HAR/network export is needed.
+moderator identities or response bodies. Boundary receipts also contain the exact
+synthetic target IDs and the API-issued public catalog cursor for reviewed
+continuation. No HAR/network export is needed.
 
 Submission IDs are exactly `726f6f74-6172-4368-8000-<12-digit hex n>`.
 n=1..3 are historical read-only fixtures, now terminal with every file deleted.
@@ -115,7 +120,9 @@ await acceptance.metadataRace('MUTATE SYNTHETIC 4 METADATA');
 ```
 
 Two simultaneous edits at version 1 must return one 200/one 409, advance once,
-and leave the file private. Next, following independent reconciliation:
+and leave the file private. Both the successful response and fresh detail must
+match the complete winning metadata payload and retain the original candidate.
+Next, following independent reconciliation:
 
 ```js
 await acceptance.replacementRace('MUTATE SYNTHETIC 4 REPLACEMENTS');
@@ -123,7 +130,11 @@ await acceptance.replacementRace('MUTATE SYNTHETIC 4 REPLACEMENTS');
 
 Two simultaneous uploads at version 2 must select one candidate/version 3;
 the losing request must conflict and any created losing intent must reconcile.
-Both requests contain the exact artificial PNG. Hold if any intent is unresolved.
+Both requests contain the exact artificial PNG. The successful response and fresh
+detail must select the same new ready replacement revision, preserve the ready
+original and its exact bytes, and leave any losing replacement deleted. An
+unchanged original candidate fails even if its bytes and version look correct.
+Hold if any intent is unresolved.
 
 ```js
 await acceptance.interruptReplacement('INTERRUPT SYNTHETIC 4 ONCE');
@@ -184,9 +195,60 @@ both IDs. It leaves files private and intact for independent R2 verification.
 await acceptance.republishBoundary('REPUBLISH TWO SYNTHETIC BOUNDARY RECORDS');
 ```
 
-It reapproves exactly the two unpublished pagination records, verifies their
+It uses the exact saved boundary plan, reapproves the two targets, verifies their
 public bytes and all 201 stable resource IDs across 200+1 pages. Codex verifies
 fresh public responses and retained audit/version transitions independently.
+
+### Reconciled continuation after a partial boundary operation
+
+The withdrawal command captures `{targets: [<exact two UUIDs>], firstCursor:
+<API-issued public cursor>}` before its first write. Every subsequent receipt,
+including a stopped receipt, includes this sanitized `boundaryPlan`. Preserve
+that receipt in PR #26 immediately. It contains no authentication material.
+Do not reconstruct the targets from whichever records happen to be unpublished.
+
+If either boundary command stops, stop all mutations. Codex must independently
+reconcile D1 versions, publication pointers, audit and the complete R2 inventory,
+including any late commit. A 200-record catalog is an expected intermediate
+state, not a completed boundary test; `readCatalog(200)` can inspect it read-only.
+External review must confirm that the exact saved targets are the only records
+allowed to be unpublished and authorize continuation of the original operation.
+If the plan receipt is lost, stop for a separately reviewed recovery plan; do
+not guess IDs, reseed, replay uncertain writes or clear the hold in memory.
+
+After that review, reload the tab and reinstall the same reviewed client.
+Re-establish `acceptance`, then set `boundaryPlan` to the **exact literal object
+from the preserved receipt**, as supplied by Codex after review. This is the
+only new input: two checked manifest IDs and a public cursor, no URL or mutation
+payload. Run only the command for the interrupted operation:
+
+```js
+// After independent reconciliation and reviewed continuation only:
+await acceptance.continueBoundary('withdraw', boundaryPlan,
+  'CONTINUE SYNTHETIC BOUNDARY WITHDRAW');
+// OR, if republishing was interrupted:
+await acceptance.continueBoundary('republish', boundaryPlan,
+  'CONTINUE SYNTHETIC BOUNDARY REPUBLISH');
+```
+
+Continuation validates all 201 records and exact catalog membership before any
+write, checks target bytes and fresh versions, and skips a target already in the
+desired state. Each changed target must advance exactly once. It verifies both
+targets' download behavior and the complete final 199/201 catalog; withdrawal
+also requires the original cursor to return 409 `catalog_changed`. It can also
+finish verification after both writes committed but the receipt was lost.
+A further ambiguity imposes another hold and external reconciliation.
+
+If withdrawal completed through continuation, independently verify D1/R2 before
+republishing. On a freshly reloaded client, pass the preserved plan explicitly:
+
+```js
+await acceptance.republishBoundary('REPUBLISH TWO SYNTHETIC BOUNDARY RECORDS', boundaryPlan);
+```
+
+The `changed`/`alreadyComplete` counts describe this invocation only. The saved
+receipts plus independent D1/audit evidence establish the whole phase; a resumed
+receipt alone does not prove previously completed operations.
 
 ### Separately gated destructive cleanup
 

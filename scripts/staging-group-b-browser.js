@@ -31,7 +31,7 @@
     check(Number.isInteger(n) && n >= 1 && n <= 205, 'Outside manifest');
     return `/admin/api/submissions/${id(n)}`;
   }
-  // All route construction is private. Exposed commands accept no URLs or payloads.
+  // All route construction is private. Exposed commands accept no URLs or mutation payloads; continuation accepts only a checked plan.
   async function request(path, {method = 'GET', body, publicRead = false, signal} = {}) {
     check(location.origin === ADMIN, 'Wrong staging context');
     check(publicRead ? method === 'GET' || method === 'HEAD' : path.startsWith('/admin/api/submissions'), 'Route guard');
@@ -151,7 +151,7 @@
     return n;
   }
   async function catalog(expected) {
-    check([0, 199, 201].includes(expected), 'Unsupported catalog size');
+    check([0, 199, 200, 201].includes(expected), 'Unsupported catalog size');
     const ids = [], pages = []; let cursor = null, firstCursor = null;
     for (let page = 0; page < 2; page++) {
       const response = await request(`/resources${cursor ? `?cursor=${encodeURIComponent(cursor)}` : ''}`, {publicRead: true});
@@ -179,17 +179,22 @@
       const message = error instanceof ClientStop ? error.message : 'Stopped; reconcile before retry';
       lastReport = {phase, outcome: 'stopped', observed_at: new Date().toISOString(), message};
     } finally { busy = false; }
+    if (boundary) lastReport.boundaryPlan = structuredClone(boundary);
     return structuredClone(lastReport);
   }
   async function startMutation(phrase, expected) {
     confirm(phrase, expected); await inventory();
   }
-  async function pair(n, requests, before) {
+  async function pair(n, requests, before, verify = () => {}) {
     const results = await Promise.allSettled(requests);
     check(results.every(r => r.status === 'fulfilled'), 'Ambiguous race; external reconciliation required');
     check(results.map(r => r.value.status).sort().join(',') === '200,409', 'Race must yield one success and one conflict');
     const d = await detail(n);
     check(d.submission.version === before + 1, 'Race version mismatch');
+    const winner = results.findIndex(r => r.value.status === 200);
+    const success = validate(results[winner].value.data, n);
+    check(success.submission.version === before + 1, 'Race response version mismatch');
+    verify(d, success, winner);
     return d;
   }
   async function upload(n, version, bytes, signal) {
@@ -210,8 +215,51 @@
     }
     return {scope: name, records: rows, hash: await hash(new TextEncoder().encode(JSON.stringify(rows)))};
   }
+  async function boundaryOperation(action, plan) {
+    check(plan && Object.keys(plan).sort().join(',') === 'firstCursor,targets' &&
+      Array.isArray(plan.targets) && plan.targets.length === 2 && new Set(plan.targets).size === 2 &&
+      plan.targets.every(value => owned.get(value) >= 5 && owned.get(value) <= 205) &&
+      typeof plan.firstCursor === 'string' && /^[A-Za-z0-9_-]{1,512}$/.test(plan.firstCursor), 'Invalid boundary plan');
+    const targets = plan.targets.map(value => owned.get(value));
+    if (boundary) check(JSON.stringify(boundary) === JSON.stringify(plan), 'Boundary plan changed');
+    boundary = {targets: [...plan.targets], firstCursor: plan.firstCursor};
+    // Check the entire campaign before any continuation write. Only these exact
+    // two targets may be unpublished; D1/R2 reconciliation is still external.
+    const snapshots = new Map();
+    for (const n of pagination) {
+      const d = await detail(n);
+      check(targets.includes(n) ? ['published', 'unpublished'].includes(d.submission.status)
+        : d.submission.status === 'published', 'Boundary campaign state mismatch');
+      if (targets.includes(n)) { await candidateBytes(n, d); snapshots.set(n, safe(d)); }
+    }
+    const missing = targets.filter(n => snapshots.get(n).status === 'unpublished');
+    const before = await catalog(201 - missing.length);
+    check(pagination.filter(n => !missing.includes(n)).every(n => before.ids.includes(n)), 'Boundary catalog membership mismatch');
+    const desired = action === 'withdraw' ? 'unpublished' : 'published';
+    let changed = 0, alreadyComplete = 0;
+    for (const n of targets) {
+      const d = await detail(n); await candidateBytes(n, d);
+      check(JSON.stringify(safe(d)) === JSON.stringify(snapshots.get(n)), 'Boundary state changed; reconcile');
+      if (d.submission.status === desired) alreadyComplete++;
+      else {
+        const after = await decision(n, action === 'withdraw' ? 'unpublish' : 'approve', d,
+          action === 'withdraw' ? {reason: 'Synthetic pagination boundary'} : {revision_id: revision(n)});
+        check(after.submission.status === desired && after.submission.version === d.submission.version + 1,
+          'Boundary decision mismatch'); changed++;
+      }
+      if (action === 'withdraw') await privateDenied(n); else await publicBytes(n);
+    }
+    if (action === 'withdraw') {
+      const response = await request(`/resources?cursor=${encodeURIComponent(boundary.firstCursor)}`, {publicRead: true});
+      check((await json(response, [409])).code === 'catalog_changed', 'Old API cursor not invalidated');
+    }
+    const c = await catalog(action === 'withdraw' ? 199 : 201);
+    check(pagination.filter(n => action !== 'withdraw' || !targets.includes(n)).every(n => c.ids.includes(n)),
+      'Boundary final membership mismatch');
+    return {targets: [...boundary.targets], changed, alreadyComplete, count: c.count, pages: c.pages};
+  }
   const api = {
-    version: 'review-candidate-1',
+    version: 'review-candidate-2',
     inspect: () => command('read-only inventory', inventory),
     inspectRecovery: () => command('read-only recovery record', async () => safe(await detail(4))),
     readCatalog: expected => command('read-only catalog', async () => {
@@ -222,15 +270,43 @@
       const d = await detail(4); check(d.submission.status === 'pending' && d.submission.version === 1, 'Need fresh fixture 4');
       await candidateBytes(4, d); await privateDenied(4);
       const payload = title => ({version: 1, course_id: '0401111', type: 'Summary', title, semester: 'Synthetic', contributor: null});
-      const after = await pair(4, ['A', 'B'].map(x => post(4, 'metadata', payload(`Synthetic staging 4 race ${x}`))), 1);
+      const after = await pair(4, ['A', 'B'].map(x => post(4, 'metadata', payload(`Synthetic staging 4 race ${x}`))), 1,
+        (after, success, winner) => {
+          const expected = payload(`Synthetic staging 4 race ${['A', 'B'][winner]}`);
+          for (const state of [after, success]) {
+            check(Object.entries(expected).filter(([key]) => key !== 'version')
+              .every(([key, value]) => state.submission[key] === value), 'Winning metadata mismatch');
+            check(state.submission.status === 'pending' && state.published === null &&
+              state.submission.candidate_revision_id === d.submission.candidate_revision_id &&
+              state.submission.original_revision_id === d.submission.original_revision_id, 'Metadata changed file/state');
+          }
+        });
       await privateDenied(4); return safe(after);
     }, true),
     replacementRace: phrase => command('MUTATION overlapping replacements', async () => {
       await startMutation(phrase, 'MUTATE SYNTHETIC 4 REPLACEMENTS');
       const d = await detail(4); check(d.submission.version === 2 && d.revisions.length === 1 && d.submission.status === 'pending', 'Replacement race state mismatch');
       const bytes = await candidateBytes(4, d);
-      const after = await pair(4, [upload(4, 2, bytes), upload(4, 2, bytes)], 2);
-      await candidateBytes(4, after); await privateDenied(4);
+      const after = await pair(4, [upload(4, 2, bytes), upload(4, 2, bytes)], 2,
+        (after, success) => {
+          const candidate = success.submission.candidate_revision_id;
+          check(candidate !== d.submission.candidate_revision_id &&
+            !d.revisions.some(r => r.id === candidate), 'Replacement candidate unchanged');
+          for (const state of [after, success]) {
+            check(state.submission.candidate_revision_id === candidate && state.submission.status === 'pending' &&
+              state.published === null && state.submission.original_revision_id === d.submission.original_revision_id &&
+              state.submission.title === d.submission.title, 'Replacement response/state mismatch');
+            check(state.revisions.some(r => r.id === candidate && r.kind === 'replacement' && r.status === 'ready'),
+              'New replacement not ready');
+            check(state.revisions.some(r => r.id === d.submission.original_revision_id && r.kind === 'original' &&
+              r.status === 'ready' && r.size === 1920 && r.filename === 'synthetic.png'), 'Original not preserved');
+          }
+          check(after.revisions.filter(r => r.kind === 'replacement' && r.id !== candidate)
+            .every(r => r.status === 'deleted'), 'Losing replacement not reconciled');
+        });
+      await candidateBytes(4, after);
+      await revisionBytes(4, after.revisions.find(r => r.id === d.submission.original_revision_id));
+      await privateDenied(4);
       check(after.revisions.every(r => r.status === 'ready' || r.status === 'deleted'), 'Reconcile losing upload before continuing');
       return safe(after);
     }, true),
@@ -291,31 +367,18 @@
     }, true),
     withdrawBoundary: phrase => command('MUTATION withdraw across catalog boundary', async () => {
       await startMutation(phrase, 'WITHDRAW TWO SYNTHETIC BOUNDARY RECORDS');
-      const c = await catalog(201); const targets = [c.ids[0], c.ids[200]];
-      boundary = targets; // Recoverable from exactly two unpublished records after reload.
-      for (const n of targets) {
-        const d = await detail(n); await candidateBytes(n, d);
-        check(d.submission.status === 'published', 'Boundary record not published');
-        await decision(n, 'unpublish', d, {reason: 'Synthetic pagination boundary'}); await privateDenied(n);
-      }
-      const response = await request(`/resources?cursor=${encodeURIComponent(c.firstCursor)}`, {publicRead: true});
-      const changed = await json(response, [409]); check(changed.code === 'catalog_changed', 'Old API cursor not invalidated');
-      const after = await catalog(199); check(targets.every(n => !after.ids.includes(n)), 'Withdrawn record in catalog');
-      return {withdrawn: targets.map(id), oldApiIssuedCursorStatus: 409, count: after.count, pages: after.pages};
+      const c = await catalog(201);
+      boundary = {targets: [id(c.ids[0]), id(c.ids[200])], firstCursor: c.firstCursor};
+      return boundaryOperation('withdraw', boundary);
     }, true),
-    republishBoundary: phrase => command('MUTATION republish boundary records', async () => {
+    republishBoundary: (phrase, plan = boundary) => command('MUTATION republish boundary records', async () => {
       await startMutation(phrase, 'REPUBLISH TWO SYNTHETIC BOUNDARY RECORDS');
-      const targets = [];
-      for (const n of pagination) {
-        const d = await detail(n); check(['published', 'unpublished'].includes(d.submission.status), 'Unexpected pagination state');
-        if (d.submission.status === 'unpublished') targets.push(n);
-      }
-      check(targets.length === 2 && (!boundary || targets.every(n => boundary.includes(n))), 'Boundary ownership/state mismatch');
-      for (const n of targets) {
-        const d = await detail(n); await candidateBytes(n, d);
-        await decision(n, 'approve', d, {revision_id: revision(n)}); await publicBytes(n);
-      }
-      const c = await catalog(201); return {republished: targets.map(id), count: c.count, pages: c.pages};
+      return boundaryOperation('republish', plan);
+    }, true),
+    continueBoundary: (action, plan, phrase) => command('MUTATION reconciled boundary continuation', async () => {
+      check(['withdraw', 'republish'].includes(action), 'Unknown boundary action');
+      await startMutation(phrase, `CONTINUE SYNTHETIC BOUNDARY ${action.toUpperCase()}`);
+      return boundaryOperation(action, plan);
     }, true),
     cleanupPlan: name => command('READ ONLY destructive-cleanup plan', async () => {
       scope(name); await inventory(); return cleanupSnapshot(name);
