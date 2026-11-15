@@ -1,5 +1,31 @@
 # Staging execution results
 
+## Actual UI PDF received privately; uploads re-paused — 15 November 2026 UTC
+
+The owner reports normal UI receipt for
+`3de6408a-e12a-4573-a772-fd8e0228ea22`. D1 confirms pending/v1 at
+18:36:39.600Z with one ready original revision
+`3879def6-19ce-4b29-a202-d44b897fde40`, synthetic metadata, no public credit and
+private identity present (values not collected). The private R2 PDF is exactly
+687 bytes and SHA256 `f225b67a86db912394042bca309b0691727e22ef3bd741b044ec0543906151d1`,
+matching the approved fixture. The real Google/allowlist/Turnstile path and
+`submission_received` audit pass. There is no public snapshot; catalog GET is
+200/empty and fresh download GET/HEAD return 404/no-store. R2 has one exact owned
+file, r2.dev disabled and no custom domains. D1 has the prior three terminal
+records plus the new pending record, four deleted revisions plus the ready PDF,
+14 audits, zero unresolved operations and no FK violations. Inspection writes
+zero rows. [Sanitized pending/hash/privacy proof](student-staging-pending-proof.json).
+
+The operator immediately paused on the owner's receipt message at 18:37:10Z;
+deployment `56e64518-2164-459b-a512-30058d1dc402`, version
+`0f8024b1-b62d-4aff-a8bc-8f7b521498f5`, is active at 18:37:25.192Z with
+SUBMISSIONS_ENABLED=false, both timestamps empty and cleanup false. Secrets are
+preserved. No moderator mutation or cleanup was executed by the agent. Next is
+coordinated owner portal discovery/inspection/approval, anonymous download
+verification, then coordinated withdrawal and fresh 404 checks. Do not delete
+without separate confirmation of the exact new identifiers. Hosted Turnstile
+negatives remain deferred; independent hosted JWT checks remain unverified.
+
 ## Streamlined acceptance and final bounded window — 15 November 2026 UTC
 
 The owner defers manual hosted missing/invalid Turnstile negatives subject to

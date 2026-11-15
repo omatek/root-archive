@@ -1,7 +1,21 @@
 # Real student staging acceptance
 
-Status: **Streamlined acceptance: one normal PDF next. Hosted missing/invalid
-Turnstile negatives DEFERRED, NOT PASSED; local coverage passes.**
+Status: **Actual Google/Turnstile PDF upload PASS; private pending state verified.
+Uploads PAUSED. Coordinated moderator approval is next.**
+
+[Pending proof](student-staging-pending-proof.json): submission
+`3de6408a-e12a-4573-a772-fd8e0228ea22` was received through the normal UI at
+18:36:39.600Z, pending/v1, one ready original revision
+`3879def6-19ce-4b29-a202-d44b897fde40`. The 687-byte private PDF matches the
+approved SHA256 exactly. There is no public resource row; anonymous catalog is
+empty and new download GET/HEAD return 404 with no-store. Private bucket public
+endpoints remain disabled. Prior synthetic records/audits are preserved, with no
+unresolved operations. Only identity-presence booleans were recorded, no email/sub.
+Uploads were re-paused at 18:37:25.192Z, version
+`0f8024b1-b62d-4aff-a8bc-8f7b521498f5`, both window timestamps cleared. No more
+uploads or denial helpers. Coordinate portal inspection and approval of this
+exact original candidate next; verify public download before coordinating
+withdrawal. Permanent cleanup remains held for exact-identifier confirmation.
 
 The owner's revised instruction supersedes the manual denial steps below. Two
 existing relevant regressions pass, including rejected Siteverify/zero writes;

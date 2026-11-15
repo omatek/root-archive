@@ -28,8 +28,8 @@
   Unpublish retains a private file for review; permanent removal revokes and
   queues deletion. Do not restore public access using old catalogs or buckets.
 - Isolated private moderation staging is deployed through Wrangler; production
-  integration remains disabled. Current window-enabled backend version is
-  `58dea236-d615-4e14-8688-3e4fca5a85e0`; student frontend version is
+  integration remains disabled. Current PAUSED backend version is
+  `0f8024b1-b62d-4aff-a8bc-8f7b521498f5`; student frontend version is
   `30f908f3-9faa-4799-b566-c46b3cc8da41`, on archive-staging.rootamman.com.
   The backend serves approved admin/API-staging domains with staging D1/R2 only.
   The separate Turnstile widget/secret and owner-provided Google Web client are
@@ -40,23 +40,30 @@
   The owner has now confirmed actual student account verification and security
   widget completion in the real frontend. This closes the eligible-account/
   allowlist check. Owner reports the paused-submit and ineligible denials; fresh
-  reads show zero storage changes. Server Siteverify awaits upload testing. The
+  reads confirmed no writes from those denials. A normal actual UI upload is now
+  accepted: submission 3de6408a-e12a-4573-a772-fd8e0228ea22, pending/v1, original
+  revision 3879def6-19ce-4b29-a202-d44b897fde40. Its sole private PDF is 687 bytes,
+  SHA256 f225b67a86db912394042bca309b0691727e22ef3bd741b044ec0543906151d1,
+  identical to the approved synthetic document. Google/allowlist and real
+  Siteverify passed through the accepted UI path. No public row exists and
+  anonymous GET/HEAD return 404. Uploads were immediately re-paused at
+  18:37:25.192Z and both window timestamps cleared. The
   original 50-minute window expired at 2026-11-15T18:28:39.447Z. The owner's
   streamlined instruction defers BOTH manual hosted Turnstile denials, contingent
   on passing local coverage; two relevant regressions plus absent/blank field
   validation now pass. Hosted cases are DEFERRED, NOT PASSED. A final 10-minute
   window uses the remaining original 60-minute budget: 18:31:15.692Z through
   18:41:15.692Z. NO remaining budget; further reopening needs new authorization.
-  Submissions flag is currently true but the Worker automatically denies new
-  intents at cutoff; explicitly re-pause immediately after one accepted upload,
-  any safety issue or on resume after expiry. Cron remains off. See
+  Submissions flag is now false, timestamps empty; do not reopen or resubmit.
+  Cron remains off. See docs/student-staging-pending-proof.json and
   docs/student-staging-window-open.json and docs/student-staging-eligible-auth.json and
   docs/student-staging-live-manifest.json and docs/student-staging-live-preflight.json.
-  Live run is authorized; next is ONE NORMAL approved PDF UI submission with
-  all Google/Turnstile/authorization controls enabled. Do not run denial helpers.
-  See docs/student-staging-streamlined-window.json. No new submission exists
-  at the fresh-window postflight. Do not
-  replay submissions or ask for live approval again. Cleanup still needs exact-ID confirmation.
+  Next is coordinated moderator discovery/inspection/approval of this exact
+  candidate, then anonymous publication/download verification, coordinated
+  withdrawal, and new-request 404 verification. Do not run denial helpers or
+  further campaigns. Do not approve or delete without coordinating the intended
+  owner step. Cleanup still needs separate exact-ID confirmation. Preserve the
+  historical records/audits and only own the new UUID/revision in the live manifest.
   The original synthetic acceptance below used version bb9e96b3.
   Access app/policy/PIN/AUD were independently verified through the connector;
   the deployment token's Access read restriction is not a security failure.
