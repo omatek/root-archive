@@ -1,0 +1,1427 @@
+# Staging execution results
+
+## Final authorized cleanup — 15 November 2026 UTC
+
+The owner confirmed the exact new submission/revision/key and required autonomous
+execution. Guarded Cloudflare D1 updates removed only that submission (v4),
+scrubbed contributor identity, retained resource/submission tombstones, appended
+an honestly attributed control-plane cleanup audit, and queued its sole file.
+Exact-key R2 DELETE succeeded; a separate GET returns 404 and the full bucket
+listing is empty. The revision is deleted, all 16 prior audits remain plus the
+new event (17 total), historical fixtures are unchanged, and FK checks are clean.
+Uploads remain false with empty timestamps; private storage endpoints remain
+disabled; production Worker/Pages IDs match baseline. No raw identity was recorded.
+This cleanup proves authorized control-plane removal, not authenticated portal
+permanent-removal behavior. The real UI submit/approval/download/withdrawal path
+passes. All additional campaigns are DEFERRED, NOT PASSED; independent hosted JWT
+checks remain UNVERIFIED and risk acceptance remains unresolved.
+[Final summary](student-staging-final-acceptance.md),
+[mutation and independent verification](student-staging-cleanup-proof.json).
+
+## Essential real contributor cycle passes through withdrawal — 15 November 2026 UTC
+
+Owner withdrawal is recorded at 18:52:02.209Z, unpublished/v3, for the one UI
+submission `3de6408a-e12a-4573-a772-fd8e0228ea22`. Fresh anonymous catalog is empty;
+same-URL GET/HEAD both return 404/no-store. The sole private PDF remains ready,
+687 bytes and approved SHA256 unchanged. D1 has four submissions (the original
+three terminal rows unchanged plus this unpublished row), five revisions (four
+historical deleted plus this ready original), 16 audits, no unresolved operations
+and no FK violations. Inspection writes zero rows. Submissions are false, both
+timestamps empty and cleanup false. Production legacy Worker/Pages deployment
+IDs match baseline. [Withdrawal/pause/private-retention proof](student-staging-withdrawal-proof.json).
+
+The essential actual Google → Turnstile → UI PDF → private pending → moderator
+approval → anonymous exact download → withdrawal → fresh 404 path now passes.
+No extra campaign is needed. Permanent cleanup is held for the owner's explicit
+confirmation of the exact new submission/revision/R2 key; audits and older
+fixtures must remain. Hosted Turnstile negatives stay deferred, independent
+Worker JWT/session negatives remain unverified, and no pilot risk acceptance or
+contributor onboarding is inferred. [Minimum pilot versus public-launch scope](student-staging-acceptance-summary.md).
+
+## Actual UI PDF approved and downloaded anonymously — 15 November 2026 UTC
+
+The owner reports approval in the actual portal. D1 confirms published/v2 at
+18:47:21.264Z for `3de6408a-e12a-4573-a772-fd8e0228ea22`, public snapshot selecting
+original revision `3879def6-19ce-4b29-a202-d44b897fde40`, with the corresponding
+`submission_approved` audit. Anonymous catalog now lists the exact item; fresh
+anonymous PDF GET/HEAD both return 200. The GET is 687 bytes, approved SHA256
+matches, filename is UUID-based, and browser/CDN cache headers all prohibit
+storage. R2 still contains only this ready private PDF; zero unresolved operations
+or FK violations, prior records preserved, 15 total audits. Uploads remain paused
+and both window timestamps empty. [Publication proof](student-staging-publication-proof.json).
+
+The owner asked whether prior tests already covered this. Earlier seeded PNGs
+did cover the lifecycle; this final PDF cycle closes the actual student Google/
+Turnstile/UI integration path. No broader rerun is necessary. Next is coordinated
+withdrawal of this exact item, fresh GET/HEAD 404 and retained private file
+verification. No permanent cleanup until separate exact-identifier confirmation.
+
+## Actual UI PDF received privately; uploads re-paused — 15 November 2026 UTC
+
+The owner reports normal UI receipt for
+`3de6408a-e12a-4573-a772-fd8e0228ea22`. D1 confirms pending/v1 at
+18:36:39.600Z with one ready original revision
+`3879def6-19ce-4b29-a202-d44b897fde40`, synthetic metadata, no public credit and
+private identity present (values not collected). The private R2 PDF is exactly
+687 bytes and SHA256 `f225b67a86db912394042bca309b0691727e22ef3bd741b044ec0543906151d1`,
+matching the approved fixture. The real Google/allowlist/Turnstile path and
+`submission_received` audit pass. There is no public snapshot; catalog GET is
+200/empty and fresh download GET/HEAD return 404/no-store. R2 has one exact owned
+file, r2.dev disabled and no custom domains. D1 has the prior three terminal
+records plus the new pending record, four deleted revisions plus the ready PDF,
+14 audits, zero unresolved operations and no FK violations. Inspection writes
+zero rows. [Sanitized pending/hash/privacy proof](student-staging-pending-proof.json).
+
+The operator immediately paused on the owner's receipt message at 18:37:10Z;
+deployment `56e64518-2164-459b-a512-30058d1dc402`, version
+`0f8024b1-b62d-4aff-a8bc-8f7b521498f5`, is active at 18:37:25.192Z with
+SUBMISSIONS_ENABLED=false, both timestamps empty and cleanup false. Secrets are
+preserved. No moderator mutation or cleanup was executed by the agent. Next is
+coordinated owner portal discovery/inspection/approval, anonymous download
+verification, then coordinated withdrawal and fresh 404 checks. Do not delete
+without separate confirmation of the exact new identifiers. Hosted Turnstile
+negatives remain deferred; independent hosted JWT checks remain unverified.
+
+## Streamlined acceptance and final bounded window — 15 November 2026 UTC
+
+The owner defers manual hosted missing/invalid Turnstile negatives subject to
+passing automated coverage. Both are recorded **DEFERRED, NOT PASSED**. Two
+existing named regressions pass; direct verification of the existing shared
+validator rejects absent and blank fields with 400. Rejected Siteverify returns
+403 and creates no D1/R2 writes in the existing private moderation test. No new
+feature, security relaxation or additional hosted campaign was introduced.
+
+The original window expired at 18:28:39.447Z. The minimum reopen action was the
+same staging Worker with new server-enforced timestamps. The remaining 10 minutes
+of the original 60-minute allowance are deployed as version
+`58dea236-d615-4e14-8688-3e4fca5a85e0`: 18:31:15.692Z–18:41:15.692Z UTC. Google,
+Turnstile, private allowlist and administrator controls remain enabled. Fresh
+postflight still shows only the three historical terminal records, four deleted
+revisions, 13 audits, no unresolved operations and empty R2. No normal PDF has
+been received yet. [Current evidence](student-staging-streamlined-window.json).
+Next is one normal UI upload, immediate pause, private pending verification,
+then coordinated approval/download/withdrawal/404. Cleanup requires confirmation
+of the new exact identifiers. Independent hosted JWT checks remain unverified,
+with a separate unresolved pre-onboarding risk-acceptance decision.
+
+## Paused/ineligible checks and original window resume — 15 November 2026 UTC
+
+The owner reports the expected paused-submit uncertainty message and exact
+ineligible-account explanation. Fresh read-only preflight confirms that neither
+created any upload: three historical terminal submissions, four deleted revisions,
+13 audits, no unresolved operations and empty private R2. Raw HTTP statuses were
+not captured from the owner browser; owner-observed messages and the verified
+server/storage state are retained as the evidence basis.
+
+The approved 50-minute window deployed as backend
+`d56561f7-20a2-48db-a280-8ca2721abe41`, interval
+`2026-11-15T17:38:39.447Z`–`2026-11-15T18:28:39.447Z`. A usage-limit interruption
+occurred immediately afterwards. Read-only reconciliation at 18:08:25Z confirms
+the original deployment/cutoff and zero new records/objects; the window was not
+restarted, extended, or replayed. The Worker automatically rejects new intents
+after cutoff. [Sanitized preflight/resume evidence](student-staging-window-open.json).
+Next are missing/invalid challenge denials and the one actual PDF UI upload,
+followed immediately by an explicit pause. Cleanup remains unconfirmed and held.
+Independent hosted JWT checks remain unverified with no pilot risk acceptance.
+
+## Actual eligible Google verification confirmed — 15 November 2026 UTC
+
+The owner reports "account verified, security check complete" in the actual
+staging student UI after the protected allowlist update. Eligible Google/allowlist
+verification is an **owner-observed PASS**; Turnstile widget completion is
+confirmed, while server Siteverify remains untested. No credentials, account
+address or raw authentication material were collected. Fresh API reads confirm
+backend `f178ada8-e738-4aa9-a550-a9cb0a16c9a8`, submissions false, empty window,
+unchanged three terminal records/four deleted revisions/13 audits, no unresolved
+storage operations and empty R2. No upload window has started or accepted PDF
+been created. [Actual auth evidence](student-staging-eligible-auth.json).
+Next UI checks are server pause and ineligible-account denial, then the already
+approved bounded window for Turnstile denials and the single accepted PDF.
+Independent hosted JWT negatives remain unverified, with no pilot risk acceptance.
+
+## Single approved account configured; uploads still paused — 15 November 2026 UTC
+
+The owner clarified that the previous secret entry had not added a student and
+authorized the agent to set one supplied test account. The agent wrote only
+`STAGING_STUDENT_EMAILS` as a protected secret on the staging moderation Worker;
+the actual address is excluded from repository/evidence. The secret-only update
+deploys version `f178ada8-e738-4aa9-a550-a9cb0a16c9a8`, retaining the tested
+automatic-cutoff code. Uploads/cleanup remain false and both window timestamps
+empty. D1 retains three terminal submissions/four deleted revisions/13 audits,
+with zero unresolved storage operations, empty R2 and unchanged production
+deployment IDs. Actual eligible Google sign-in remains pending owner browser
+verification; no upload window, new submission or cleanup has occurred.
+[Sanitized secret update receipt](student-staging-allowlist-update.json).
+
+## Supervised run authorized; automatic cutoff deployed paused — 15 November 2026 UTC
+
+The owner approves one synthetic UI PDF, denials, moderation/download/withdrawal
+and practical administrator recovery, with at most 60 minutes temporary upload
+enablement. Exact new identifiers must be presented and confirmed separately
+before destructive cleanup. Source `802d5814b35f70f0a45e62a2723f5b6e2c97ffed`
+deploys backend `922fe37d-b9ab-44b5-ad94-b69aeeec1ac9` **paused**, with empty
+window timestamps. The server now independently refuses missing/invalid/future/
+expired/overlong windows even when the boolean is true, and rechecks the cutoff
+after Siteverify before creating an upload intent. It needs no active Codex
+session or Cron. Local boundary/mid-Siteverify checks create zero D1/R2 records;
+73 Worker tests, 68 repository tests and five final focused staging checks pass.
+
+Postflight confirms submissions/cleanup false, no unresolved receiving/uploading/
+delete_pending operations, empty R2, unchanged three historical terminal records,
+four deleted revisions and 13 audits. Production deployments are unchanged.
+Public catalog GET and exact-origin CORS OPTIONS return 200. Actual eligible
+Google/allowlist verification is pending owner browser confirmation; no upload
+window or accepted upload exists yet. [Preflight](student-staging-live-preflight.json)
+and [separate student-run manifest](student-staging-live-manifest.json) preserve
+the checkpoint. No cleanup confirmation exists and no destructive cleanup ran.
+Independent hosted JWT negatives remain unverified with no pilot risk acceptance.
+
+## Google-configured paused checkpoint — 15 November 2026 UTC
+
+The owner supplied a distinct Google Web client ID, reports updating the student
+allowlist secret in Cloudflare, and confirms HTTPS/the top staging notice. Source
+`40f6c5d7e456e26686e0cbac3bc1177024140aae` is deployed to both staging Workers:
+backend `2bf35f0b-8c6f-4c0f-9fbb-11740b646d3c`, frontend
+`30f908f3-9faa-4799-b566-c46b3cc8da41`. The three existing secrets are preserved
+as secret bindings; no secret value or account address was retrieved or retained.
+SUBMISSIONS_ENABLED/CLEANUP_ENABLED remain false and no Cron exists. Public
+catalog GET and staging-origin CORS OPTIONS both return 200. D1/R2, historical
+audits, production Worker/Pages and domains are unchanged. No student login,
+submission POST, moderator operation or deletion has run. Four focused build
+tests and both deployment dry-runs pass. Full previous local test evidence is
+preserved; it is not a live Google/Turnstile pass.
+
+[Sanitized current evidence](student-staging-google-ready.json). The next gate is
+explicit owner approval for the bounded live synthetic PDF acceptance window,
+including temporary submission enablement, withdrawal and cleanup of its exact
+new UUID. Independent hosted Worker JWT checks remain unverified under the open
+RA-JWT-01 decision. Fixture 4 concurrency/focused pagination remain deferred;
+the artificial 200 ms interruption test is not an acceptance gate.
+
+## Approved paused student setup deployed — 15 November 2026 UTC
+
+The owner approved only staging configuration and initially paused deployment.
+Source `6a22c29f43f8a5fb088e64348a1cec1042b441da` is deployed: backend version
+`6d658a5a-4f5b-4848-b32a-7d63d5bd6986`, student frontend version
+`53a70251-f36b-4e97-a592-8fec66ad2c5b`. The new frontend domain/DNS and isolated
+managed Turnstile widget exist; the matching secret is installed. Google client
+and the privately configured eligible-account allowlist remain owner steps;
+until then no account is admitted and the UI explicitly reports setup pending.
+Submissions and scheduled cleanup remain false, with no Cron or alternate URLs.
+
+Read-only postflight: public catalog 200/empty, CORS OPTIONS 200/exact student
+origin; D1 retains the same three terminal records/four deleted revisions/13
+audits, R2 remains empty. Production Pages/legacy Worker versions and production
+widget are unchanged. No migrations, Access changes, student authentication,
+submission POST, moderation action or deletion occurred. The temporary secret
+file was removed. New-host HTTP is blocked by the Cloud environment's allowlist;
+its dedicated certificate became active at the 16:41:09Z control-plane recheck,
+but presented TLS remains unverified from this environment.
+[Sanitized deployment/state evidence](student-staging-paused-deployment.json)
+and [remaining owner steps](student-staging-acceptance.md#exact-owner-assisted-setup).
+
+Local verification: 67 repository and 39 browser tests pass; both prepared
+deployment configurations pass dry-run. A setup-only missing-client guard keeps
+the UI from calling Google with a dummy client. The artificial 200 ms client
+interruption test is no longer an acceptance gate. Fixture 4 deterministic
+concurrency and focused pagination remain deferred to merge/launch acceptance,
+unseeded. Independent hosted Worker JWT negatives remain **not executed** with
+an unresolved risk-acceptance decision. No live acceptance or enablement is
+authorized by this checkpoint.
+
+## Student integration preparation — 15 November 2026 UTC
+
+The owner's revised priority supersedes the earlier "next owner action" below:
+prepare and execute the minimum actual student UI acceptance before remaining
+hosted race/pagination campaigns. Fixture 4 and n=5..205 remain unseeded/deferred.
+See [the concrete release and acceptance instructions](student-staging-acceptance.md)
+and [new read-only preflight evidence](student-staging-preflight.json).
+Preparation and local checks pass; real Google/Turnstile/UI acceptance has NOT
+run. No external configuration, deployment or persistent staging write occurred.
+Existing evidence and manifest ownership remain unchanged. Independent hosted
+Worker JWT negatives remain NOT EXECUTED, with a separate unresolved pilot
+risk-acceptance decision; the new priority does not mark Group A as passed.
+
+## Final fixture 3 cleanup and browser-client preparation — 14 November 2026 UTC
+
+**Fixture 3 permanent removal PASS; Group B PARTIAL. Client prepared, NOT RUN;
+independent review PENDING. No new fixtures seeded.**
+
+The owner reported `Removed 3`. Read-only Cloudflare verification at
+`2026-11-14T22:10:23.900Z` confirms removed/version 7, scrubbed title/semester,
+null identity/candidate/original pointers and a scrubbed removed resource
+tombstone. Both n=3 revision rows are `deleted`, each with one deletion attempt
+and no error. The exact replacement key is absent and the complete staging R2
+inventory has **zero objects**. Six actual audit events remain, including
+`resource_removed` at `22:01:57.983Z`, reason `Synthetic cleanup 3`.
+All three submissions are terminal: n=1 removed/v6, n=2 rejected/v3, n=3
+removed/v7; audit counts are 5/2/6 and foreign-key checking returns no violations.
+All verification SQL reports zero writes. At `22:13:46Z` fresh anonymous hosted
+catalog GET returns 200/empty and n=3 download GET/HEAD both return 404.
+[Actual D1/R2 evidence](staging-functional-fixture3-final-removal.json) and
+[anonymous denial evidence](staging-functional-fixture3-final-removal-http.json).
+
+The owner agreed to operate a tightly scoped client in their existing
+administrator browser, but explicitly requested the **complete script and
+instructions first, independent review, and no execution or seeding yet**.
+The [complete client](../scripts/staging-group-b-browser.js) and
+[phase-by-phase instructions/review checklist](staging-browser-client.md) are
+prepared for that review. Loading defines commands with zero requests; reads,
+mutations and separately gated destructive cleanup are distinct. The only write
+scopes are future n=4 recovery/races and n=5..205 pagination. The script uses
+normal same-origin administrator requests without reading authentication
+material. No browser, server or authentication configuration was changed.
+
+Preparation checks: `node --check scripts/staging-group-b-browser.js` passed;
+`node --test --test-isolation=none scripts/staging-group-b-browser.test.mjs`
+passed **9/9 offline client guard tests**. Normal `node --test
+scripts/staging-group-b-browser.test.mjs` also passed. The tests use an isolated
+VM and fake transport only; they are not hosted application acceptance or
+independent review. `git diff --check` passed. Client SHA256:
+`81fca68992a49b0dc5619166d0e3fe5592853edc889213b59b40302c6f0ae1b6`.
+
+The full `node --test --test-isolation=none scripts/*.test.mjs` suite passed
+**43/43**. Its first sandboxed run hit `spawnSync git EPERM` in the existing
+temporary-Git-repository tests; rerunning with the approved subprocess capability
+passed without changing test/application behavior. No network or live client
+was involved. Existing PR checks will also run on the pushed review candidate.
+
+Review candidate `508c433cf57058b6c9c998a60d7f0276bd4af89c` is pushed to
+PR #26; all GitHub checks completed successfully, including the five required
+checks with their recorded App identities. A verified incremental Git bundle
+is retained at `/workspace/root-archive-browser-review.bundle` (requires the
+previous `a9f644bd7df2a99f1f6b1c0a324d42dc88904edf` checkpoint).
+Read-only PR metadata also corrects the earlier handoff: #27 is already
+closed/unmerged, with `closed_at=2026-11-14T11:52:52Z`, before this continuation.
+This task did not close, merge or reopen it. Its evidence remains in #26.
+[Sanitized review-candidate CI/PR postflight](staging-browser-client-postflight.json).
+
+**Outstanding:** actual 201-record pagination/publication/withdrawal consistency,
+overlapping metadata/decision/upload races, idempotent approval replay and real
+client-interruption reconciliation. Those remain unexecuted; the previously
+passed two-tab stale-write case is not a simultaneous race. Hosted artificial
+D1/R2 outages remain outside the approved fault scope. Deferred Group A
+independent JWT and expired/revoked-session negatives stay unverified, not failed.
+No confirmed failure was observed in this checkpoint.
+
+**Next owner action:** have an independent reviewer inspect the exact client
+commit/hash and instructions, record findings, and approve execution separately.
+Do not run it or seed n=4..205 yet. Cleanup is separately reviewed/gated even
+after execution approval. Work remains in PR #26; no other PR is created/merged.
+
+**Contributor onboarding: NO.** After synthetic acceptance, the minimum separate
+setup/approval is a staging student frontend with staging Google authorized
+origins/client and Turnstile, then an authorized eligible student identity doing
+an actual synthetic UI upload through `/submit`. Verify pending confidentiality,
+admin approval/public download, withdrawal/takedown and the submission-disable
+switch. Synthetic inserts prove none of Google, Turnstile or `/submit`.
+Production private storage/deployment/cutover and real academic uploads still
+require explicit owner approval; none is activated here.
+
+
+## Fixture 3 edited replacement approved and republished — 15 November 2026, Asia/Amman
+
+**Replacement approval, exact edited public download and unused-original cleanup
+PASS. Group B remains PARTIAL.** The owner reported `Approved replacement`.
+The real `submission_approved` event is at `2026-11-14T21:50:54.833Z`
+(15 November, 00:50:54 Asia/Amman). Read-only D1/R2 verification confirms n=3
+published/version 4, title `Synthetic staging 3 conflict A`, with the public
+snapshot selecting the exact edited revision
+`fa34866f-cd12-4be7-a3fe-fe4a18cc0a45`.
+
+The unused original is now `deleted`, filename scrubbed and ETag cleared, with
+one deletion attempt and no error. Its exact R2 key returns actual Cloudflare
+404/code 10007. The revision row remains for history; its retained ID is not an
+active file. Only the approved 2,025-byte replacement remains in R2, ready with
+the previously verified ETag. No direct SQL publication/deletion was performed.
+[Actual approval and cleanup state](staging-functional-fixture3-approved-state.json).
+
+Fresh anonymous hosted checks at 00:52:53 Asia/Amman confirm:
+
+- Catalog 200, exactly one known synthetic resource, tab A's successful title,
+  correct public URL and no private identity/moderator fields.
+- Download GET/HEAD 200, `image/png`, Content-Length 2,025, safe filename
+  `resource-726f6f74-6172-4368-8000-000000000003.png`, and no-store headers.
+- GET SHA256 exactly
+  `f7a2816a18d53b3db6a505a75ceaa01fb0cd3606d7a4f424ca0466beadbfda0b`,
+  proving the public bytes are the inspected rotated/redacted replacement rather
+  than the original. HEAD has no body.
+- Direct private replacement path on the public API still returns 404.
+- The previously accepted constructed cursor now returns actual
+  `409 {code:"catalog_changed"}` after publication. This is supplementary hosted
+  generation invalidation, **not** a completed API-issued 201-resource traversal.
+
+[Actual public download and cursor results](staging-functional-fixture3-approved-http.json).
+No confirmed failure was observed; authentication, infrastructure, migrations,
+production/legacy resources and onboarding settings remain unchanged.
+
+### Same-ID republication PASS
+
+The owner then unpublished and reapproved n=3 through the real portal. Live D1
+records `resource_unpublished` at `2026-11-14T21:54:39.626Z` followed by
+`submission_approved` at `21:56:01.163Z`; the record is published/version 6.
+The resource UUID, public download URL, selected edited revision and file hash
+remain unchanged. At 01:00:58 Asia/Amman, fresh anonymous catalog/GET/HEAD all
+returned 200 and GET still matched the same 2,025-byte edited PNG. The original
+stays deleted and only the ready approved replacement remains in R2. This closes
+the earlier independently unverified republication case. The brief private
+interval was not independently sampled; n=1's withdrawal-denial proof remains
+the observed revocation test.
+[Real republication/audit state](staging-functional-fixture3-republished-state.json)
+and [same-ID public responses](staging-functional-fixture3-republished-http.json).
+
+**Historical next action, now completed above:** permanently remove n=3 with reason `Synthetic cleanup 3`.
+Pre-cleanup inventory contains only the three owned submissions (two terminal),
+the known deleted originals and one exact manifest-owned approved replacement;
+there are no unknown live objects. The executor will verify physical deletion,
+continued public denial and retained history. No database row deletion or restore
+is authorized or needed.
+
+Full multi-page publication/withdrawal consistency, overlapping mutation/upload
+races, and actual client-interruption recovery remain outstanding. They require
+authenticated operator/browser actions; no available tool controls the user's
+authenticated side browser. The owner is being asked whether they can operate a
+reviewable, strictly scoped same-origin functional API client to avoid hundreds
+of manual UI actions. No new pagination fixtures are being seeded until an
+executable path is chosen. Such a client is not an auth bypass or deployed service;
+no client code or successful bulk result is claimed at this checkpoint.
+No cookie, JWT or PIN is requested. Group A's limited
+deferred negative cases remain unverified, and contributor onboarding is inactive.
+
+## Earlier fixture 3 interruption resume and private editing checkpoint
+
+**Group B remains PARTIAL. Fixture 3 was already fully seeded; it was not
+recreated. Rotation/redaction/private replacement and stale-write protection
+now PASS on the actual deployment. Replacement approval is the next action.**
+
+Read-only reconciliation found three submissions: n=1 removed/version 6, n=2
+rejected/version 3, and n=3 pending/version 1. Both old files were deleted with
+their five/two audit rows preserved. n=3 had exactly one ready 1,920-byte original
+under its reserved key, matching fixture SHA256
+`1324f212d3fdc38a04671664d9e87bf203d9982696eeff2373ce4ea9f1251383`.
+It had no replacement, audit event or public snapshot. The old upload deadline
+had elapsed, but the revision was **ready**, not an abandoned uploading intent;
+no deadline reset, write replay, new fixture or migration was required.
+Current Worker version/bindings and production/legacy deployment IDs remain at
+the recorded baseline. [Live interruption reconciliation](staging-functional-fixture3-reconciliation.json).
+
+Current anonymous n=3 GET/HEAD returned 404, catalog 200/empty, and private admin
+file access redirected to Access. [Hosted pending/privacy checks](staging-functional-fixture3-pending-http.json).
+
+### Shared side-browser capability
+
+The user explicitly offered the existing Codex side-browser tab and personal PIN
+entry. Ambient context identifies the admin URL, but no Browser `js`, CUA desktop
+action, click or tab-control tool is exposed to this executor. Document-control
+discovery found no connected session. Environment metadata advertises a desktop
+capability; that does not prove a controllable connection to the user's tab.
+The executor cannot programmatically inspect/use that authenticated session.
+No separate Playwright browser was launched; cookies, JWTs and PINs were never
+read, printed or exported. The owner operates the actual portal; Codex verifies
+D1/R2, pixels and anonymous responses independently.
+[Capability evidence](staging-functional-browser-capability.json).
+
+### Real private image editing/replacement
+
+The owner used the existing portal editor to rotate right once, redact
+`X=60, Y=30, Width=20, Height=20`, inspect, and save privately. Actual D1 now
+records `file_replaced`, version 2, and a new ready selected revision
+`fa34866f-cd12-4be7-a3fe-fe4a18cc0a45`, 2,025 bytes, inside the owned n=3 prefix.
+The original is still ready and byte-identical; both files remain private and
+there is still no public snapshot.
+
+Read-only analysis of the actual replacement bytes confirms 128×128 output,
+all 400 redaction pixels fully opaque black, and **zero** differences outside
+that rectangle from the original rotated 90° clockwise. The red shape and
+background match the expected positions. PNG chunks are only IHDR/IDAT/IEND,
+with no text or EXIF chunks. This verifies the exported output; the original
+synthetic fixture itself contained no private metadata. Replacement SHA256:
+`f7a2816a18d53b3db6a505a75ceaa01fb0cd3606d7a4f424ca0466beadbfda0b`.
+Anonymous resource GET/HEAD remains 404 and catalog empty.
+[Private revision evidence](staging-functional-fixture3-private-edit.json),
+[pixel analysis](staging-functional-fixture3-pixels.json), and
+[post-edit public confidentiality](staging-functional-fixture3-edited-private-http.json).
+
+### Real two-tab stale-write protection
+
+The owner opened two copies at version 2. Tab A saved
+`Synthetic staging 3 conflict A`. Tab B submitted a different title without
+reloading and displayed the expected conflict/draft-retention message. Live D1
+confirms version 3, tab A's title, exactly one `metadata_changed` event, and the
+same edited candidate. Tab B did not overwrite the successful edit or publish
+anything. This is a hosted stale-write protection pass; simultaneous in-flight
+races are not claimed. The 409-specific UI text is owner-observed; Codex did not
+capture that authenticated HTTP response directly.
+[Stale-write evidence](staging-functional-fixture3-stale-write.json).
+
+**Next owner action:** use tab A, inspect the selected cleaned PNG, tick the
+publication checkbox and **Approve selected candidate**. Leave it published for
+independent catalog/download/hash and unused-original-deletion checks. Do not
+resave tab B's stale draft. All revision keys/hashes are now recorded in the
+ownership manifest before approval's authorized cleanup effects.
+
+A supplementary generation-guard check has also accepted a constructed valid
+offset-200 cursor against the current empty catalog. It is explicitly **not** an
+API-issued page traversal or a substitute for the 201-resource pagination case.
+Its reuse after publication will test generation invalidation separately.
+[Prepublication cursor setup](staging-functional-generation-before.json).
+
+### Corrected recovered progress and remaining scope
+
+The interrupted workspace contained uncommitted evidence proving n=2 review,
+rejection and physical R2 deletion, despite older summaries still awaiting them.
+That evidence is preserved and consolidated in PR #26. The recovered n=1 audit
+shows approval, withdrawal and removal; it does not record a second approval.
+Same-ID republication therefore remains independently unverified and will be
+covered on n=3 rather than assumed from the resume summary.
+
+Only three initial fixtures and one replacement exist in the campaign; the
+remaining 202 initial fixtures are unseeded. Full 201-record page traversal under
+publication/withdrawal, overlapping mutations/uploads, and actual interrupted
+request recovery still need authenticated operations. Public reads and storage
+inspection alone cannot execute them. No auth bypass, direct SQL publication,
+mock result or new security harness is substituted. Previously deferred Group A
+JWT/session negatives stay deferred only for synthetic staging, not marked passed.
+Production and contributor onboarding remain inactive. After functional acceptance,
+the minimum real-upload gates remain staging Google client/authorized origin,
+staging Turnstile and frontend, an authorized eligible student identity, and an
+actual synthetic UI upload through `/submit`, followed by private moderation and
+revocation checks. Production storage/cutover and real-material onboarding need
+separate owner approval.
+
+## Earlier Group B withdrawal and permanent removal checkpoint
+
+**The n=1 lifecycle through permanent removal/cleanup PASS. Group B remains
+PARTIAL overall.** The owner reported `Unpublished`, then performed the requested
+removal and reported `Removed` through the in-progress browser-action handoff.
+Both actions used the real protected admin workflow; the executor performed only
+read-only verification of those transitions. No SQL status/audit fabrication,
+authentication change, redeployment, migration or production operation was used.
+
+### Withdrawal
+
+The real audit records `resource_unpublished` at `12:15:02.183Z`. At `12:15:37Z`,
+submission and public snapshot were both `unpublished`, version 5. The original
+revision remained ready, with zero deletion attempts and no error. A live read
+of the exact owned private R2 key returned the original 1,920-byte PNG with its
+matching manifest SHA256. Global inventory contained only that known owned object.
+
+Fresh anonymous requests at `12:16:14Z` returned an empty public catalog **200**,
+and **404** for both GET and HEAD on the **same URL previously downloaded with
+200**. Responses retain `private, no-store, max-age=0`; no cache HIT/stale result
+was observed. The private object path stayed **404**, and the protected admin
+file route stayed an Access **302**. This verifies new-request revocation after
+the observed withdrawal; no subsecond revocation latency was measured.
+
+[Withdrawal D1/private-object evidence](staging-functional-unpublished-state.json)
+and [actual hosted responses](staging-functional-unpublished-http.json).
+
+### Permanent removal and actual cleanup
+
+Before asking for removal, the exact UUID/key/size/ETag/hash and global inventory
+were checked against the ownership manifest; no unknown records/objects existed.
+The reusable locally generated synthetic fixture also still matched its hash.
+Removal was within the already approved synthetic deletion scope; no real
+materials or unrelated files were eligible. The real audit records
+`resource_removed` at `12:17:48.457Z`.
+
+At `12:18:31Z`, actual storage checks confirmed:
+
+- Submission `removed`, version 6; title `Removed material`, empty semester,
+  null contributor/email/subject and null original/candidate pointers.
+- Resource tombstone retained as `removed`, with revision pointer cleared and
+  title/semester/credit scrubbed.
+- Revision retained as `deleted`, filename `removed`, ETag cleared, exactly one
+  deletion attempt, no deletion error, deleted at `12:17:48.495Z`.
+- Private R2 listing empty; an authenticated read of the exact former key returns
+  actual Cloudflare **404/code 10007**, confirming that it is physically absent.
+- All five real moderation audit events and the submission/revision/resource
+  tombstones remain; foreign keys are clean. No D1 rows were deleted or restored.
+
+At `12:19:24Z`, fresh anonymous GET/HEAD remained **404** and the catalog remained
+empty **200**, with no-store headers. Automatic cleanup from the real removal
+request worked; manual retry, injected storage failure and late-PUT recovery are
+not claimed as tested.
+
+[Removal state/storage evidence](staging-functional-removed-state.json) and
+[post-removal public responses](staging-functional-removed-http.json).
+
+### Next small case: review and rejection
+
+Only reserved **n=2**, `Synthetic staging 2`, has now been seeded as a second
+case, using the same synthetic PNG and approved per-record key structure.
+Immediately before writes, checks established that staging contained only n=1's
+removed/deleted tombstones, its five audit rows, and an empty bucket. Both new
+inserts and both ready/pending updates changed exactly one row; n=1 history was
+preserved. Private R2 readback matches the manifest hash. n=2 starts pending at
+version 1, with no public snapshot or manufactured submission audit. New anonymous
+n=2 GET/HEAD returns **404**, the catalog is empty, and its admin file requires
+Access. [Rejection seed](staging-functional-rejection-seed.json) and
+[pending confidentiality](staging-functional-rejection-pending-http.json).
+
+The owner initially reported waiting for review and showed the Pending/version-1
+header. After locating **Start review** beside Save candidate metadata, the owner
+confirmed the expected Under review state. Live D1 at `12:30:43Z` confirms
+`under_review`, version 2, a real `review_started` event at `12:29:38.794Z`, and
+zero resource rows for n=2. No application fix or authentication change was
+needed. **Start review PASS**; the initial wait was not a demonstrated application
+failure. [Review transition evidence](staging-functional-review-state.json).
+
+The only live object is now n=2's manifest-owned PNG. The remaining **203**
+initial fixtures and all replacement revisions are unseeded. **Next browser
+action:** on `Synthetic staging 2`, choose **Reject submission**, reason
+`Synthetic rejection`, and confirm. Do not approve it. The executor will verify
+the rejection audit transition,
+no public snapshot, metadata scrubbing and actual object deletion. No credential
+sharing, manual database deletion or infrastructure change is needed.
+
+Overall progress: pending privacy, metadata editing, approval, publication,
+anonymous exact-file download, withdrawal/private retention, permanent removal
+and automatic durable cleanup have live evidence. Explicit Start review now also
+passes on n=2. Rejection, replacement/image preparation, same-ID republication, conflicts,
+pagination and interruption/recovery still require their own observations.
+Google/Turnstile/real `/submit` are not tested by these seeds. Contributor
+onboarding remains **NO**, pending functional completion, actual contributor-auth
+acceptance and the separate production approval. The two specific security
+negative-test categories remain deferred only for synthetic staging; Group A
+has not been relabeled fully passed.
+
+## Earlier Group B publication checkpoint
+
+**Group B: PARTIAL; real metadata editing, approval, listing and anonymous
+approved download PASS.** The owner reported `Approved`. At `11:55:52Z`, live
+read-only D1 queries confirmed submission and public snapshot both `published`,
+version 4, title `Synthetic staging 1 reviewed`, and the exact original manifest
+revision still ready in private R2. The real moderation audit records two
+`metadata_changed` events followed by `submission_approved` at `11:55:17.358Z`.
+Actor identities were deliberately excluded from evidence. No SQL publication
+or forged audit event was used.
+
+At `11:56:53Z`, fresh anonymous hosted requests independently verified:
+
+- Public catalog **200**: exactly the one manifest resource, edited title,
+  course `0401111`, expected API download URL and no next cursor. No private
+  identity or moderator fields were present.
+- Approved download GET and HEAD **200**, `image/png`, Content-Length 1,920,
+  safe filename `resource-726f6f74-6172-4368-8000-000000000001.png`, and
+  `private, no-store, max-age=0`. No cache HIT/stale response was observed.
+- GET body SHA256 exactly matches the approved fixture:
+  `1324f212d3fdc38a04671664d9e87bf203d9982696eeff2373ce4ea9f1251383`.
+  HEAD returns no body.
+- Direct private object path on the public API remains **404**; the admin
+  private-file route remains an Access **302**, without returning protected bytes.
+
+[Published state/audit evidence](staging-functional-published-state.json) and
+[anonymous publication/download evidence](staging-functional-published-http.json)
+retain actual observations. No security setting, infrastructure, source code,
+credential, student-auth flow or production resource was changed in this stage.
+Group A remains partial with the two specific negative-test categories deferred
+only for this synthetic campaign; it is not fully passed.
+
+**The independent `Start review` transition is not yet exercised:** the live
+audit contains no `review_started` event. Approval can legitimately proceed from
+pending; therefore this is missing test coverage, not a demonstrated failure.
+Exercise that action during the later withdrawn-record correction/replacement
+stage. Image editing/replacement, withdrawal, rejection/removal, cleanup,
+concurrency, pagination and recovery remain outstanding. No complete end-to-end
+campaign or contributor onboarding pass is claimed.
+
+**Next browser action:** in the existing portal's Published view, open
+`Synthetic staging 1 reviewed`, choose **Unpublish for re-review**, enter
+`Synthetic withdrawal` and confirm. Leave it unpublished; do not remove it yet.
+The executor will check catalog exclusion, fresh anonymous GET/HEAD denial, the
+unpublish audit event and continued private file retention before proceeding to
+destructive synthetic-only removal. No PIN, cookie or JWT sharing is needed.
+
+## Earlier Group B small lifecycle — pending checkpoint
+
+**Group A: PARTIAL, specific negative tests explicitly deferred by owner for
+synthetic staging only. Group B: PARTIAL / first fixture seeded and private.**
+The owner accepts the risk of deferring hosted independent Worker JWT rejection
+and real expired/revoked-session negatives for this functional campaign. These
+remain unverified, not failed or passed. This authorization supersedes the earlier
+requirement to block all Group B work, without changing Access, independent
+authorization, production approval or the documented deletion boundaries.
+
+At `11:38:53Z`, live preflight reconfirmed the recorded Worker version/deployment,
+exact staging bindings, private R2 endpoints disabled, empty application tables
+and bucket, clean foreign keys and the two migration ledger entries. Access
+app/AUD/PIN/policy reference were unchanged. Legacy deployment/version and
+production Pages canonical deployment/SHA matched the existing baseline.
+No migration, redeployment, production/legacy change or new test infrastructure
+was needed. [Preflight and pre-seed Time Travel bookmark](staging-functional-preflight.json).
+
+### Actual completed functional steps
+
+Only **n=1** from the approved 205-entry manifest was seeded:
+
+- Submission: `726f6f74-6172-4368-8000-000000000001`, course `0401111`,
+  type Summary, title `Synthetic staging 1`, semester Synthetic. All contributor
+  identity/credit fields are null. State `pending`, initial version 1.
+- Revision: `726f6f74-6172-4368-9000-000000000001`, ready original PNG,
+  1,920 bytes; the exact private key is in the [active ownership manifest](staging-functional-manifest.json).
+- The approved 128×128 synthetic canvas contains only artificial shapes and
+  `SYNTHETIC`. SHA256
+  `1324f212d3fdc38a04671664d9e87bf203d9982696eeff2373ce4ea9f1251383`.
+- Absence and ownership were checked immediately before insertion/PUT. Both
+  upload-intent inserts and both ready/pending updates changed exactly one row.
+  R2 readback through the authenticated management API matched all 1,920 bytes
+  and the SHA256. No public snapshot or manufactured submission audit was created.
+- Actual anonymous hosted `/download/<submission UUID>` GET and HEAD return
+  **404**, with `private, no-store, max-age=0`. The private object path on the
+  API host also returns **404**. The actual admin private-file GET/HEAD redirect
+  **302** to Access. The public catalog returns **200**, empty with no cursor.
+
+Thus synthetic pending-record creation, private storage byte integrity, exclusion
+from the public catalog and anonymous pending-file denial **PASS**. This is not
+a pass for Google sign-in, Turnstile, `/submit`, administrator moderation,
+publication/download, withdrawal, rejection/removal or cleanup. Those require
+the real application transitions; none will be simulated with direct SQL updates.
+
+### Corrected execution issues
+
+After the four successful seed writes, the final read-only D1 query combined
+multiple statements with parameters, which the REST API rejects (HTTP 400/code
+7400). It was corrected to a read-only query batch; the expected pending/ready
+state, empty public/audit tables and clean foreign keys were verified. **No insert,
+PUT or update was replayed.** This was an execution-query error, not a failure of
+the application lifecycle. [Seed attempt and successful reconciliation](staging-functional-seed-evidence.json).
+
+Initial anonymous probes using Python's default User-Agent received plaintext
+403s; their catalog parser consequently failed. The established acceptance
+User-Agent and a browser User-Agent each returned the expected catalog 200.
+Repeating the narrow pending-file probes with the established client produced
+the expected 404/302/200 results above. No security setting was changed. The
+specific edge rule is not established; the initial 403s are not counted as
+Worker privacy evidence. Both the [initial results](staging-functional-pending-http.json)
+and [verified client results](staging-functional-pending-http-verified.json) are retained.
+
+### Smallest required owner action
+
+In the existing authenticated browser at `https://admin.archive.rootamman.com/`:
+
+1. Open `Synthetic staging 1` in the Pending queue; confirm course `0401111`.
+2. Choose **Preview image** and confirm the artificial SYNTHETIC image.
+3. Choose **Start review**. Change the title to `Synthetic staging 1 reviewed`
+   and **Save candidate metadata**.
+4. Tick the inspection checkbox, choose **Approve selected candidate**, and
+   **leave it published**. Report success or the exact visible error, without
+   sending credentials or private logs.
+
+The executor will then verify the real audit/state transition, public catalog,
+anonymous PNG GET/HEAD, safe filename, no-store headers and exact file hash.
+Only after that observation should the owner unpublish the same record; the
+executor will verify new downloads fail while the file remains private. Removal
+and rejection will follow with ownership checks and retained audit/tombstone
+evidence. Do not unpublish/remove immediately after approval, because that would
+skip the independently observed publication/download phase.
+
+The owner-browser session is not present in this executor. No PIN, cookie or JWT
+export is requested, no bypass is introduced, and no new authentication harness
+is being pursued. Additional 204 initial fixtures and all replacement revisions
+remain unseeded until the small lifecycle works. Unknown objects/records must
+still stop the campaign. The known pending fixture is intentionally retained for
+this next action; do not delete its D1 rows or apply a database restore. The
+pre-seed bookmark is recovery evidence, not authorization for destructive restore.
+
+### Contributor rollout: minimum remaining work
+
+**Not ready for real uploads.** Complete the small hosted lifecycle, then the
+approved replacement/image-edit, conflict, pagination and recovery/cleanup cases.
+The next contributor-authentication experiment needs an owner-authorized eligible
+student identity, a real staging Google client, staging Turnstile configuration
+and a staging student frontend. Current live Google client is empty, Turnstile
+secret is absent, submissions are false and no student frontend is deployed.
+Direct database seeding cannot satisfy that experiment. Use a synthetic file
+through the actual UI, then verify pending privacy, admin approval, public
+download, withdrawal and removal. No real academic material is needed for auth
+acceptance.
+
+Production rollout still needs separately approved production D1/private R2 and
+configuration; never promote staging records/storage to production. Verify the
+actual student Google/Turnstile/upload path before admitting the trusted group.
+The existing `SUBMISSIONS_ENABLED=false` server switch is the minimum emergency
+pause; setting it requires an authorized deployment/configuration action and
+must be verified on every active submission entrypoint before rollout. Do not
+treat a frontend toggle as a server pause or assume this moderation switch also
+pauses the legacy Worker. The existing cutover sequence in
+`private-moderation.md` remains the authority for later production/legacy work.
+No rollout, new identity setup or production activation is performed here.
+
+The requested short course-project architecture explanation remains secondary
+to completing the hosted lifecycle; no presentation package is being generated.
+
+## Owner hostname verification — current checkpoint
+
+**Group A: BLOCKED by remaining authentication evidence, not a demonstrated
+security failure. Group B: NOT STARTED.** The owner has completed the manual
+hostname checks outside the Codex network. These close the TLS and alternate-host
+gates using **owner-observed hosted evidence**, alongside prior deployed routing
+and certificate inventory. No new network grant or repetition of these completed
+checks is needed for acceptance.
+
+- `admin.archive.rootamman.com`: the presented Google Trust Services **WE1**
+  certificate includes the exact admin hostname in its SANs; owner reports validity
+  from **14 November 2026 through 12 February 2027**.
+- `api-staging.rootamman.com`: the presented certificate includes the exact API
+  hostname in its SANs. The owner did not report its issuer or validity dates;
+  those are not inferred from the admin certificate. The preceding Cloudflare
+  inventory independently records active, unexpired API-host certificate coverage.
+- Both `root-archive-moderation-staging.omar-khldooon33.workers.dev` and
+  `bb9e96b3-root-archive-moderation-staging.omar-khldooon33.workers.dev` denied
+  access when opened directly in the owner's browser. **Exact HTTP statuses were
+  not captured**; no 401/403/404 or response-body assertion is invented. Prior live
+  API inventory also showed both routing flags and custom-domain previews disabled.
+- The owner reconfirms the earlier real Proton PIN login and successful session
+  JSON. No credentials or actual email were requested or recorded.
+
+The structured provenance is in
+[owner-hosted observations](staging-owner-hosted-evidence.json). Earlier Codex
+proxy failures remain historical transport observations, not origin denials.
+The previous custom-host access denials, staging-binding/private-storage checks
+and production/legacy baseline remain accepted; no drift or new failure is
+reported. This continuation changes documentation only and performs no hosted
+probe, migration, deployment, Access change or storage operation.
+
+### Remaining authentication evidence and minimum safe closure
+
+The inspected deployed validator is present and its noncomment executable lines
+match the reviewed bundle. Successful owner authentication exercises its positive
+path. Previously passing local signed-token tests remain supplementary evidence;
+neither establishes hosted rejection of every invalid assertion.
+
+| Case | Current limitation | Minimum safe way to close |
+| --- | --- | --- |
+| Missing/malformed assertion; invalid signature | Public admin requests are intercepted by Access; the public API rejects admin origin/paths before JWT verification | A separately approved, operator-only private invocation of the **existing deployed staging Worker**, using the unchanged admin URL and GET `/admin/api/session`, can send absent/malformed assertions or synthetic bad signatures and check the Worker's 401 response. It must have no public bypass route, mutation calls or new data bindings. No such invocation capability is currently available or created here. |
+| Issuer/audience rejection | Changing claims in an existing token invalidates its signature; that cannot isolate issuer/audience checks | The private invocation also needs appropriately signed genuine test inputs. To isolate a claim check, signature verification against the configured JWKS must first succeed. A token from another issuer may instead fail key/signature validation. No such inputs are available; a harness alone cannot supply them, and changing Worker issuer/AUD/JWKS is not permitted. |
+| JWT expiration rejection inside Worker | Access rejects an expired session before the Worker; no retained genuine test assertion is available | A trusted private runner could retain an operator-controlled genuine assertion in memory until after its actual expiry plus verifier tolerance, then invoke the unchanged Worker. Emit only case/status, never the assertion. No owner session export or token collection by Codex is requested. |
+| Exact allowlist rejection | The unchanged exact-email Access policy does not issue this app's token to a nonadministrator; editing an email breaks the signature; a different app's token can fail AUD first | Requires an otherwise valid, unexpired token for the configured issuer/AUD with a nonallowlisted email through an already legitimate issuance path. None is available under the preserved policy. The approved plan makes a real synthetic nonadministrator case **conditional on availability**; do not promote its absence into a new mandatory identity-setup requirement or weaken the policy to run it. |
+| Real expired/revoked Access-session denial | Owner success is confirmed, but an actual expired/revoked-session denial has not been reported | The owner can let the existing one-hour session expire naturally, then request `https://admin.archive.rootamman.com/admin/api/session` before signing in again. Record time and whether it redirects/requires login or denies access without returning the session JSON. An exact status is useful if available; no cookie, PIN or JWT is needed in evidence. This checks the gateway, not independent Worker expiry validation. |
+
+Worker JWT verification is offline: it checks the signed claims and expiration,
+without live per-request session introspection. Do not invent an immediate Worker
+JWT-revocation requirement; the existing gateway enforces session revocation at
+the public administrator hostname. The plan's real expired/revoked-session case
+can be closed by one genuine observed denial; both mechanisms need not be tested
+to satisfy that stated case.
+
+These limitations are **NOT EXERCISED / UNAVAILABLE**, not failed tests. No auth
+weakening, public diagnostic route, extra Access app/IdP, allowlist change or mock
+issuer is justified to obtain a pass. A private harness would require a concrete,
+separately approved scope and would initially close only the cases for which
+valid inputs exist. For a claim-isolated hosted case that the unchanged issuer
+cannot supply, closure needs an explicit owner decision on acceptable alternative
+evidence or a documented exception; source inspection/local tests must never be
+relabeled as hosted negative-test passes. No exception is assumed here.
+
+Group A therefore remains incomplete for independent negative-JWT evidence and
+the actual expired/revoked-session case. TLS, alternate-host denial and positive
+login are no longer blockers. Group B remains gated; contributor onboarding is
+still not ready. The owner need not repeat PIN login or share any authentication
+material to record the remaining session-denial observation.
+
+## Earlier owner-login continuation and PR consolidation
+
+**Group A: BLOCKED. Group B: NOT STARTED. Contributor onboarding: NO.**
+The owner now reports successful real Proton email-PIN login at the existing
+administrator hostname, the correct authenticated identity, the empty queue,
+and successful `/admin/api/session` JSON containing the approved email. This
+is accepted as **owner-observed hosted positive-login evidence**. No exact
+login timestamp, cookie, assertion, PIN or actual email was requested or saved.
+It supersedes the earlier request for the owner to demonstrate login; another
+login is not needed to establish that observation.
+
+### Group A evidence and limits
+
+The same configured root-archive environment resumed on 14 November UTC.
+Read-only inventory began at `09:52:58Z`; subsequent live probes and source
+inspection are timestamped in the linked JSON. No remote migration, deployment,
+Access/policy change, storage write/delete, cleanup or production cutover occurred.
+This statement concerns direct execution: the later authorized feature-branch
+push triggered the existing automated Pages **preview** check, recorded below;
+production Pages was rechecked and remained on its original canonical deployment.
+
+| Gate | Observed evidence | Acceptance status |
+| --- | --- | --- |
+| Real administrator authentication | Owner reports genuine PIN delivery/login, correct identity, loaded portal/empty queue and successful session JSON | PASS, owner-observed |
+| Unauthorized custom-host access | Fresh anonymous GET/HEAD across every admin file, root/unknown paths, session/list/private-file routes: Access redirects; forged assertion also redirects; browser-style preflight 403 | PASS for these hosted cases |
+| Public API cannot serve admin content | The same paths on API-staging return Worker JSON 404, including forged assertion and OPTIONS | PASS |
+| HTTPS and valid certificate coverage | Verified HTTPS requests reach both hosts; recorded Cloudflare certificate packs active, exact hostname coverage and unexpired Google Trust Services certificates | PARTIAL: the managed proxy presents its own certificate; direct edge chain/SAN verification is unavailable |
+| Independent Worker JWT signature/issuer/audience/expiry checks | Deployed source contains RS256 verification with pinned issuer/AUD, required claims and expiry checks; owner session succeeds | BLOCKED: invalid-assertion rejection inside the Worker was not observed |
+| Explicit Worker administrator allowlist | Secret binding present; deployed code checks exact normalized email inclusion; historical deployment evidence pins the policy email; owner's allowed identity succeeds | BLOCKED for a genuine signed nonadministrator negative case |
+| Expired/revoked real session | No real testing session or expired/revoked session is available in this execution environment | NOT EXERCISED; invalid synthetic cookies from the earlier run are not equivalent |
+| workers.dev and version-preview protection | Both routing flags false; both custom-domain preview flags false; one version enumerated; exact hostname probes fail at environment CONNECT | BLOCKED: proxy denial is not origin denial |
+| Staging bindings/private storage | Only approved staging D1/R2 and ASSETS; zero application rows/objects; two migrations recorded; foreign-key check clean; private R2 has no public endpoint | PASS, live read-only inventory |
+| Production and legacy infrastructure | Legacy deployment/version/ETag, production Pages deployment/SHA, and all three production DNS IDs/targets/timestamps equal the prior baseline; legacy public R2 domain configuration remains enabled as previously recorded | PASS for recorded infrastructure baseline; no historical file bytes were downloaded |
+
+The fresh script issued **79 actual hosted requests**: 31 Access 302s, 34 public
+API 404s, one denied preflight 403, one empty-catalog 200 and 12 alternate-host
+transport failures. `/resources` and missing-ID download GET/HEAD retain
+`private, no-store, max-age=0`. These requests use no real authentication
+material, follow no redirects and perform no application writes. The original
+120-request evidence is preserved separately without changing its observations.
+
+Independent negative JWT tests cannot be isolated through the present public
+administrator entrypoint: Access rejects requests without its valid session
+before the Worker executes. The unprotected public API entrypoint rejects the
+administrator path/origin before JWT validation. No current internal invocation
+path or valid signed negative-test assertions are available. An unsigned forged
+assertion stopped by Access does not prove signature, issuer, audience, expiry
+or allowlist rejection by the Worker. A nonadministrator is also blocked by the
+fixed exact-email Access policy before reaching the Worker. Do not request the
+owner's tokens, cookies or PIN; do not relax the policy or enable alternate hosts
+to manufacture these cases. Completing those branches requires a separately
+scoped hosted test method that can invoke the deployed staging Worker with
+controlled assertions while retaining all existing public protections. No such
+harness, service binding, diagnostic endpoint or new infrastructure was created.
+
+The deployed JavaScript was downloaded read-only, without returning its source
+or source map in the evidence. Raw deployed JS is 116,479 bytes, SHA256
+`addc4300d309566403c422bbff91572cb67fc5de61a37a30c418e65a52ddefe3`.
+The reproduced reviewed dry-run bundle is 116,371 bytes, SHA256
+`080ac6521a239d769ed02ec2c0aab9f39feb80e23b307a798ff43fa9fd4747fd`.
+Removing only the 37 standalone top-level `//` comment lines from each gives
+114,637 identical bytes, SHA256
+`28610cf9a1bd86932cee58fba5c46e334fee35ad501880371621a4c2c28d796e`.
+Thus noncomment executable lines match; raw bundle identity is not claimed.
+This is deployed-source inspection, not successful hosted negative JWT testing.
+
+### Exact missing capabilities
+
+Keep the existing custom-host grants. Only these **two additional HTTPS hosts**
+are needed for the enumerated moderation alternate endpoints:
+
+- `root-archive-moderation-staging.omar-khldooon33.workers.dev`
+- `bb9e96b3-root-archive-moderation-staging.omar-khldooon33.workers.dev`
+
+The second is derived from the sole recorded version and Wrangler 4.156.0's
+eight-character version-prefix rule. It is a probe of the existing version, not
+a newly created preview. No account-wide `*.workers.dev` grant is required.
+For direct edge certificate inspection, provide policy-supported TLS passthrough
+for **only** `admin.archive.rootamman.com:443` and
+`api-staging.rootamman.com:443`, or record an independent direct TLS inspection
+of those two hosts. Do not disable certificate verification or bypass the
+managed network policy. Network grants alone will not unblock the independent
+JWT negative tests described above. Later authenticated Group B actions also
+need an owner-operated real session in the test browser; an external owner
+browser login does not create a session in Codex. No session export is requested.
+
+### PR #26 / #27 transfer
+
+Before transfer, live GitHub metadata and fetched Git objects agree:
+
+- PR #26: open draft, `feat/private-moderation` into `main`, head
+  `1bcce0009c807167a2d4ade4c9845be99f0c8d58`, 12 commits/39 changed files.
+- PR #27: open draft, `acceptance/hosted-security-20261114` into
+  `feat/private-moderation`, head `3a80a7fabb9169c9a7ab024858d8b15088ff6e66`,
+  exactly one commit/four changed files. All four are instructions/evidence;
+  there are no runtime changes or separate test implementation to transfer.
+
+PR #27's evidence belongs in PR #26. Advancing its base to include its exact
+head could cause GitHub to mark #27 merged automatically. To preserve the owner's
+instruction that #27 remain open, its one patch was cherry-picked once onto
+`1bcce000…` as `c0f13d5876be080fd016ea112b4c9b3c164f34ab` in a separate
+worktree. `git diff --exit-code 3a80a7f… c0f13d5…` passed: complete tree
+identity, including all old evidence. The original commit is retained on #27;
+the PR #26 lineage has one copy of that patch. This continuation adds the
+owner-observed login, current evidence and a repeatable read-only probe script.
+No implementation file, SQL, dependency lockfile or existing evidence artifact
+is changed. Neither PR is merged, closed, deleted or retargeted by this work.
+
+### CI and retained artifacts
+
+The required CI commands were run locally on the consolidated implementation,
+with Node `v24.22.1`, Python `3.12.14` and locked dependencies. Sandbox attempts
+were blocked by local socket restrictions; permitted reruns removed Cloudflare
+and GitHub credentials from the process environment. These are explicitly
+**local/mock/emulated checks**, not hosted acceptance:
+
+- `node scripts/catalogs.mjs`: 127 courses, zero resources.
+- `node --test scripts/*.test.mjs`: 34/34.
+- `npm --prefix worker run check` with `XDG_CONFIG_HOME=/tmp/root-archive-acceptance-config`
+  and `WRANGLER_SEND_METRICS=false`: generated types, TypeScript, both dry-run
+  bundles and 71/71 tests. No deployment or migration command was run.
+- `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/chromium npm run test:frontend`:
+  37/37 browser tests with mocked external services.
+- `python3 -m unittest discover -s scripts/tests -v`: 3/3.
+- `python3 -m unittest discover -s analytics/tests -v`: 5/5.
+- `python3 analytics/generate.py --count 200 --seed 42 --output analytics/output/events.jsonl`
+  and `python3 analytics/analyze.py analytics/output/events.jsonl --output analytics/output/report`:
+  succeeded, synthetic output only.
+- CI-pinned actionlint 1.7.7, verified SHA256
+  `023070a287cd8cccd71515fedc843f1985bf96c436b7effaecce67290e7e0757`:
+  `.github/workflows/*.yml` and `scripts/fixtures/spoof-publication-check.yml` pass.
+- JSON parsing, sensitive-material checks, baseline comparisons and
+  `git diff --check` pass. GitHub CI observations after push are recorded in
+  [consolidation evidence](staging-pr-consolidation.json).
+
+All six GitHub checks passed on pushed continuation
+`a2ed5fb696665b7435775230688a5b6a92defea8`, including the five recorded required
+checks from their expected Apps: Repository/Worker/Frontend from `15368`,
+Cloudflare Pages from `85455`, and Submission policy from `5734145`. Trusted
+publication validation also passed. Existing Git integration generated Pages
+preview `902205f0-9393-4be0-bc99-c20a948b4b73`; no manual Pages deployment was
+issued. At `10:03:03Z`, production canonical Pages deployment/SHA and both
+legacy/staging active Worker deployments still matched their original baselines.
+Both PRs were verified open, draft and unmerged after the transfer; #27 retained
+its original head and base. The evidence-only follow-up records these named
+checks; the live PR page remains authoritative for subsequent commit checks.
+
+Evidence files: [HTTP probes](staging-security-resume-http.json),
+[read-only inventory](staging-security-resume-inventory.json),
+[deployed-source inspection](staging-security-resume-source.json).
+Reproduce the read-only hosted matrix with
+`python3 scripts/staging-security-probes.py`; this overwrites only the current
+resume HTTP evidence and never uses real credentials or initiates PIN login.
+
+### Group B and contributor readiness
+
+No Group B fixture has been seeded or published. Staging remains empty and the
+synthetic-only lifecycle/replacement/image-edit/concurrency/recovery/pagination/
+cleanup campaign is **NOT STARTED**, because mandatory Group A checks remain
+unverified. Local lifecycle tests do not change that status. Even after this
+gate, synthetic D1 seeding cannot establish Google sign-in or Turnstile behavior.
+Staging Google client configuration remains empty, contributor frontend/Turnstile
+setup has not been accepted, and submissions/scheduled cleanup remain false.
+Public `CONFIG.privateModeration` remains false. Contributor onboarding is **NO**
+until Group A and hosted Group B pass, real contributor-authentication acceptance
+has its separately approved setup, and the owner approves any later production
+cutover/activation. No production configuration change is authorized by this report.
+
+## Earlier hosted security resume
+
+Resumed exact handoff `1bcce0009c807167a2d4ade4c9845be99f0c8d58` in a
+separate worktree. **Group A: INCOMPLETE. Group B: NOT STARTED.** No
+migration, deployment, Access change, fixture seed, cleanup or production/legacy
+mutation was issued. This run used actual hosted requests, without local tests
+or mocked results.
+
+At approximately 09:33–09:34 UTC, 119 live requests covered all ten files under
+`admin/`, root/unknown paths, session/courses/list/detail/private-file routes,
+all eight mutation routes, GET/HEAD, POST/OPTIONS, forged assertion/email
+headers and a deliberately invalid synthetic session cookie. Redirects were
+not followed. POST bodies were deliberately invalid JSON so an unexpected
+authentication failure could not execute an operation.
+
+- All 49 non-OPTIONS administrator probes returned 302 to the expected Access
+  login origin/path. No protected asset, API or private file was returned.
+- All 57 corresponding probes on the public API hostname returned the Worker's
+  JSON 404, including every asset/admin path and forged-header probe.
+- Eight bare administrator OPTIONS requests returned 400 HTML. A subsequent
+  browser-style OPTIONS request to `/admin/api/session`, with the administrator
+  Origin and preflight method/header fields, returned 403. These are denials;
+  they do not establish authorized CORS/session behavior.
+- `/resources` returned 200, an empty catalog and `private, no-store, max-age=0`.
+  Missing synthetic-ID download GET/HEAD returned 404 with the same cache policy.
+  Access JWKS returned 200 and two keys; no assertion was collected.
+- HTTPS verification remained enabled: curl returned `ssl_verify_result=0` for
+  admin, public API and Access JWKS. The managed proxy presents its own OpenAI
+  certificate, including the requested admin SAN. Cloudflare's read-only API
+  separately reports both recorded custom-domain certificate packs active,
+  exact hostname coverage, Google Trust Services issuance and expiry on
+  12 February 2027. **The actual edge certificate chain/SANs were not observed
+  directly through this intercepting proxy; that portion of the TLS gate remains
+  unverified.**
+- workers.dev `/` failed at proxy CONNECT with 403; it did not reach the origin.
+  The updated environment permits the three custom/Access hosts, but lacks
+  moderation workers.dev/version-host grants. This is not an alternate-host pass.
+  API inventory still shows workers.dev and previews disabled and both custom
+  domains' preview routing false. The sole version has `has_preview=true` metadata;
+  no preview was created or enabled, and no actual preview-host denial is claimed.
+- Read-only inventory confirms the original deployment/version and staging-only
+  bindings, secret ADMIN_EMAILS binding, correct issuer/AUD/origins, disabled
+  submissions/cleanup, private R2 domains disabled/absent, and one exact-email
+  Access Allow policy with the existing PIN provider and no overlapping app.
+  This checks configuration, not genuine administrator login or JWT execution.
+
+Evidence: [hosted probes](staging-hosted-security-evidence.json) and
+[sanitized read-only inventory](staging-hosted-security-inventory.json).
+No cookies, OTPs, assertions, actual administrator email or response content
+from protected pages were retained. The configured Cloudflare API secret was
+not sent to staging. The original workspace checkout was preserved.
+
+**Stop for real administrator interaction:** open
+`https://admin.archive.rootamman.com/`, enter the existing approved Proton
+administrator address, request the email code and enter it in the Cloudflare
+Access page. Confirm the portal loads, then visit
+`https://admin.archive.rootamman.com/admin/api/session` in the same browser and
+confirm a successful JSON session response. Never paste the PIN, cookies or JWT
+into chat. An owner-browser success alone does not create a session in the
+Codex browser; subsequent authenticated acceptance needs that same real session
+in the browser used for testing.
+
+Administrator login, genuine expired/revoked-session checks, independent hosted
+Worker JWT/allowlist enforcement, direct edge TLS inspection and workers.dev/
+version-host probes remain outstanding. Access interception of forged assertions
+does not prove that the Worker's independent validator ran. Do not weaken Access,
+change the allowlist, deploy a diagnostic endpoint or seed fixtures to complete
+these gates. Grant the existing moderation workers.dev/version hostnames under
+`omar-khldooon33.workers.dev` in the environment for remaining alternate-host
+probes. Group B stays blocked until every Group A gate is evidenced as passed.
+
+## Wrangler deployment — current checkpoint
+
+Continued from `048b998102279d1945870ad5a1226c502ea34841` using the owner's
+explicit authorization to split Access verification from deployment credentials.
+The earlier policy-read 403 is a deployment-token scope limitation, not a failed
+security control. The connected Cloudflare integration independently verified
+app `bebba566-18d3-42c5-a78e-50213ea2dad6`, unchanged AUD, existing single exact-email
+Allow policy, PIN provider `0db90b4d-534a-4f75-ab0e-026016e0b1b9`, one-hour session,
+HttpOnly/binding cookies, no preflight bypass and no overlapping Access apps.
+No Access setting was changed. The exact existing policy email was transferred
+in encrypted form and supplied only through a mode-0600 temporary secrets file;
+that file and the temporary transfer key were removed after deployment.
+
+Preflight confirmed both migrations recorded, zero submissions/revisions/resources/
+audit rows, clean foreign keys, empty private R2, disabled r2.dev and no R2 custom
+domains. Reviewed implementation/config/assets still match `5f978552…` exactly.
+No migration was reapplied. Locked dependencies were restored with `npm ci`;
+Wrangler 4.156.0 release-config dry-run and real deploy succeeded.
+
+At `2026-11-14T08:32:53Z`, Wrangler uploaded all ten administrator assets and deployed:
+
+- Worker `root-archive-moderation-staging`.
+- Version `bb9e96b3-e789-47b0-aa92-16168fe80db4` at 100%; deployment
+  `2eaa7db3-f51c-4747-a5ea-e8ec0b86c5a2`.
+- Admin custom domain `580d38dcab623f69bd2edffa224340c4473435be`, managed DNS
+  `60487f52f1b055e739042149d60f8e45`, certificate reference
+  `ec66ad67-c346-4ff5-a5b1-dc3d59735aa9`.
+- API-staging custom domain `1fc544a0ed42618cfdde24bc360c4686a50675a8`, managed DNS
+  `6b07023fca7347ba5d83c67fda5322a4`, certificate reference
+  `2cdcbcd6-7862-46f9-bb0c-1e3ea3b30642`.
+
+Postflight confirms only staging D1 `f4aa2a8b-4b27-4ed3-b7a2-4e6e100a94c6`,
+R2 `root-archive-private-staging` and ASSETS bindings, ADMIN_EMAILS as a secret,
+correct issuer/AUD/origins, and submissions/cleanup false. workers.dev and version
+previews are disabled; both custom domains have preview routing false. R2 remains
+empty. Legacy deployment/version, production Pages canonical deployment/SHA and
+three existing production DNS records remain unchanged. No legacy/public R2,
+production DNS or Pages mutation was issued.
+
+**Group A remains BLOCKED at hosted verification; Group B has NOT STARTED.**
+Cloud-shell HTTPS probes fail before reaching the origin: curl exit 56,
+`CONNECT tunnel failed, response 403`, HTTP `000`. The integration's generic fetch
+also denies the new hostnames; a control `/resources` request returns
+`Forbidden: requests to api-staging.rootamman.com are not allowed`. These are
+network-policy limitations, not evidence of Access denial or a security failure.
+Do not count the attempted admin HTML/asset/API probes as passed security tests.
+Certificate references and routing creation do not prove valid hosted TLS.
+The zone certificate-pack listing has not yet exposed the new certificates.
+
+The running environment needs HTTPS access to `admin.archive.rootamman.com`,
+`api-staging.rootamman.com`, `rootamman.cloudflareaccess.com`, and the exact
+moderation workers.dev/version hosts under `omar-khldooon33.workers.dev` for the
+required probes. No environment-change tool is offered; edit the running
+machine's network settings. Then complete anonymous/forged-token/alternate-host
+checks, actual TLS verification and owner-operated email-PIN login. Independent
+hosted JWT/allowlist enforcement and session-negative cases remain unverified.
+No authentication bypass or synthetic writes are authorized before that gate.
+
+[Sanitized deployment evidence](staging-wrangler-deployment-evidence.json) records
+bindings, domain/DNS/certificate identities and unchanged production checkpoints.
+The original rollback plan now applies to the two recorded new custom-domain IDs;
+no rollback was performed. Access PIN configuration is retained. PR #26 stays
+draft/unmerged and public integration remains disabled.
+
+## Authenticated Wrangler resume — current checkpoint
+
+Resumed the existing owner-approved Groups A/B in a newly selected Codex Cloud
+environment on 14 November 2026 UTC. This supersedes the earlier assertion that
+no authenticated Wrangler environment is available. **Wrangler authentication:
+PASS. Group A: BLOCKED by token permissions. Group B: NOT STARTED.**
+
+- Fetched `feat/private-moderation` and checked out exact checkpoint
+  `3c72dc82ae1c45c6b5e35631766eb76e56a6f989` with a clean working tree.
+  GitHub confirms PR #26 is open, draft and unmerged at that head.
+- Read the current deployment plan, execution results, private moderation guide
+  and moderation Wrangler configuration. `git diff --exit-code
+  5f978552dc5a8ed0b515386b6a20bc8e3dcb00d0 -- worker admin site scripts tests
+  package.json package-lock.json` passed. Both migration SHA256 values match
+  the approved plan. No implementation, asset, dependency or configuration
+  change was needed.
+- Node `v24.22.1`; installed existing locked Worker dependencies with
+  `npm ci --prefix worker --cache /tmp/root-archive-npm` (42 packages).
+  Local Wrangler `4.156.0` help confirms the planned deploy and secrets-file
+  options. No migration command was run.
+- `XDG_CONFIG_HOME=/tmp/root-archive-config WRANGLER_SEND_METRICS=false
+  worker/node_modules/.bin/wrangler whoami` exited 0 and reported User API Token
+  authentication through the configured `CLOUDFLARE_API_TOKEN` environment
+  secret, with expected account `1b409400fea16e7142f62ac19ecd361d` listed.
+  No credential or token value was displayed or saved in evidence.
+- The first remote preflight request, authenticated using that same configured
+  secret, was `GET /accounts/1b409400fea16e7142f62ac19ecd361d/access/policies/
+  1fd4e71c-8a76-4969-8792-2772531ca2a9` (one continuous API path). Cloudflare
+  returned **HTTP 403**, error code **1010**, `auth.forbidden`. This blocks
+  revalidating the existing exact-email policy and securely deriving the
+  matching Worker allowlist. It is not an asset-session upload failure.
+- Stopped immediately under the owner's instruction to stop on insufficient
+  permissions. No later inventory request, protected allowlist file creation,
+  deploy, migration, asset upload, DNS/TLS mutation or hosted test occurred.
+  Worker/custom-domain deployment permissions have not been exercised.
+
+[Sanitized resume evidence](staging-wrangler-resume-evidence.json) records the
+exact blocker. Repair the environment token's access to the existing account:
+the reusable-policy GET accepts **Access: Apps and Policies Read** (or Write).
+Use secure environment-secret configuration; never paste a token into chat.
+The remaining inventory/deployment operations may require other permissions;
+this run does not claim they have been validated. No connector fallback or
+repeat upload investigation was attempted.
+
+All hosted Group A gates remain unverified in this run: actual owner PIN login,
+anonymous asset/API denials, independent JWT/allowlist enforcement, alternate
+endpoint protection, deployed staging bindings and valid HTTPS. No PIN
+interaction is needed until the portal is deployed. Group B has no fixture
+writes or deletions. The previously recorded applied migrations and empty
+staging storage were preserved by issuing no writes; their remote state was
+not re-read after the permission failure. No production/legacy mutation was
+issued, and their current remote identifiers were not revalidated in this run.
+Access policy, email-PIN provider and AUD were not modified; submissions,
+scheduled cleanup and public integration remain disabled in source.
+
+## Direct-upload diagnosis — latest checkpoint
+
+Continued from `c967e007691d4ce1cc2e35c89fd015f7af4bd21e` under the
+owner's instruction to diagnose the protocol and retain email-PIN authentication.
+No D1 migration was reapplied. Source, config and assets still match reviewed
+`5f978552dc5a8ed0b515386b6a20bc8e3dcb00d0`; tested bundle SHA256 is unchanged.
+
+Compared the actual previous construction with
+[Cloudflare's official direct-upload protocol](https://developers.cloudflare.com/workers/static-assets/direct-upload/)
+and installed Wrangler 4.156.0's asset uploader:
+
+1. Manifest registration used the existing account and approved staging Worker
+   name, with the same ten verified asset hashes/sizes. Fresh registration
+   returned a three-segment session token and three buckets requesting ten files.
+2. The fresh transfer request used that returned session token as the bearer
+   credential, rather than the ordinary account API credential. The constructed
+   Request's authorization value was compared in memory with the session token;
+   only the boolean result was returned. This checks construction, not wire-level
+   forwarding. No bearer token, secret or complete header was printed or saved.
+3. Endpoint/method were the documented POST to
+   `/accounts/1b409400fea16e7142f62ac19ecd361d/workers/assets/upload?base64=true`.
+   Redirect following was disabled for diagnosis; no redirect occurred.
+4. Multipart body was constructed with FormData/Blob, hash-named file fields,
+   base64-encoded file bytes, and matching per-part MIME types. A cloned Request
+   was parsed back into FormData: expected fields, MIME types and lengths all
+   passed, and the multipart boundary was present. Source bytes/hashes were
+   rechecked locally against the previously verified artifact payload.
+5. The fresh token's decoded expiry was 3,599 seconds in the future, and its
+   single-asset-upload flag was false. Thus the bulk protocol and immediate use
+   matched this session; ordinary expiration and an accidentally selected
+   single-asset protocol do not explain this fresh failure. Decoding claims is
+   diagnostic only and does not establish the token's cryptographic validity.
+6. The first requested bucket returned **HTTP 401**, content type
+   `text/plain;charset=UTF-8`, exact body `Unauthorized`, server `cloudflare`,
+   Ray ID `a5a45c2ee8a9355d-WAW`. No uploads were acknowledged. Execution did not
+   proceed to other buckets and no completion token was received or substituted
+   with the initial session token. No Worker attachment/deployment was attempted.
+
+Read-only controls: connected domain reads succeeded; generic fetch without an
+explicit Authorization header returned successful JSON; a deliberately invalid
+synthetic credential returned JSON HTTP 400/code 9106. This demonstrates that an
+explicit header affects processing, but **does not prove** a real session JWT
+arrived unchanged at the asset service. A second registration inspected token
+shape only (no transfer): three segments and a non-placeholder 86-character
+signature component. Its header/expiry metadata could not be decoded by that
+diagnostic helper; it provides no proof of token validity or redaction.
+
+**Confirmed result, unresolved cause:** a fresh bulk asset transfer constructed
+according to the documented protocol is rejected with 401. Available evidence
+cannot distinguish connector transport/authorization handling from Cloudflare
+session-token validation. It does not establish insufficient account scopes,
+header stripping, payload corruption or a server-side defect. The supported
+`cloudflare.request` interface has no Authorization-header override; the generic
+fetch path permits construction but this upload authentication could not be
+completed or verified. No unsupported credential workaround was attempted.
+
+[Sanitized diagnostics](staging-upload-diagnostics.json) contain the observations,
+not tokens or complete headers. These diagnostic registrations may leave
+transient manifest/session state, but no asset transfer was acknowledged. No
+cleanup/deletion was attempted. Read-only postflight again shows only the legacy
+Worker and existing domain, unchanged legacy deployment/ETag and production Pages
+deployment, and an empty staging R2 bucket. Existing D1 ledger remains 0001/0002;
+application counts are zero. No Access, authentication-choice, DNS, TLS, Worker,
+R2 object or production mutation was made in this diagnostic continuation.
+
+Group A is still partially completed and blocked; all hosted security gates
+remain unverified. Group B has not started. Wrangler `whoami` still reports
+unauthenticated and no `CLOUDFLARE_API_TOKEN` environment secret is configured,
+so there is no authenticated Wrangler fallback available in this environment.
+
+Recommended next step: make an authorized Wrangler environment available through
+a secure environment-secret or supported OAuth-login mechanism, then resume the
+same approved deployment without reapplying migrations. Never paste token values
+in chat. Alternatively the integration provider must resolve/confirm its
+session-JWT upload support before another connector transfer is attempted.
+No administrator PIN interaction is needed until the portal is deployed.
+
+## API deployment attempt — latest result
+
+This supersedes the earlier CLI-authentication stop recorded below. The owner
+explicitly authorized replacing Wrangler execution with connected Cloudflare API
+operations while preserving source, SQL, resources and the security gate.
+
+- Source/configuration/admin assets match reviewed commit
+  `5f978552dc5a8ed0b515386b6a20bc8e3dcb00d0`. The current checkout differs from
+  that commit only in documentation/instructions. Worker typecheck, dry-run
+  bundles and 71/71 local Worker tests passed before remote writes.
+- Verified tested bundle SHA256:
+  `080ac6521a239d769ed02ec2c0aab9f39feb80e23b307a798ff43fa9fd4747fd`.
+  Ten admin asset files were hashed with SHA256 and the installed Wrangler's
+  BLAKE3 asset-manifest algorithm. All bytes were rechecked inside the API
+  execution runtime before upload. No source/security change was made.
+- Pre-migration Time Travel bookmark:
+  `0000000a-00000000-00005123-85f5d60047382e3f32e50ee33f993a02`.
+- **Migration 0001 succeeded at 03:48:56 UTC; 0002 at 03:49:12 UTC.** Exact
+  reviewed SQL was sent in order to staging D1
+  `f4aa2a8b-4b27-4ed3-b7a2-4e6e100a94c6`, with the compatible `d1_migrations`
+  schema and each filename inserted after its migration. Ledger IDs are 1/2.
+  All six application tables, indexes and three catalog triggers exist;
+  foreign-key check is clean. Only cleanup/catalog singleton rows are present.
+  Submissions, revisions, resources and audit tables each contain zero records.
+- The asset-upload session registration succeeded for
+  `root-archive-moderation-staging`. The first transfer using its upload-session
+  bearer token returned non-JSON text beginning **Unauthorized**; JSON parsing
+  failed. Zero asset uploads were acknowledged. The response HTTP status was not
+  retained, so this report does not invent a status code or assert the root
+  cause is a particular missing scope. Token-based asset transfer is blocked.
+- Execution stopped immediately: no retry, credential substitution, alternate
+  infrastructure, code upload, endpoint/domain change or TLS configuration.
+  The session token was neither returned nor saved in logs/evidence; registration
+  may leave transient manifest/session state. No cleanup/delete was attempted.
+
+[Sanitized API deployment evidence](staging-api-deployment-evidence.json)
+records the artifact manifest, migration checks and postflight inventory at
+`2026-11-14T03:50:57.966Z`. Only legacy `root-archive-worker` is listed; no
+moderation Worker/version/deployment ID exists. Existing production DNS/custom
+domain, Worker ETag/deployment, and canonical Pages deployment still match the
+baseline. R2 is empty; its contents were not modified. Access app, AUD, OTP
+provider and exact-email policy were unchanged by this attempt. No unexpected
+deletion or production mutation occurred.
+
+**Group A remains incomplete. Group B did not start.** Hosted administrator
+login, unauthorized-request denial, independent JWT/allowlist enforcement,
+alternate-host rejection, TLS and deployed binding inspection remain blocked.
+No synthetic test records/files were seeded or deleted. No real identities or
+academic materials were used. Submissions and scheduled cleanup were not enabled.
+
+Next action: resolve authorization of the documented asset-session upload flow
+in the connected integration, or use an authenticated Wrangler environment for
+the same approved account/resources. Do not recreate resources, rerun applied
+migrations or change authentication to get a pass. A genuine owner PIN login
+and every remaining Group A security check are still required before Group B.
+
+Recovery: no code/domain rollback is necessary because no Worker or hostname
+was deployed. Prefer retaining the compatible staging schema/ledger and fixing
+forward. D1 Time Travel restoration to the bookmark above remains a separate
+explicitly approved destructive recovery choice; no restore was performed.
+No asset, R2 object, historical preview or legacy resource deletion is authorized
+by this failed attempt.
+
+## Earlier email-PIN setup — historical checkpoint
+
+Approved deployment source: `5f978552dc5a8ed0b515386b6a20bc8e3dcb00d0`,
+branch `feat/private-moderation`, draft [PR #26](https://github.com/omatek/root-archive/pull/26).
+The owner approved Groups A/B in the [execution plan](staging-deployment.md),
+with a mandatory successful hosted security gate before B. Approval persists;
+this report does not request another approval for the same operations.
+
+## Group A — partially executed, blocked
+
+Cloudflare account `1b409400fea16e7142f62ac19ecd361d`.
+Two remote mutations succeeded through the connected Cloudflare API:
+
+1. Created `Archive staging email PIN`, type `onetimepin`, ID
+   `0db90b4d-534a-4f75-ab0e-026016e0b1b9`, config `{}`.
+2. Updated existing app `admin.archive`, ID
+   `bebba566-18d3-42c5-a78e-50213ea2dad6`, at `2026-11-14T01:25:42Z`:
+   allowed IdPs now contain only that PIN provider; session duration `1h`;
+   HttpOnly cookie and binding cookie enabled. Preserved entire protected
+   hostname, destinations, no OPTIONS bypass, and the existing reusable policy.
+
+The application AUD remains
+`0003d8d8ba905005bfed05fc441631de07c91985c3e2baab528bdb4bbb7ac5be`.
+Reusable policy `1fd4e71c-8a76-4969-8792-2772531ca2a9` still allows exactly
+the same single administrator email; its update timestamp remains
+`2026-11-13T23:30:28Z`. No policy, existing Cloudflare IdP, account membership,
+or production setting was modified. The administrator email is omitted from
+committed evidence. No OTP request, code, cookie or JWT was collected.
+
+Wrangler 4.156.0 `whoami`, with the planned config-home setting, reported
+**You are not authenticated**. The approved plan explicitly requires CLI
+authentication before migrations/deployment. No temporary account, credential
+extraction, substitute migration ledger, auth bypass or alternative deployment
+was used. Required CLI operations are blocked; no remote migration or Worker
+deployment command was attempted.
+
+Post-change API verification at `2026-11-14T01:26:13.895Z` is recorded in
+[sanitized evidence](staging-group-a-evidence.json):
+
+- Staging D1 `f4aa2a8b-4b27-4ed3-b7a2-4e6e100a94c6` still contains only
+  internal `_cf_KV`; no migrations or application tables. The read-only schema
+  query reports `changed_db=false`, `rows_written=0`, size 12,288 bytes.
+- Private staging R2 `root-archive-private-staging`, ID
+  `1a5f949cc506496daa0ff5ff43333c72`, remains empty. Preflight reconfirmed
+  r2.dev disabled and no custom domains. No object writes/deletions occurred.
+- `root-archive-moderation-staging` does not exist. No staging Worker version,
+  deployment, domain, DNS or certificate identifiers were created.
+- Admin hostname DNS resolution still fails; no TLS or hosted login success
+  is claimed. The API accepts the PIN configuration, but that does not prove
+  mail delivery, owner authentication or enforcement at the hosted Worker.
+
+## Mandatory security gate
+
+| Requirement | Result |
+| --- | --- |
+| Authorized administrator genuinely authenticates | Blocked: hostname/Worker not deployed; no OTP login exercised |
+| Unauthorized admin assets/APIs denied | Hosted verification unavailable |
+| Worker independently validates JWT and administrator allowlist | Source/local tests previously passed; deployed verification unavailable |
+| Alternate endpoints cannot bypass protection | Source disables/rejects them; hosted verification unavailable |
+| Deployed bindings use only approved staging D1/R2 | No deployed moderation bindings exist to inspect |
+| Production/legacy unchanged | Existing deployment/version, Worker ETag, custom domain, DNS and production Pages identifiers match baseline |
+
+The gate has **not passed**. Missing verification is not treated as success.
+Previously recorded 71 Worker/37 browser tests are local mocked/emulated evidence,
+not results of this execution. No new hosted lifecycle test passed here.
+
+## Group B — not started
+
+No synthetic records were seeded, published, withdrawn, edited or deleted.
+No concurrency/failure-recovery/deletion campaign was run. No real students or
+academic materials were used. Audit/recovery data was not created or removed.
+The local synthetic manifest prepared earlier remains local and unexecuted.
+Submissions, scheduled cleanup and production frontend integration remain off.
+
+## Production baseline retained
+
+- Legacy Worker deployment `88fef60a-22b0-434a-bbc2-89ac0d569629`, active version
+  `e8895ac0-b95b-409e-aff1-af3f549be94f`, modification time
+  `2026-11-12T19:55:21.827727Z`; unchanged ETag in JSON evidence.
+- Existing `api.rootamman.com` domain ID
+  `18ff115e80d1e21d3b74e146d72bf141227e6f23`, mapped to the legacy Worker.
+- Existing DNS IDs, targets and modification times for API, archive and assets
+  match preflight; no staging hostname records were created.
+- Production Pages canonical deployment
+  `60b32faf-7934-4e5b-8a34-c07c1cb0983d`, SHA
+  `4bb136b9a39423737be4ee30ba1239d735e221c9`, branch `main` unchanged.
+
+No production/legacy mutation API was issued, historical previews were not
+deleted, PR #26 was not merged, and no paid subscription was introduced.
+
+## Resume and recovery
+
+Resume requires an authenticated authorized Wrangler execution environment for
+the existing account. Do not paste credentials into chat. Re-read the inventory,
+recognize the two intentional Access changes above, and use the originally
+approved source SHA for migration/deployment. Complete the remaining Group A
+steps and genuinely verify owner PIN login and every security requirement before
+any Group B write. No deployment permission renewal is needed for unchanged scope.
+
+No rollback has been performed; the approved PIN configuration remains in place.
+If rolling it back under the approved recovery plan, while the hostname remains
+unrouted, PUT the app's saved writable settings with the same domain,
+destinations and policy reference, restoring `allowed_idps=[]`, session `24h`,
+HttpOnly false and binding cookie false; preserve all other settings. Verify
+no application references the new provider, then DELETE only
+`/accounts/1b409400fea16e7142f62ac19ecd361d/access/identity_providers/0db90b4d-534a-4f75-ab0e-026016e0b1b9`.
+No D1, R2, Worker, DNS or certificate recovery is needed because none was changed.

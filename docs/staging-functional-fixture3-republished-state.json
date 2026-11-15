@@ -1,0 +1,117 @@
+{
+  "observed_at": "2026-11-14T22:00:50.957Z",
+  "kind": "Actual same-ID edited republication and pre-cleanup ownership check; audit actors omitted",
+  "results": [
+    {
+      "rows": [
+        {
+          "id": "726f6f74-6172-4368-8000-000000000003",
+          "status": "published",
+          "version": 6,
+          "title": "Synthetic staging 3 conflict A",
+          "candidate_revision_id": "fa34866f-cd12-4be7-a3fe-fe4a18cc0a45"
+        }
+      ],
+      "rows_written": 0,
+      "changed_db": false
+    },
+    {
+      "rows": [
+        {
+          "id": "726f6f74-6172-4368-8000-000000000003",
+          "status": "published",
+          "revision_id": "fa34866f-cd12-4be7-a3fe-fe4a18cc0a45",
+          "title": "Synthetic staging 3 conflict A"
+        }
+      ],
+      "rows_written": 0,
+      "changed_db": false
+    },
+    {
+      "rows": [
+        {
+          "action": "file_replaced",
+          "created_at": "2026-11-14T20:29:17.598Z",
+          "reason": null
+        },
+        {
+          "action": "metadata_changed",
+          "created_at": "2026-11-14T20:33:14.425Z",
+          "reason": null
+        },
+        {
+          "action": "submission_approved",
+          "created_at": "2026-11-14T21:50:54.833Z",
+          "reason": null
+        },
+        {
+          "action": "resource_unpublished",
+          "created_at": "2026-11-14T21:54:39.626Z",
+          "reason": "Synthetic republication check"
+        },
+        {
+          "action": "submission_approved",
+          "created_at": "2026-11-14T21:56:01.163Z",
+          "reason": null
+        }
+      ],
+      "rows_written": 0,
+      "changed_db": false
+    },
+    {
+      "rows": [
+        {
+          "id": "726f6f74-6172-4368-9000-000000000003",
+          "status": "deleted",
+          "object_key": "private/v1/726f6f74-6172-4368-8000-000000000003/726f6f74-6172-4368-9000-000000000003.png",
+          "size": 1920,
+          "etag": null,
+          "delete_attempts": 1,
+          "last_delete_error": null
+        },
+        {
+          "id": "fa34866f-cd12-4be7-a3fe-fe4a18cc0a45",
+          "status": "ready",
+          "object_key": "private/v1/726f6f74-6172-4368-8000-000000000003/fa34866f-cd12-4be7-a3fe-fe4a18cc0a45.png",
+          "size": 2025,
+          "etag": "8927c760b02e49a006c2c1fbf3734154",
+          "delete_attempts": 0,
+          "last_delete_error": null
+        }
+      ],
+      "rows_written": 0,
+      "changed_db": false
+    },
+    {
+      "rows": [
+        {
+          "id": "726f6f74-6172-4368-8000-000000000001",
+          "status": "removed"
+        },
+        {
+          "id": "726f6f74-6172-4368-8000-000000000002",
+          "status": "rejected"
+        },
+        {
+          "id": "726f6f74-6172-4368-8000-000000000003",
+          "status": "published"
+        }
+      ],
+      "rows_written": 0,
+      "changed_db": false
+    },
+    {
+      "rows": [],
+      "rows_written": 0,
+      "changed_db": false
+    }
+  ],
+  "r2_inventory": [
+    {
+      "key": "private/v1/726f6f74-6172-4368-8000-000000000003/fa34866f-cd12-4be7-a3fe-fe4a18cc0a45.png",
+      "size": 2025,
+      "etag": "8927c760b02e49a006c2c1fbf3734154"
+    }
+  ],
+  "observed_local": "2026-11-15T01:00:50.957000+03:00"
+}

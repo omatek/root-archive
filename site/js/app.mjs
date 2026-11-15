@@ -154,7 +154,11 @@ function renderResources(course, container, type = '') {
       const extension = /\.(pdf|docx|zip|png|jpg)$/i.exec(new URL(resource.asset_url).pathname)?.[1].toUpperCase();
       const open = externalLink(extension === 'ZIP' ? 'Open ZIP ↗' : `Open ${extension || 'file'} ↗`, resource.asset_url, 'resource-open');
       open.setAttribute('aria-label', `Open ${resource.title} (opens in a new tab)`);
-      row.append(info, open); list.append(row);
+      const actions = el('div', 'resource-actions');
+      const notice = el('p', 'download-notice');
+      notice.append('Download for personal study. See the ', link('Terms of Use', './policies/terms-of-use.html'), ' for reuse and sharing.');
+      actions.append(open, notice);
+      row.append(info, actions); list.append(row);
     }
     group.append(list); container.append(group);
   }

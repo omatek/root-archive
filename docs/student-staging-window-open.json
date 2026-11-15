@@ -1,0 +1,140 @@
+{
+  "recorded_at": "2026-11-15T18:08:25Z",
+  "event": "Original supervised window reconciled after usage-limit interruption; no redeployment/reseed/replay.",
+  "source_commit": "802d5814b35f70f0a45e62a2723f5b6e2c97ffed",
+  "owner_results": {
+    "paused_submit": {
+      "message": "We couldn’t confirm whether your submission was received. Your draft is still here. Avoid submitting it again immediately; it may already be awaiting review.",
+      "result": "OWNER_OBSERVED_DENIAL_WITH_VERIFIED_ZERO_STORAGE_CHANGES",
+      "raw_http_status_captured": false,
+      "server_pause_confirmed": true
+    },
+    "ineligible_account": {
+      "message": "This account isn’t currently eligible to contribute. Contributions require a verified @std.aum.edu.jo student account. Use a different Google account to try again; your draft is still here.",
+      "result": "OWNER_OBSERVED_PASS",
+      "raw_http_status_captured": false
+    }
+  },
+  "pre_enable_storage": {
+    "submissions": [
+      {
+        "id": "726f6f74-6172-4368-8000-000000000001",
+        "status": "removed",
+        "version": 6
+      },
+      {
+        "id": "726f6f74-6172-4368-8000-000000000002",
+        "status": "rejected",
+        "version": 3
+      },
+      {
+        "id": "726f6f74-6172-4368-8000-000000000003",
+        "status": "removed",
+        "version": 7
+      }
+    ],
+    "revisions": [
+      {
+        "status": "deleted",
+        "count": 4
+      }
+    ],
+    "audits": [
+      {
+        "count": 13
+      }
+    ],
+    "unresolved": [
+      {
+        "count": 0
+      }
+    ],
+    "objects": [],
+    "r2_managed_enabled": false,
+    "r2_custom_domains": []
+  },
+  "window": {
+    "opens_at": "2026-11-15T17:38:39.447Z",
+    "closes_at": "2026-11-15T18:28:39.447Z",
+    "max_minutes": 50,
+    "automatic_disable": "Worker refuses new upload intents at/after closes_at, independent of Codex; rechecks after Siteverify.",
+    "restart_or_extension": false
+  },
+  "deployment": {
+    "id": "1c599d9e-f1e5-427c-8345-09ca941309ba",
+    "versions": [
+      {
+        "version_id": "d56561f7-20a2-48db-a280-8ca2721abe41",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-11-15T17:39:34.329837Z"
+  },
+  "bindings": [
+    {
+      "database_id": "f4aa2a8b-4b27-4ed3-b7a2-4e6e100a94c6",
+      "id": "f4aa2a8b-4b27-4ed3-b7a2-4e6e100a94c6",
+      "name": "DB",
+      "type": "d1"
+    },
+    {
+      "bucket_name": "root-archive-private-staging",
+      "name": "PRIVATE_FILES",
+      "type": "r2_bucket"
+    }
+  ],
+  "required_secret_names": [
+    "ADMIN_EMAILS",
+    "STAGING_STUDENT_EMAILS",
+    "TURNSTILE_SECRET"
+  ],
+  "current_storage": {
+    "submissions": [
+      {
+        "id": "726f6f74-6172-4368-8000-000000000001",
+        "status": "removed",
+        "version": 6
+      },
+      {
+        "id": "726f6f74-6172-4368-8000-000000000002",
+        "status": "rejected",
+        "version": 3
+      },
+      {
+        "id": "726f6f74-6172-4368-8000-000000000003",
+        "status": "removed",
+        "version": 7
+      }
+    ],
+    "revisions": [
+      {
+        "status": "deleted",
+        "count": 4
+      }
+    ],
+    "audits": [
+      {
+        "count": 13
+      }
+    ],
+    "unresolved": [
+      {
+        "count": 0
+      }
+    ],
+    "objects": [],
+    "rows_written": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "next": "Owner runs missing/invalid challenge UI denials, then exactly one normal approved PDF submission; operator immediately re-pauses on receipt before moderator work.",
+  "accepted_uploads": 0,
+  "cleanup": {
+    "identifiers_confirmed": false,
+    "executed": false
+  },
+  "jwt_checks": "UNVERIFIED_NOT_PASSED; risk-acceptance decision remains separate and unresolved."
+}

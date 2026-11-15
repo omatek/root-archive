@@ -1,0 +1,47 @@
+{
+  "observed_at": "2026-11-14T12:32:54.344132+00:00",
+  "kind": "Actual anonymous post-rejection checks; no credentials; TLS verified",
+  "results": [
+    {
+      "path": "/resources",
+      "method": "GET",
+      "status": 200,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a60a9e682cf092-DFW"
+      },
+      "body_bytes": 35,
+      "body_sha256": "6ef2e67caee31da95619fd58bb5f42b8b6a17823d86a735ed2f5f2bd412803ab",
+      "catalog": {
+        "resources": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "path": "/download/726f6f74-6172-4368-8000-000000000002",
+      "method": "GET",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a60aa0cbd26c22-DFW"
+      },
+      "body_bytes": 52,
+      "body_sha256": "cf72421b0be259620fbb222f1cc2656a1e1d799ad13875d73f80b5ffd7bf34bd"
+    },
+    {
+      "path": "/download/726f6f74-6172-4368-8000-000000000002",
+      "method": "HEAD",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a60aa28cb36c22-DFW"
+      },
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "pass": true
+}

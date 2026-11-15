@@ -1,0 +1,45 @@
+{
+  "recorded_at": "2026-11-14T08:20:31Z",
+  "repository": "omatek/root-archive",
+  "pr": 26,
+  "branch": "feat/private-moderation",
+  "checkpoint": "3c72dc82ae1c45c6b5e35631766eb76e56a6f989",
+  "reviewed_baseline": "5f978552dc5a8ed0b515386b6a20bc8e3dcb00d0",
+  "implementation_config_and_assets_match_reviewed_baseline": true,
+  "migration_sha256": {
+    "0001_private_moderation.sql": "c7d7ec22e7bf186fa21e0049ad0fe58c8352094bb6ef94a33508fee9328b682d",
+    "0002_catalog_generation.sql": "4a3c8d6bd19288c7645bc8c5ebc87e9c340e9f860574b67954080e05d00e4beb"
+  },
+  "node_version": "24.22.1",
+  "wrangler_version": "4.156.0",
+  "wrangler_authentication": {
+    "result": "PASS",
+    "whoami_exit_code": 0,
+    "method": "User API Token from configured environment secret",
+    "expected_account_listed": "1b409400fea16e7142f62ac19ecd361d",
+    "credential_values_recorded": false
+  },
+  "preflight_blocker": {
+    "method": "GET",
+    "path": "/accounts/1b409400fea16e7142f62ac19ecd361d/access/policies/1fd4e71c-8a76-4969-8792-2772531ca2a9",
+    "http_status": 403,
+    "errors": [{"code": 1010, "error": "auth.forbidden"}],
+    "documented_accepted_permissions": [
+      "Access: Apps and Policies Read",
+      "Access: Apps and Policies Write"
+    ],
+    "effect": "Cannot verify existing Access policy or derive protected ADMIN_EMAILS deployment secret; stopped before further remote operations."
+  },
+  "group_a": "BLOCKED",
+  "group_b": "NOT STARTED",
+  "hosted_security_gate": "NOT VERIFIED",
+  "remote_mutations_issued": 0,
+  "migration_commands_run": 0,
+  "deployment_attempted": false,
+  "asset_upload_attempted": false,
+  "connector_upload_investigation_repeated": false,
+  "synthetic_records_or_objects_written": 0,
+  "production_or_legacy_mutations_issued": 0,
+  "production_remote_state_revalidated": false,
+  "pr_open_draft_unmerged_at_preflight": true
+}

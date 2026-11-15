@@ -1,0 +1,547 @@
+{
+  "observed_at": "2026-11-14T09:52:58.886Z",
+  "operations": "read-only GET plus SELECT-only D1 query",
+  "settings": {
+    "compatibility_date": "2026-10-30",
+    "bindings": [
+      {
+        "name": "ACCESS_AUD",
+        "type": "plain_text",
+        "text": "0003d8d8ba905005bfed05fc441631de07c91985c3e2baab528bdb4bbb7ac5be"
+      },
+      {
+        "name": "ACCESS_ISSUER",
+        "type": "plain_text",
+        "text": "https://rootamman.cloudflareaccess.com"
+      },
+      {
+        "name": "ADMIN_EMAILS",
+        "type": "secret_text"
+      },
+      {
+        "name": "ADMIN_ORIGIN",
+        "type": "plain_text",
+        "text": "https://admin.archive.rootamman.com"
+      },
+      {
+        "name": "ALLOWED_ORIGIN",
+        "type": "plain_text",
+        "text": "https://archive-staging.rootamman.com"
+      },
+      {
+        "name": "ASSETS",
+        "type": "assets"
+      },
+      {
+        "name": "CLEANUP_ENABLED",
+        "type": "plain_text",
+        "text": "false"
+      },
+      {
+        "name": "DB",
+        "type": "d1",
+        "database_id": "f4aa2a8b-4b27-4ed3-b7a2-4e6e100a94c6"
+      },
+      {
+        "name": "GOOGLE_CLIENT_ID",
+        "type": "plain_text",
+        "text": ""
+      },
+      {
+        "name": "PRIVATE_FILES",
+        "type": "r2_bucket",
+        "bucket_name": "root-archive-private-staging"
+      },
+      {
+        "name": "PUBLIC_API_ORIGIN",
+        "type": "plain_text",
+        "text": "https://api-staging.rootamman.com"
+      },
+      {
+        "name": "SUBMISSIONS_ENABLED",
+        "type": "plain_text",
+        "text": "false"
+      }
+    ]
+  },
+  "subdomain": {
+    "enabled": false,
+    "previews_enabled": false
+  },
+  "deployments": {
+    "deployments": [
+      {
+        "id": "2eaa7db3-f51c-4747-a5ea-e8ec0b86c5a2",
+        "created_on": "2026-11-14T08:32:53.290691Z",
+        "versions": [
+          {
+            "version_id": "bb9e96b3-e789-47b0-aa92-16168fe80db4",
+            "percentage": 100
+          }
+        ]
+      }
+    ]
+  },
+  "versions": {
+    "items": [
+      {
+        "id": "bb9e96b3-e789-47b0-aa92-16168fe80db4",
+        "number": 1,
+        "metadata": {
+          "created_on": "2026-11-14T08:32:52.90709Z",
+          "has_preview": true
+        },
+        "annotations": {
+          "workers/message": "Owner-approved isolated staging",
+          "workers/triggered_by": "version_upload"
+        }
+      }
+    ]
+  },
+  "version": {
+    "id": "bb9e96b3-e789-47b0-aa92-16168fe80db4",
+    "metadata": {
+      "has_preview": true
+    },
+    "script": {
+      "etag": "889c089e44c653aff600f801f0cc6b87a64bccfd3d6283e7e3cc8f9b79409243",
+      "handlers": [
+        "scheduled",
+        "fetch"
+      ],
+      "named_handlers": [
+        {
+          "name": "runPrivateCleanup",
+          "handlers": [
+            "class"
+          ]
+        }
+      ],
+      "last_deployed_from": "wrangler"
+    }
+  },
+  "worker_domains": [
+    {
+      "id": "18ff115e80d1e21d3b74e146d72bf141227e6f23",
+      "zone_id": "fc80d6a45a703d0fe4d1876f1380870f",
+      "zone_name": "rootamman.com",
+      "hostname": "api.rootamman.com",
+      "service": "root-archive-worker",
+      "environment": "production",
+      "cert_id": "ddec1cda-d044-4ac4-9b49-f02c3534b6b4",
+      "previews_enabled": false,
+      "enabled": true
+    },
+    {
+      "id": "580d38dcab623f69bd2edffa224340c4473435be",
+      "zone_id": "fc80d6a45a703d0fe4d1876f1380870f",
+      "zone_name": "rootamman.com",
+      "hostname": "admin.archive.rootamman.com",
+      "service": "root-archive-moderation-staging",
+      "environment": "production",
+      "cert_id": "ec66ad67-c346-4ff5-a5b1-dc3d59735aa9",
+      "previews_enabled": false,
+      "enabled": true
+    },
+    {
+      "id": "1fc544a0ed42618cfdde24bc360c4686a50675a8",
+      "zone_id": "fc80d6a45a703d0fe4d1876f1380870f",
+      "zone_name": "rootamman.com",
+      "hostname": "api-staging.rootamman.com",
+      "service": "root-archive-moderation-staging",
+      "environment": "production",
+      "cert_id": "2cdcbcd6-7862-46f9-bb0c-1e3ea3b30642",
+      "previews_enabled": false,
+      "enabled": true
+    }
+  ],
+  "apps": [
+    {
+      "id": "bebba566-18d3-42c5-a78e-50213ea2dad6",
+      "domain": "admin.archive.rootamman.com",
+      "destinations": [
+        {
+          "type": "public",
+          "uri": "admin.archive.rootamman.com"
+        }
+      ],
+      "type": "self_hosted"
+    }
+  ],
+  "app": {
+    "id": "bebba566-18d3-42c5-a78e-50213ea2dad6",
+    "domain": "admin.archive.rootamman.com",
+    "aud": "0003d8d8ba905005bfed05fc441631de07c91985c3e2baab528bdb4bbb7ac5be",
+    "allowed_idps": [
+      "0db90b4d-534a-4f75-ab0e-026016e0b1b9"
+    ],
+    "session_duration": "1h",
+    "http_only_cookie_attribute": true,
+    "enable_binding_cookie": true,
+    "options_preflight_bypass": false,
+    "policies": [
+      {
+        "id": "1fd4e71c-8a76-4969-8792-2772531ca2a9",
+        "decision": "allow",
+        "precedence": 1
+      }
+    ]
+  },
+  "policy": {
+    "id": "1fd4e71c-8a76-4969-8792-2772531ca2a9",
+    "decision": "allow",
+    "updated_at": "2026-11-13T23:30:28Z",
+    "include": [
+      {
+        "types": [
+          "email"
+        ],
+        "exact_email": true
+      }
+    ],
+    "require_count": 0,
+    "exclude_count": 0
+  },
+  "r2_private_managed": {
+    "enabled": false,
+    "bucketId": "1a5f949cc506496daa0ff5ff43333c72",
+    "domain": "pub-1a5f949cc506496daa0ff5ff43333c72.r2.dev"
+  },
+  "r2_private_custom": {
+    "domains": []
+  },
+  "r2_private_objects": {
+    "shape": "array",
+    "count": 0,
+    "cursor_present": false
+  },
+  "legacy_deployments": {
+    "deployments": [
+      {
+        "id": "88fef60a-22b0-434a-bbc2-89ac0d569629",
+        "created_on": "2026-11-12T19:55:22.85177Z",
+        "versions": [
+          {
+            "version_id": "e8895ac0-b95b-409e-aff1-af3f549be94f",
+            "percentage": 100
+          }
+        ]
+      },
+      {
+        "id": "2badef31-c064-4fb2-a61b-ec788168aa5e",
+        "created_on": "2026-10-31T00:09:09.042328Z",
+        "versions": [
+          {
+            "version_id": "e22c9592-f89e-4909-a34d-d5009a57b5f5",
+            "percentage": 100
+          }
+        ]
+      },
+      {
+        "id": "c8a8f310-5516-4577-aa4d-9646ce66d38e",
+        "created_on": "2026-10-31T00:09:01.8981Z",
+        "versions": [
+          {
+            "version_id": "232f6823-9843-4c5c-a71b-9795d6cfbda2",
+            "percentage": 100
+          }
+        ]
+      },
+      {
+        "id": "c5862daf-3b09-44d9-8e9e-11b99c31f640",
+        "created_on": "2026-10-31T00:07:26.918351Z",
+        "versions": [
+          {
+            "version_id": "0e4eae3b-8b0b-4ab9-972b-6afc7bcbaee2",
+            "percentage": 100
+          }
+        ]
+      },
+      {
+        "id": "08bfed2d-d69a-4ce3-b076-6a24432c005e",
+        "created_on": "2026-10-31T00:04:13.446636Z",
+        "versions": [
+          {
+            "version_id": "79a4ab39-870e-41dd-abd1-d22e2853b489",
+            "percentage": 100
+          }
+        ]
+      },
+      {
+        "id": "e8952849-268e-475f-90f7-f0773df04223",
+        "created_on": "2026-10-30T23:30:56.641195Z",
+        "versions": [
+          {
+            "version_id": "5af9fb0e-a1db-4db5-8e6e-9bf2e8d0dda0",
+            "percentage": 100
+          }
+        ]
+      },
+      {
+        "id": "111aff6f-b254-453f-93e0-86dc20c77a2f",
+        "created_on": "2026-10-30T23:28:00.086135Z",
+        "versions": [
+          {
+            "version_id": "4ffbc8c0-22bc-45ba-a8d3-46e13a0b2bab",
+            "percentage": 100
+          }
+        ]
+      },
+      {
+        "id": "1780f45c-eb0f-4c8b-be07-e2a145dec3e4",
+        "created_on": "2026-10-30T22:47:13.166568Z",
+        "versions": [
+          {
+            "version_id": "5c075f47-353f-4d42-9a9a-90a4376aab53",
+            "percentage": 100
+          }
+        ]
+      },
+      {
+        "id": "e2346aa7-b761-4c57-b0f9-774a939da86a",
+        "created_on": "2026-10-30T22:47:11.716534Z",
+        "versions": [
+          {
+            "version_id": "e886494c-c884-40da-a322-f4c19660b38f",
+            "percentage": 100
+          }
+        ]
+      }
+    ]
+  },
+  "legacy_version": {
+    "id": "e8895ac0-b95b-409e-aff1-af3f549be94f",
+    "etag": "444bf555ae095ef8e55bab96b9ba17cdd47c6426cd540ed004f2ca45d43b6b24"
+  },
+  "pages": {
+    "id": "f6c6adb3-6f02-4412-b691-e93eca6d2f8e",
+    "name": "root-archive",
+    "production_branch": "main",
+    "canonical_deployment": {
+      "id": "60b32faf-7934-4e5b-8a34-c07c1cb0983d",
+      "environment": "production",
+      "commit_hash": "4bb136b9a39423737be4ee30ba1239d735e221c9"
+    }
+  },
+  "dns": [
+    {
+      "id": "4d1cbc33b6585bfd21916d6d49ae0ccb",
+      "name": "archive.rootamman.com",
+      "type": "CNAME",
+      "content": "root-archive.pages.dev",
+      "proxied": true,
+      "modified_on": "2026-11-12T18:59:27.528501Z"
+    },
+    {
+      "id": "06182d8814d3f6187723db7df63c91e4",
+      "name": "assets.rootamman.com",
+      "type": "CNAME",
+      "content": "public.r2.dev",
+      "proxied": true,
+      "modified_on": "2026-11-12T19:31:11.13818Z"
+    },
+    {
+      "id": "60487f52f1b055e739042149d60f8e45",
+      "name": "admin.archive.rootamman.com",
+      "type": "AAAA",
+      "content": "100::",
+      "proxied": true,
+      "modified_on": "2026-11-14T08:32:55.116966Z"
+    },
+    {
+      "id": "b75429fff2288f3f2d53fe502ff2b94f",
+      "name": "api.rootamman.com",
+      "type": "AAAA",
+      "content": "100::",
+      "proxied": true,
+      "modified_on": "2026-11-12T19:02:47.896805Z"
+    },
+    {
+      "id": "6b07023fca7347ba5d83c67fda5322a4",
+      "name": "api-staging.rootamman.com",
+      "type": "AAAA",
+      "content": "100::",
+      "proxied": true,
+      "modified_on": "2026-11-14T08:32:55.176734Z"
+    }
+  ],
+  "certificates": [
+    {
+      "id": "2cdcbcd6-7862-46f9-bb0c-1e3ea3b30642",
+      "hosts": [
+        "rootamman.com",
+        "api-staging.rootamman.com",
+        "*.api-staging.rootamman.com"
+      ],
+      "status": "active",
+      "certificates": [
+        {
+          "id": "75f9dd8e-946b-455b-9062-504ebd33ed5d",
+          "hosts": [
+            "rootamman.com",
+            "api-staging.rootamman.com",
+            "*.api-staging.rootamman.com"
+          ],
+          "status": "active",
+          "issuer": "GoogleTrustServices",
+          "expires_on": "2027-02-12T08:32:57.000000Z"
+        },
+        {
+          "id": "a21df817-d84a-4e89-9efd-554c5aa71dd5",
+          "hosts": [
+            "rootamman.com",
+            "api-staging.rootamman.com",
+            "*.api-staging.rootamman.com"
+          ],
+          "status": "active",
+          "issuer": "GoogleTrustServices",
+          "expires_on": "2027-02-12T08:35:13.000000Z"
+        }
+      ]
+    },
+    {
+      "id": "ec66ad67-c346-4ff5-a5b1-dc3d59735aa9",
+      "hosts": [
+        "rootamman.com",
+        "admin.archive.rootamman.com",
+        "*.admin.archive.rootamman.com"
+      ],
+      "status": "active",
+      "certificates": [
+        {
+          "id": "71b30d79-c275-4f15-9434-3e72dac99f7a",
+          "hosts": [
+            "rootamman.com",
+            "admin.archive.rootamman.com",
+            "*.admin.archive.rootamman.com"
+          ],
+          "status": "active",
+          "issuer": "GoogleTrustServices",
+          "expires_on": "2027-02-12T08:32:57.000000Z"
+        },
+        {
+          "id": "d7755bfa-e251-45db-bfca-92034400b575",
+          "hosts": [
+            "rootamman.com",
+            "admin.archive.rootamman.com",
+            "*.admin.archive.rootamman.com"
+          ],
+          "status": "active",
+          "issuer": "GoogleTrustServices",
+          "expires_on": "2027-02-12T08:35:12.000000Z"
+        }
+      ]
+    }
+  ],
+  "legacy_r2_managed": {
+    "enabled": true,
+    "bucketId": "7a7ae5ec96bb46c7829a25b4b06407eb",
+    "domain": "pub-7a7ae5ec96bb46c7829a25b4b06407eb.r2.dev"
+  },
+  "legacy_r2_custom": {
+    "domains": [
+      {
+        "domain": "assets.rootamman.com",
+        "status": {
+          "ssl": "active",
+          "ownership": "active"
+        },
+        "zoneId": "fc80d6a45a703d0fe4d1876f1380870f",
+        "zoneName": "rootamman.com",
+        "minTLS": "1.2",
+        "enabled": true
+      }
+    ]
+  },
+  "d1_readonly": [
+    {
+      "results": [
+        {
+          "name": "submissions",
+          "count": 0
+        },
+        {
+          "name": "file_revisions",
+          "count": 0
+        },
+        {
+          "name": "resources",
+          "count": 0
+        },
+        {
+          "name": "moderation_audit",
+          "count": 0
+        }
+      ],
+      "success": true,
+      "meta": {
+        "served_by": "v3-prod",
+        "served_by_region": "EEUR",
+        "served_by_colo": "FRA",
+        "served_by_primary": true,
+        "timings": {
+          "sql_duration_ms": 0.6866
+        },
+        "duration": 0.6866,
+        "changes": 0,
+        "last_row_id": 0,
+        "changed_db": false,
+        "size_after": 102400,
+        "rows_read": 4,
+        "rows_written": 0,
+        "total_attempts": 1
+      }
+    },
+    {
+      "results": [
+        {
+          "id": 1,
+          "name": "0001_private_moderation.sql"
+        },
+        {
+          "id": 2,
+          "name": "0002_catalog_generation.sql"
+        }
+      ],
+      "success": true,
+      "meta": {
+        "served_by": "v3-prod",
+        "served_by_region": "EEUR",
+        "served_by_colo": "FRA",
+        "served_by_primary": true,
+        "timings": {
+          "sql_duration_ms": 0.0837
+        },
+        "duration": 0.0837,
+        "changes": 0,
+        "last_row_id": 0,
+        "changed_db": false,
+        "size_after": 102400,
+        "rows_read": 2,
+        "rows_written": 0,
+        "total_attempts": 1
+      }
+    },
+    {
+      "results": [],
+      "success": true,
+      "meta": {
+        "served_by": "v3-prod",
+        "served_by_region": "EEUR",
+        "served_by_colo": "FRA",
+        "served_by_primary": true,
+        "timings": {
+          "sql_duration_ms": 0.3602
+        },
+        "duration": 0.3602,
+        "changes": 0,
+        "last_row_id": 0,
+        "changed_db": false,
+        "size_after": 102400,
+        "rows_read": 3,
+        "rows_written": 0,
+        "total_attempts": 1
+      }
+    }
+  ]
+}

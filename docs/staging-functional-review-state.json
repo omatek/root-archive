@@ -1,0 +1,18 @@
+{
+  "observed_at": "2026-11-14T12:30:43.848Z",
+  "submission": [
+    {
+      "id": "726f6f74-6172-4368-8000-000000000002",
+      "status": "under_review",
+      "version": 2,
+      "title": "Synthetic staging 2"
+    }
+  ],
+  "audit": [
+    {
+      "action": "review_started",
+      "created_at": "2026-11-14T12:29:38.794Z"
+    }
+  ],
+  "resource_rows": 0
+}

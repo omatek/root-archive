@@ -1,0 +1,23 @@
+{
+  "observed_at": "2026-11-14T22:13:46.785805+00:00",
+  "kind": "Anonymous hosted final-removal verification; read only",
+  "checks": [
+    {
+      "path": "/resources",
+      "method": "GET",
+      "status": 200,
+      "resources": 0,
+      "next_cursor": null
+    },
+    {
+      "path": "/download/726f6f74-6172-4368-8000-000000000003",
+      "method": "GET",
+      "status": 404
+    },
+    {
+      "path": "/download/726f6f74-6172-4368-8000-000000000003",
+      "method": "HEAD",
+      "status": 404
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { parseCatalog, filterCourses, readRoute, routeUrl, validateFile, cleanText } from '../site/js/catalog.mjs';
+import { parseCatalog, filterCourses, readRoute, routeUrl, validateFile, cleanText, loadCatalog, loadPublishedResources } from '../site/js/catalog.mjs';
 import { CONFIG, TYPES } from '../site/js/config.mjs';
 import { validateCatalogs } from './catalog-policy.mjs';
 
@@ -10,6 +10,7 @@ const sample = { id: 'synthetic', course_id: '0401212', type: 'Summary', title: 
   semester: 'Fall 2026', asset_url: 'https://assets.example.invalid/synthetic.pdf', created_at: '2026-01-01T00:00:00.000Z' };
 
 test('browser consumes the real published catalogs, preserving empty courses', async () => {
+  assert.equal(CONFIG.privateModeration, false, 'production cutover requires a separate owner-approved change');
   const resources = JSON.parse(await readFile(new URL('../site/resources.json', import.meta.url)));
   const catalog = parseCatalog(courses, resources);
   assert.equal(catalog.courses.length, courses.length);
@@ -66,6 +67,66 @@ test('materials URL follows first-value routing and canonicalizes invalid/duplic
     assert.deepEqual(params.getAll('hasMaterials'), enabled ? ['1'] : []);
   }
   assert.equal(routeUrl({ hasMaterials: '1' }), '/');
+});
+test('D1 catalog loads bounded API pages, keeps static courses and has no static resource fallback', async () => {
+  const originalFetch = globalThis.fetch;
+  const originalMode = CONFIG.privateModeration;
+  const id = '12345678-1234-4123-8123-123456789abc';
+  const published = {...sample, id, semester: '', asset_url: `https://api.rootamman.com/download/${id}`};
+  const calls = [];
+  try {
+    CONFIG.privateModeration = true;
+    globalThis.fetch = async (value, options) => {
+      const url = new URL(value); calls.push(url.href);
+      assert.equal(options.cache, 'no-store');
+      assert(options.signal instanceof AbortSignal);
+      if (url.pathname.endsWith('/courses.json')) return Response.json(courses);
+      assert.equal(url.pathname, '/resources', 'the static resource catalog must not be fetched');
+      return Response.json(url.searchParams.has('cursor')
+        ? {resources: [], next_cursor: null} : {resources: [published], next_cursor: '1'});
+    };
+    const catalog = await loadCatalog();
+    assert.equal(catalog.resourceCount, 1);
+    assert.equal(catalog.byId.get(sample.course_id).resources[0].semester, '');
+    assert.equal(catalog.courses.length, courses.length);
+    assert(calls.includes('https://api.rootamman.com/resources?cursor=1'));
+    globalThis.fetch = async value => new URL(value).pathname.endsWith('/courses.json')
+      ? Response.json(courses) : new Response('unavailable', {status: 503});
+    await assert.rejects(loadCatalog(), /could not be loaded/);
+  } finally { globalThis.fetch = originalFetch; CONFIG.privateModeration = originalMode; }
+});
+test('D1 public data rejects non-download URLs, repeated or unsafe cursors and partial page failures', async () => {
+  const id = '12345678-1234-4123-8123-123456789abc';
+  const published = {...sample, id, semester: '', asset_url: `https://api.rootamman.com/download/${id}`};
+  const policy = {allowEmptySemester: true, downloadOrigin: 'https://api.rootamman.com'};
+  assert.doesNotThrow(() => parseCatalog(courses, [published], policy));
+  for (const url of [sample.asset_url, published.asset_url + '?key=private', 'https://api.rootamman.com/private/' + id,
+    'https://api.rootamman.com/download/22345678-1234-4123-8123-123456789abc']) {
+    assert.throws(() => parseCatalog(courses, [{...published, asset_url: url}], policy));
+  }
+  const originalFetch = globalThis.fetch;
+  try {
+    for (const next_cursor of ['https://attacker.invalid', '../private', '', undefined, '0']) {
+      globalThis.fetch = async () => Response.json({resources: [published], next_cursor});
+      await assert.rejects(loadPublishedResources());
+    }
+    let page = 0;
+    globalThis.fetch = async () => ++page === 1
+      ? Response.json({resources: [published], next_cursor: '1'}) : new Response(null, {status: 503});
+    await assert.rejects(loadPublishedResources(), /could not be loaded/);
+  } finally { globalThis.fetch = originalFetch; }
+});
+test('catalog change retries discard partial generations and are bounded during continuous writes',async()=>{
+  const originalFetch=globalThis.fetch;let requests=0;
+  try{
+    globalThis.fetch=async value=>{
+      requests++;const url=new URL(value);
+      return url.searchParams.has('cursor')?Response.json({code:'catalog_changed'},{status:409}):
+        Response.json({resources:[sample],next_cursor:'opaque_generation_page'});
+    };
+    await assert.rejects(loadPublishedResources(),/catalog is changing/);
+    assert.equal(requests,6,'three complete traversal attempts, no unbounded retry or partial return');
+  }finally{globalThis.fetch=originalFetch;}
 });
 test('metadata guards match new Worker restrictions without changing the contract', () => {
   assert.equal(cleanText('  Midterm   summary  ', 3, 120), 'Midterm summary');

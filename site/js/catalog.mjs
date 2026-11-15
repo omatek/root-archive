@@ -16,7 +16,7 @@ export function httpsUrl(value) {
 }
 
 // Catalogs are published data only. Never read submission branches or receipts.
-export function parseCatalog(courses, resources) {
+export function parseCatalog(courses, resources, { allowEmptySemester = false, downloadOrigin = null } = {}) {
   const requireValid = (ok) => { if (!ok) throw new Error('The published catalog could not be read.'); };
   const clean = (v, min, max) => typeof v === 'string' && v === v.trim()
     && v.length >= min && v.length <= max && !CONTROL_CHARS.test(v);
@@ -34,13 +34,19 @@ export function parseCatalog(courses, resources) {
   for (const resource of resources) {
     requireValid(object(resource) && clean(resource.id, 1, 80) && !seen.has(resource.id)
       && byId.has(resource.course_id) && TYPES.includes(resource.type)
-      && clean(resource.title, 3, 120) && clean(resource.semester, 4, 20)
+      && clean(resource.title, 3, 120) && (clean(resource.semester, 4, 20) || (allowEmptySemester && resource.semester === ''))
       && (resource.contributor == null || clean(resource.contributor, 1, 40))
       && clean(resource.asset_url, 1, 4096) && httpsUrl(resource.asset_url)
       && typeof resource.created_at === 'string'
       && /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/.test(resource.created_at)
       && Number.isFinite(Date.parse(resource.created_at))
       && new Date(resource.created_at).toISOString() === resource.created_at);
+    if (downloadOrigin) {
+      const download = new URL(resource.asset_url);
+      requireValid(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(resource.id)
+        && download.origin === downloadOrigin && download.pathname === `/download/${resource.id}`
+        && !download.search && !download.hash);
+    }
     seen.add(resource.id);
     byId.get(resource.course_id).resources.push({ ...resource, asset_url: httpsUrl(resource.asset_url) });
   }
@@ -48,15 +54,54 @@ export function parseCatalog(courses, resources) {
   return { courses: [...byId.values()], byId, resourceCount: resources.length };
 }
 
+class CatalogChanged extends Error {}
+async function readJson(url) {
+  const response = await fetch(url, {
+    headers: { Accept: 'application/json' }, cache: 'no-store', signal: AbortSignal.timeout(20000)
+  });
+  if (response.status === 409 && (await response.json().catch(() => null))?.code === 'catalog_changed') throw new CatalogChanged();
+  if (!response.ok) throw new Error('The archive could not be loaded.');
+  return response.json();
+}
+
+// Follow only opaque cursor tokens on the configured API. Never follow a supplied
+// URL or fall back to an old static catalog: that could revive removed resources.
+export async function loadPublishedResources(endpoint = CONFIG.resourcesEndpoint) {
+  if (!httpsUrl(endpoint)) throw new Error('The resource API is not configured.');
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try { return await readPublishedTraversal(endpoint); }
+    catch (error) { if (!(error instanceof CatalogChanged)) throw error; }
+  }
+  throw new Error('The catalog is changing. Please try again shortly.');
+}
+async function readPublishedTraversal(endpoint) {
+  const resources = [], cursors = new Set();
+  let cursor = null;
+  for (let page = 0; page < 100; page++) {
+    const url = new URL(endpoint);
+    if (cursor !== null) url.searchParams.set('cursor', cursor);
+    const result = await readJson(url);
+    if (!result || !Array.isArray(result.resources) || result.resources.length > 200
+      || !(result.next_cursor === null || (typeof result.next_cursor === 'string' && /^[A-Za-z0-9_-]{1,512}$/.test(result.next_cursor)))) {
+      throw new Error('The published resource list could not be read.');
+    }
+    resources.push(...result.resources);
+    if (result.next_cursor === null) return resources;
+    if (cursors.has(result.next_cursor)) throw new Error('The published resource list did not finish loading.');
+    cursors.add(result.next_cursor); cursor = result.next_cursor;
+  }
+  throw new Error('The published resource list is too large to load.');
+}
+
 export async function loadCatalog() {
-  const values = await Promise.all(['courses', 'resources'].map(async name => {
-    const response = await fetch(new URL(`../${name}.json`, import.meta.url), {
-      headers: { Accept: 'application/json' }, cache: 'no-store'
-    });
-    if (!response.ok) throw new Error('The archive could not be loaded.');
-    return response.json();
-  }));
-  return parseCatalog(...values);
+  const [courses, resources] = await Promise.all([
+    readJson(new URL('../courses.json', import.meta.url)),
+    CONFIG.privateModeration
+      ? loadPublishedResources()
+      : readJson(new URL('../resources.json', import.meta.url))
+  ]);
+  return parseCatalog(courses, resources, CONFIG.privateModeration
+    ? { allowEmptySemester: true, downloadOrigin: new URL(CONFIG.resourcesEndpoint).origin } : {});
 }
 
 export function filterCourses(courses, query, track, hasMaterials = false) {

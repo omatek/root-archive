@@ -26,7 +26,7 @@
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
   <link rel="preload" href="./assets/fonts/barlow-semi-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="./assets/fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="./styles.css?v=materials-checkbox-1">
+  <link rel="stylesheet" href="./styles.css?v=legal-1">
   <script type="module" src="./js/app.mjs"></script>
 </head>
 <body>
@@ -89,8 +89,9 @@
         <p>root/archive is our first public project: a shared collection of course materials, initially covering Computer Science, Artificial Intelligence, and Cybersecurity at AUM. It brings students’ learning resources together so the next person has somewhere to start.</p>
         <p>Anyone can browse and download. Contributions currently require an eligible student account, and every submission is reviewed before it appears in the archive.</p>
         <h2>Built by a community.</h2>
-        <p>Practice questions, summaries, notes, test banks, and other resources can make a difference. If you have something you’re allowed to share, help the collection grow.</p>
-        <p>root and root/archive are independent community projects, not official university services.</p>
+        <p>Original student-authored notes, summaries, explanations, and original practice questions and test banks can make a difference. Share only material you have the right to share. Past examination papers are excluded.</p>
+        <p>root is an independent, unincorporated student-led community based in Jordan. root and root/archive are not operated, sponsored, or officially affiliated with AUM or another educational institution.</p>
+        <p>root/archive is operated by Omar Khaldoon Jaber Tahrawi as an individual through root. For privacy, content, copyright or removal requests, contact <a href="mailto:privacy@rootamman.com">privacy@rootamman.com</a>. Backup contact: <a href="mailto:omar@rootamman.com">omar@rootamman.com</a>.</p>
         <button class="button" type="button" data-contribute>Contribute a resource <svg class="arrow-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h12m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.5"/></svg></button>
       </div>
     </section>
@@ -99,12 +100,12 @@
       <h2>We couldn’t load the archive.</h2><p>Please check your connection and try again.</p>
       <button id="retry-load" class="button" type="button">Try again</button>
     </section>
-    <noscript><div class="notice">JavaScript is needed to search the directory and contribute. You can still read the <a href="./courses.json">course catalog</a> and <a href="./resources.json">published resource list</a>.</div></noscript>
+    <noscript><div class="notice">JavaScript is needed to browse published resources, search the directory and contribute. You can still read the <a href="./courses.json">course catalog</a>.</div></noscript>
   </main>
   <footer class="site-footer">
     <div class="shell footer-inner">
       <div class="footer-signature"><img src="./assets/brand/archive.svg" width="47" height="34" alt=""><div><strong>A project by root.</strong><br>Independent. Student-built. Not an official university service.</div></div>
-      <nav class="footer-links" aria-label="Footer"><a href="?view=about" data-nav data-about>About root</a><a href="https://github.com/omatek/root-archive">Source on GitHub</a></nav>
+      <nav class="footer-links" aria-label="Footer"><a href="?view=about" data-nav data-about>About root</a><a href="./policies/privacy-notice.html">Privacy Notice</a><a href="./policies/terms-of-use.html">Terms of Use</a><a href="./policies/content-and-copyright-policy.html">Content and Copyright Policy</a><a href="./policies/takedown-and-dispute-procedure.html">Takedown and Dispute Procedure</a><a href="./policies/contributor-declaration.html">Contributor Declaration</a><a href="./policies/independence-statement.html">Independence and Non-Affiliation Statement</a><a href="mailto:privacy@rootamman.com">Privacy &amp; content requests</a><a href="https://github.com/omatek/root-archive">Source on GitHub</a></nav>
     </div>
   </footer>
   <dialog id="contribution-dialog" aria-labelledby="contribution-heading" aria-describedby="contribution-description">
@@ -117,6 +118,7 @@
         <section class="auth-box" aria-labelledby="auth-heading">
           <h3 id="auth-heading">Sign in to contribute.</h3>
           <p>Contributions currently require an eligible student account. Browsing and downloading are open to everyone.</p>
+          <p>Read the <a href="./policies/privacy-notice.html" target="_blank" rel="noopener">Privacy Notice</a> before signing in or submitting.</p>
           <div class="auth-actions">
             <div id="google-signin-slot"></div>
             <button id="retry-signin" class="button button-secondary" type="button">Load Google sign-in</button>
@@ -152,7 +154,7 @@
                 <p id="type-error" class="field-error" hidden></p>
               </div>
               <div class="field">
-                <label for="contribution-semester">Semester or year</label>
+                <label for="contribution-semester">Semester or year <span id="semester-optional" class="optional" hidden>(optional)</span></label>
                 <input id="contribution-semester" name="semester" type="text" minlength="4" maxlength="20" placeholder="e.g. Fall 2026" required aria-describedby="semester-error">
                 <p id="semester-error" class="field-error" hidden></p>
               </div>
@@ -168,6 +170,7 @@
               <p id="file-error" class="field-error" hidden></p>
             </div>
             <div class="field">
+              <label id="credit-choice" class="credit-choice" hidden><input id="contribution-credit" type="checkbox">Show a public contributor name with this resource</label>
               <label for="contribution-contributor">Public contributor name <span class="optional">(optional)</span></label>
               <input id="contribution-contributor" name="contributor" type="text" maxlength="40" aria-describedby="contributor-help contributor-error" autocomplete="off">
               <p id="contributor-help" class="field-help">Shown with the resource. Leave blank to contribute anonymously.</p>
@@ -179,9 +182,20 @@
               <p id="turnstile-error" class="field-error" hidden></p>
               <button id="retry-security" class="text-button" type="button" hidden>Retry security check</button>
             </div>
+            <div id="contributor-privacy-consent" class="field" hidden>
+              <p id="contribution-privacy-consent-text" class="field-help"></p>
+              <label class="credit-choice" for="contribution-privacy-consent"><input id="contribution-privacy-consent" type="checkbox" aria-describedby="contribution-privacy-consent-text privacy-consent-error">I agree to this processing and transfer.</label>
+              <p class="field-help"><a href="./policies/privacy-notice.html" target="_blank" rel="noopener">Read the Privacy Notice</a></p>
+              <p id="privacy-consent-error" class="field-error" hidden></p>
+            </div>
+            <div id="contributor-authorization" class="field" hidden>
+              <label class="credit-choice" for="contribution-declaration"><input id="contribution-declaration" type="checkbox" aria-describedby="contribution-notice declaration-error">I have read and accept the Contributor Declaration for this file.</label>
+              <p class="field-help"><a href="./policies/contributor-declaration.html" target="_blank" rel="noopener">Read the full Contributor Declaration</a></p>
+              <p id="declaration-error" class="field-error" hidden></p>
+            </div>
           </fieldset>
           <div id="submission-status" class="form-status" role="status" tabindex="-1" hidden><p id="submission-message"></p><progress id="submission-progress" aria-label="Submitting your resource" hidden></progress></div>
-          <p class="field-help">Only share material you have permission to share. Uploaded files are accessible by direct link, including while awaiting review. Do not include private information.</p>
+          <p id="contribution-notice" class="field-help">Only share material you have permission to share. Uploaded files are accessible by direct link, including while awaiting review. Do not include private information.</p>
           <div class="form-actions">
             <button id="submit-resource" class="button" type="submit">Submit for review <svg class="arrow-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h12m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.5"/></svg></button>
             <button id="save-close" class="text-button" type="button">Keep draft &amp; close</button>

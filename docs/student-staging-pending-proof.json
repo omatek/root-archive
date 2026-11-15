@@ -1,0 +1,182 @@
+{
+  "recorded_at": "2026-11-15T18:40:15Z",
+  "owner_receipt": {
+    "message": "Submission received. Your material is awaiting review.",
+    "submission_id": "3de6408a-e12a-4573-a772-fd8e0228ea22",
+    "via": "Actual student frontend, normal Google/Turnstile submission; no denial helper."
+  },
+  "pause": {
+    "requested_on_owner_receipt_at": "2026-11-15T18:37:10Z",
+    "deployment": {
+      "id": "56e64518-2164-459b-a512-30058d1dc402",
+      "versions": [
+        {
+          "version_id": "0f8024b1-b62d-4aff-a8bc-8f7b521498f5",
+          "percentage": 100
+        }
+      ],
+      "created_on": "2026-11-15T18:37:25.192036Z"
+    },
+    "submissions_enabled": false,
+    "window_opens_at": "",
+    "window_closes_at": "",
+    "scheduled_cleanup_enabled": false,
+    "secrets_preserved": [
+      "ADMIN_EMAILS",
+      "STAGING_STUDENT_EMAILS",
+      "TURNSTILE_SECRET"
+    ]
+  },
+  "submission": {
+    "id": "3de6408a-e12a-4573-a772-fd8e0228ea22",
+    "course_id": "0401111",
+    "type": "Summary",
+    "title": "Synthetic student acceptance",
+    "semester": "",
+    "public_credit_present": 0,
+    "private_sub_present": 1,
+    "private_email_present": 1,
+    "status": "pending",
+    "version": 1,
+    "original_revision_id": "3879def6-19ce-4b29-a202-d44b897fde40",
+    "candidate_revision_id": "3879def6-19ce-4b29-a202-d44b897fde40",
+    "created_at": "2026-11-15T18:36:39.600Z",
+    "updated_at": "2026-11-15T18:36:39.600Z"
+  },
+  "revisions": [
+    {
+      "id": "3879def6-19ce-4b29-a202-d44b897fde40",
+      "submission_id": "3de6408a-e12a-4573-a772-fd8e0228ea22",
+      "object_key": "private/v1/3de6408a-e12a-4573-a772-fd8e0228ea22/3879def6-19ce-4b29-a202-d44b897fde40.pdf",
+      "kind": "original",
+      "mime": "application/pdf",
+      "size": 687,
+      "etag": "bdd67c1a010fb6a649ce4c105a495444",
+      "status": "ready",
+      "created_at": "2026-11-15T18:36:39.600Z",
+      "upload_deadline": "2026-11-15T19:36:39.600Z",
+      "delete_after": null,
+      "delete_attempts": 0,
+      "last_delete_error": null
+    }
+  ],
+  "public_resource_rows": [],
+  "audit": [
+    {
+      "action": "submission_received",
+      "created_at": "2026-11-15T18:36:39.600Z",
+      "reason": null
+    }
+  ],
+  "all_submission_states": [
+    {
+      "id": "3de6408a-e12a-4573-a772-fd8e0228ea22",
+      "status": "pending",
+      "version": 1
+    },
+    {
+      "id": "726f6f74-6172-4368-8000-000000000001",
+      "status": "removed",
+      "version": 6
+    },
+    {
+      "id": "726f6f74-6172-4368-8000-000000000002",
+      "status": "rejected",
+      "version": 3
+    },
+    {
+      "id": "726f6f74-6172-4368-8000-000000000003",
+      "status": "removed",
+      "version": 7
+    }
+  ],
+  "revision_counts": [
+    {
+      "status": "deleted",
+      "count": 4
+    },
+    {
+      "status": "ready",
+      "count": 1
+    }
+  ],
+  "audit_count": [
+    {
+      "count": 14
+    }
+  ],
+  "unresolved": [
+    {
+      "count": 0
+    }
+  ],
+  "foreign_key_violations": [],
+  "inspection_rows_written": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "r2": {
+    "objects": [
+      {
+        "key": "private/v1/3de6408a-e12a-4573-a772-fd8e0228ea22/3879def6-19ce-4b29-a202-d44b897fde40.pdf",
+        "etag": "bdd67c1a010fb6a649ce4c105a495444",
+        "last_modified": "2026-11-15T18:36:39.776Z",
+        "size": 687,
+        "http_metadata": {
+          "contentType": "application/pdf"
+        },
+        "custom_metadata": {},
+        "storage_class": "Standard"
+      }
+    ],
+    "managed": {
+      "enabled": false,
+      "bucketId": "1a5f949cc506496daa0ff5ff43333c72",
+      "domain": "pub-1a5f949cc506496daa0ff5ff43333c72.r2.dev"
+    },
+    "custom": {
+      "domains": []
+    },
+    "approved_file_hash": {
+      "key": "private/v1/3de6408a-e12a-4573-a772-fd8e0228ea22/3879def6-19ce-4b29-a202-d44b897fde40.pdf",
+      "bytes": 687,
+      "sha256": "f225b67a86db912394042bca309b0691727e22ef3bd741b044ec0543906151d1",
+      "approved_sha256_match": true
+    }
+  },
+  "anonymous": {
+    "catalog_get": 200,
+    "catalog_empty": true,
+    "download_get": 404,
+    "download_head": 404,
+    "no_store": true
+  },
+  "results": {
+    "actual_google_student_authorization": "PASS",
+    "actual_turnstile_siteverify": "PASS through accepted normal UI upload and submission_received audit",
+    "pending_private_storage": "PASS",
+    "moderator_discovery": "AWAITING_OWNER_PORTAL",
+    "approval_public_download": "NOT_RUN",
+    "withdrawal_and_download_404": "NOT_RUN"
+  },
+  "ownership": {
+    "submission_id": "3de6408a-e12a-4573-a772-fd8e0228ea22",
+    "revision_id": "3879def6-19ce-4b29-a202-d44b897fde40",
+    "key": "private/v1/3de6408a-e12a-4573-a772-fd8e0228ea22/3879def6-19ce-4b29-a202-d44b897fde40.pdf",
+    "scope": "Only this newly created submission/revision; permanent cleanup remains separately gated."
+  },
+  "hosted_turnstile_negative_checks": "DEFERRED_NOT_PASSED",
+  "independent_hosted_jwt_checks": "UNVERIFIED_NOT_PASSED; pilot risk decision unresolved.",
+  "moderation_coordination": "Next owner step is portal discovery, inspect the exact original PDF and metadata, then approve selected candidate. Wait for publication verification before withdrawal.",
+  "cleanup": {
+    "identifiers_confirmed": false,
+    "executed": false
+  }
+}

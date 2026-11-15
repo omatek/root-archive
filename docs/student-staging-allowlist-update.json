@@ -1,0 +1,169 @@
+{
+  "recorded_at": "2026-11-15T17:24:04Z",
+  "owner_clarification": "The owner clarified that no eligible student account had actually been configured in the earlier secret entry and explicitly authorized one account to be set now.",
+  "action": "Set STAGING_STUDENT_EMAILS directly as secret_text on root-archive-moderation-staging only.",
+  "account_count": 1,
+  "account_address": "OMITTED_FROM_REPOSITORY_AND_EVIDENCE",
+  "api_success": true,
+  "before_deployment": {
+    "id": "621dc9f1-13c9-4ba3-a3f1-af102c49af27",
+    "versions": [
+      {
+        "version_id": "922fe37d-b9ab-44b5-ad94-b69aeeec1ac9",
+        "percentage": 100
+      }
+    ]
+  },
+  "after_deployment": {
+    "id": "570541ef-0cc1-4bf8-a8df-5f30edb535ca",
+    "versions": [
+      {
+        "version_id": "f178ada8-e738-4aa9-a550-a9cb0a16c9a8",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-11-15T17:24:04.263647Z"
+  },
+  "submissions_enabled": false,
+  "window_opens_at": "",
+  "window_closes_at": "",
+  "cleanup_enabled": false,
+  "required_secret_bindings": [
+    {
+      "name": "ADMIN_EMAILS",
+      "type": "secret_text"
+    },
+    {
+      "name": "STAGING_STUDENT_EMAILS",
+      "type": "secret_text"
+    },
+    {
+      "name": "TURNSTILE_SECRET",
+      "type": "secret_text"
+    }
+  ],
+  "state": [
+    {
+      "results": [
+        {
+          "id": "726f6f74-6172-4368-8000-000000000001",
+          "status": "removed",
+          "version": 6
+        },
+        {
+          "id": "726f6f74-6172-4368-8000-000000000002",
+          "status": "rejected",
+          "version": 3
+        },
+        {
+          "id": "726f6f74-6172-4368-8000-000000000003",
+          "status": "removed",
+          "version": 7
+        }
+      ],
+      "success": true,
+      "meta": {
+        "served_by": "v3-prod",
+        "served_by_region": "EEUR",
+        "served_by_colo": "FRA",
+        "served_by_primary": true,
+        "timings": {
+          "sql_duration_ms": 0.1731
+        },
+        "duration": 0.1731,
+        "changes": 0,
+        "last_row_id": 0,
+        "changed_db": false,
+        "size_after": 102400,
+        "rows_read": 3,
+        "rows_written": 0,
+        "total_attempts": 1
+      }
+    },
+    {
+      "results": [
+        {
+          "status": "deleted",
+          "count": 4
+        }
+      ],
+      "success": true,
+      "meta": {
+        "served_by": "v3-prod",
+        "served_by_region": "EEUR",
+        "served_by_colo": "FRA",
+        "served_by_primary": true,
+        "timings": {
+          "sql_duration_ms": 0.0773
+        },
+        "duration": 0.0773,
+        "changes": 0,
+        "last_row_id": 0,
+        "changed_db": false,
+        "size_after": 102400,
+        "rows_read": 4,
+        "rows_written": 0,
+        "total_attempts": 1
+      }
+    },
+    {
+      "results": [
+        {
+          "count": 13
+        }
+      ],
+      "success": true,
+      "meta": {
+        "served_by": "v3-prod",
+        "served_by_region": "EEUR",
+        "served_by_colo": "FRA",
+        "served_by_primary": true,
+        "timings": {
+          "sql_duration_ms": 0.0516
+        },
+        "duration": 0.0516,
+        "changes": 0,
+        "last_row_id": 0,
+        "changed_db": false,
+        "size_after": 102400,
+        "rows_read": 13,
+        "rows_written": 0,
+        "total_attempts": 1
+      }
+    },
+    {
+      "results": [
+        {
+          "count": 0
+        }
+      ],
+      "success": true,
+      "meta": {
+        "served_by": "v3-prod",
+        "served_by_region": "EEUR",
+        "served_by_colo": "FRA",
+        "served_by_primary": true,
+        "timings": {
+          "sql_duration_ms": 0.0782
+        },
+        "duration": 0.0782,
+        "changes": 0,
+        "last_row_id": 0,
+        "changed_db": false,
+        "size_after": 102400,
+        "rows_read": 2,
+        "rows_written": 0,
+        "total_attempts": 1
+      }
+    }
+  ],
+  "r2_objects": [],
+  "production": {
+    "legacy_deployment": "88fef60a-22b0-434a-bbc2-89ac0d569629",
+    "pages_deployment": "60b32faf-7934-4e5b-8a34-c07c1cb0983d"
+  },
+  "google_browser_verification": "PENDING_OWNER_ACTION",
+  "enablement_started": false,
+  "cleanup_confirmation": false,
+  "jwt_tests": "UNVERIFIED_NOT_PASSED; no pilot risk acceptance made."
+}

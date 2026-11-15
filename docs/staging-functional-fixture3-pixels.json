@@ -1,0 +1,47 @@
+{
+  "observed_at": "2026-11-14T20:30:55.205569+00:00",
+  "kind": "Read-only pixel inspection of the actual hosted private replacement bytes, compared to the original synthetic fixture",
+  "dimensions": [
+    128,
+    128
+  ],
+  "rotation_reference": "90 degrees clockwise; computed in memory for comparison only",
+  "redaction_rectangle": {
+    "x": 60,
+    "y": 30,
+    "width": 20,
+    "height": 20
+  },
+  "opaque_black_pixels": 400,
+  "expected_black_pixels": 400,
+  "pixels_different_from_rotated_original_outside_redaction": 0,
+  "sample_pixels": {
+    "inside_redaction": [
+      0,
+      0,
+      0,
+      255
+    ],
+    "red_shape_outside_redaction": [
+      255,
+      0,
+      0,
+      255
+    ],
+    "background": [
+      255,
+      255,
+      255,
+      255
+    ]
+  },
+  "png_chunks": [
+    "IHDR",
+    "IDAT",
+    "IDAT",
+    "IEND"
+  ],
+  "no_text_or_exif_chunks": true,
+  "sha256": "f7a2816a18d53b3db6a505a75ceaa01fb0cd3606d7a4f424ca0466beadbfda0b",
+  "pass": true
+}

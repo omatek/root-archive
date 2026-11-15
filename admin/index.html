@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <title>root/archive — Moderation</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script type="module" src="/js/admin.mjs"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to moderation queue</a>
+  <header class="masthead"><div class="shell masthead-inner">
+    <a class="wordmark" href="/" aria-label="root archive moderation"><span class="wordmark-root">root</span><span class="wordmark-slash">/</span><span class="wordmark-product">archive</span></a>
+    <span class="private-label">Private moderation</span>
+  </div></header>
+  <main class="shell" id="main">
+    <div class="intro"><div><p class="eyebrow">Administrator workspace</p><h1>Moderation queue</h1><p>Review and prepare materials before publication.</p></div><div class="session"><span id="identity">Verifying access…</span><a href="/cdn-cgi/access/logout">Sign out</a></div></div>
+    <div id="status" class="status" role="status" aria-live="polite">Loading moderation records…</div>
+    <div id="session-recovery" class="notice session-recovery" hidden><p>Your draft remains in this tab. Complete Access sign-in in a new tab, then retry here.</p><div class="actions"><a href="/" target="_blank" rel="noopener" class="button secondary">Open sign-in in a new tab</a><button id="retry-session" class="button retry-session">Retry session</button></div></div>
+    <nav class="view-tabs" aria-label="Moderation views">
+      <button data-view="pending" aria-pressed="true">Pending &amp; re-review</button>
+      <button data-view="published" aria-pressed="false">Published resources</button>
+      <button data-view="history" aria-pressed="false">Rejected &amp; removed</button>
+    </nav>
+    <form id="search-form" class="filters"><label for="search">Search title or course<input id="search" type="search" maxlength="120" placeholder="Title or course code"></label><button class="button secondary" type="submit">Search</button><button type="button" class="text-button" id="refresh">Refresh</button></form>
+    <p class="help" id="view-help">Unpublished records remain private until approved again.</p>
+    <div id="records" class="records" aria-label="Moderation records"></div>
+    <div class="actions pagination"><button id="load-more" class="button secondary" hidden>Load more</button><button id="retry-cleanup" class="text-button">Retry pending file cleanup</button></div>
+  </main>
+  <footer class="shell">root/archive · Independent, student-led. Private content stays within this workspace.</footer>
+
+  <dialog id="detail-dialog" aria-labelledby="detail-heading">
+    <div class="dialog-header"><div><p class="eyebrow" id="detail-state"></p><h2 id="detail-heading" tabindex="-1">Review material</h2><p id="detail-reference" class="help"></p></div><button type="button" class="close-button" id="close-detail" aria-label="Close record">×</button></div>
+    <div class="dialog-body">
+      <div id="detail-status" class="status" role="status" aria-live="polite"></div><div class="notice session-recovery" hidden><p>Your draft stays here while you sign in again.</p><div class="actions"><a href="/" target="_blank" rel="noopener" class="button secondary">Open sign-in in a new tab</a><button class="button retry-session" type="button">Retry session</button></div></div>
+      <div id="contributor-info" class="notice compact"></div>
+      <form id="metadata-form">
+        <div class="field"><label for="meta-title">Title</label><input id="meta-title" name="title" required minlength="3" maxlength="120"></div>
+        <div class="field-grid"><div class="field"><label for="meta-course">Course</label><select id="meta-course" name="course_id" required></select></div><div class="field"><label for="meta-type">Resource type</label><select id="meta-type" name="type"><option>Practice Questions</option><option>Summary</option><option>Notes</option><option>Test Bank</option><option>Other</option></select></div></div>
+        <div class="field-grid"><div class="field"><label for="meta-semester">Semester <span class="optional">(optional)</span></label><input id="meta-semester" name="semester" maxlength="20"></div><div class="field"><label for="meta-credit">Public contributor credit <span class="optional">(opt-in only)</span></label><input id="meta-credit" name="contributor" maxlength="40"><p class="help">Leave blank for anonymous attribution. Never copy a private email or student ID into public credit.</p></div></div>
+        <div class="actions"><button class="button secondary" type="submit" id="save-metadata">Save candidate metadata</button><button type="button" id="start-review" class="text-button">Start review</button></div>
+      </form>
+      <section class="section" aria-labelledby="files-heading"><h3 id="files-heading">Files &amp; revisions</h3><p class="help">Only raster images are previewed here. Download PDFs and documents for local inspection. For PDF redaction, remove sensitive content with a suitable external tool, verify it, then upload the sanitized replacement. Drawing a rectangle over a PDF does not securely redact it.</p><div id="file-list"></div><div id="image-preview" hidden><h4>Private image preview</h4><img id="preview-image" alt="Selected private submission image"><button class="text-button" id="close-preview" type="button">Close preview</button></div>
+        <form id="replacement-form" class="notice compact"><label for="replacement-file">Upload a cleaned-up replacement</label><input id="replacement-file" type="file" accept=".pdf,.docx,.zip,.png,.jpg" required><p class="help">Up to 24 MiB. A new private candidate is created. The current public file is kept until you approve the replacement.</p><button class="button secondary" id="upload-replacement" type="submit">Save private replacement</button></form>
+      </section>
+      <section class="section" aria-labelledby="decision-heading"><h3 id="decision-heading">Publication decision</h3><p class="help" id="candidate-summary"></p><label class="check" id="review-check-label"><input type="checkbox" id="review-check">I inspected the candidate file and metadata, checked personal details and publication permission, and confirmed edits preserve academic meaning.</label><div class="actions"><button class="button" id="approve">Approve selected candidate</button><button class="button secondary" id="reject">Reject submission</button><button class="button secondary" id="unpublish">Unpublish for re-review</button><button class="button danger" id="remove">Permanently remove</button></div><div id="public-state" class="notice compact" hidden><p id="public-description"></p><div class="actions"><a id="public-link" href="/" target="_blank" rel="noopener noreferrer">Open public download ↗</a><button class="text-button" id="check-public">Check anonymous availability</button></div><p class="help" id="availability"></p></div></section>
+      <section class="section" aria-labelledby="history-heading"><h3 id="history-heading">Decision history</h3><ol id="audit-list" class="audit-list"></ol></section>
+    </div>
+  </dialog>
+
+  <dialog id="decision-dialog" aria-labelledby="decision-title"><form id="decision-form"><div class="dialog-header"><h2 id="decision-title">Confirm decision</h2></div><div class="dialog-body"><p id="decision-explanation"></p><div class="field"><label for="decision-reason">Concise private reason</label><textarea id="decision-reason" required minlength="3" maxlength="300" rows="3"></textarea><p class="help">Use only the details needed for moderation. Avoid unnecessary personal information.</p></div><div class="actions"><button class="button" id="confirm-decision" type="submit">Confirm</button><button class="button secondary" type="button" id="cancel-decision">Cancel</button></div></div></form></dialog>
+
+  <dialog id="editor-dialog" aria-labelledby="editor-heading"><div class="dialog-header"><div><p class="eyebrow">Private image preparation</p><h2 id="editor-heading">Clean up the scan</h2></div><button class="close-button" id="close-editor" aria-label="Close image editor">×</button></div><div class="dialog-body"><p class="help">Edits stay in this browser until you save a replacement. Exported PNGs contain newly rendered pixels without original image metadata. Black redactions permanently replace those pixels. PDF redaction and perspective correction require an external tool and replacement upload.</p><div id="editor-status" class="status" role="status" aria-live="polite"></div><div class="notice session-recovery" hidden><p>Your image edits stay in this tab while you sign in again.</p><div class="actions"><a href="/" target="_blank" rel="noopener" class="button secondary">Open sign-in in a new tab</a><button class="button retry-session" type="button">Retry session</button></div></div>
+    <div class="editor-tools"><button type="button" class="button secondary" id="rotate-left">Rotate left</button><button type="button" class="button secondary" id="rotate-right">Rotate right</button><button type="button" class="text-button" id="reset-image">Reset all edits</button></div>
+    <div class="field-grid"><label for="brightness">Brightness <input id="brightness" type="range" min="50" max="150" value="100"><output id="brightness-value">100%</output></label><label for="contrast">Contrast <input id="contrast" type="range" min="50" max="200" value="100"><output id="contrast-value">100%</output></label></div><div class="actions"><label class="check"><input type="checkbox" id="grayscale">Grayscale</label><label class="check"><input type="checkbox" id="scan">Scan-style black &amp; white</label></div>
+    <fieldset><legend>Crop / remove margins</legend><p class="help">Coordinates are pixels in the rotated original. Applying a crop or rotation clears existing redactions; reapply and inspect them before saving.</p><div class="coordinates"><label>X<input type="number" id="crop-x" value="0" min="0" step="1"></label><label>Y<input type="number" id="crop-y" value="0" min="0" step="1"></label><label>Width<input type="number" id="crop-width" value="1" min="1" step="1"></label><label>Height<input type="number" id="crop-height" value="1" min="1" step="1"></label></div><button class="button secondary" id="apply-crop" type="button">Apply crop</button></fieldset>
+    <fieldset><legend>Opaque pixel redaction</legend><p class="help">Drag over the preview, or enter a rectangle in output pixels. Redactions are applied after every image adjustment.</p><div class="coordinates"><label>X<input type="number" id="redact-x" value="0" min="0" step="1"></label><label>Y<input type="number" id="redact-y" value="0" min="0" step="1"></label><label>Width<input type="number" id="redact-width" value="20" min="1" step="1"></label><label>Height<input type="number" id="redact-height" value="20" min="1" step="1"></label></div><div class="actions"><button class="button secondary" id="add-redaction" type="button">Redact rectangle</button><button class="text-button" id="undo-redaction" type="button">Undo last redaction</button></div></fieldset>
+    <p class="help" id="image-dimensions"></p><div class="canvas-wrap" tabindex="0" role="region" aria-label="Scrollable image preview"><canvas id="editor-canvas" aria-label="Candidate image preview. Use rectangle fields above for keyboard redaction."></canvas></div><label class="check"><input type="checkbox" id="editor-inspected">I inspected this final preview, including all redactions.</label><div class="actions"><button class="button" id="save-edited" type="button">Save as private PNG candidate</button><button class="button secondary" id="download-edited" type="button">Export PNG locally</button></div>
+  </div></dialog>
+</body>
+</html>

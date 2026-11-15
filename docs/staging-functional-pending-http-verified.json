@@ -1,0 +1,96 @@
+{
+  "observed_at": "2026-11-14T11:42:35.526183+00:00",
+  "kind": "actual anonymous hosted pending-fixture probes; established acceptance user-agent; no credentials; redirects disabled; TLS verified",
+  "results": [
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/download/726f6f74-6172-4368-8000-000000000001",
+      "method": "GET",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a5c0e73bd0f78b-DFW"
+      },
+      "body_bytes": 52,
+      "body_sha256": "cf72421b0be259620fbb222f1cc2656a1e1d799ad13875d73f80b5ffd7bf34bd"
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/download/726f6f74-6172-4368-8000-000000000001",
+      "method": "HEAD",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a5c0e8bd10f78b-DFW"
+      },
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/resources",
+      "method": "GET",
+      "status": 200,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a5c0eabc146c22-DFW"
+      },
+      "body_bytes": 35,
+      "body_sha256": "6ef2e67caee31da95619fd58bb5f42b8b6a17823d86a735ed2f5f2bd412803ab",
+      "catalog": {
+        "resources": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/private/v1/726f6f74-6172-4368-8000-000000000001/726f6f74-6172-4368-9000-000000000001.png",
+      "method": "GET",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a5c0ed0a72b52d-DFW"
+      },
+      "body_bytes": 47,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507"
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/files/726f6f74-6172-4368-9000-000000000001",
+      "method": "GET",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a5c0ee6cf6e8f5-DFW"
+      },
+      "body_bytes": 510,
+      "body_sha256": "e272fd5659bb5ecc47b28d7b90ef1a3d07130be2b32d6def93d0d1b7ebc87fa6",
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      }
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/files/726f6f74-6172-4368-9000-000000000001",
+      "method": "HEAD",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a5c0efd8aae95e-DFW"
+      },
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      }
+    }
+  ]
+}

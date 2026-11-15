@@ -1,0 +1,111 @@
+{
+  "phase": "COMPLETE_CLEANED_UPLOADS_PAUSED",
+  "essential_acceptance_complete": true,
+  "withdrawal_proof": "student-staging-withdrawal-proof.json",
+  "publication_proof": "student-staging-publication-proof.json",
+  "pending_proof": "student-staging-pending-proof.json",
+  "streamlined_window_evidence": "student-staging-streamlined-window.json",
+  "enablement_budget_used_minutes": 60,
+  "remaining_enablement_budget_minutes": 0,
+  "workflow_complete": true,
+  "window_evidence": "student-staging-window-open.json",
+  "eligible_auth_evidence": "student-staging-eligible-auth.json",
+  "authorization": {
+    "supervised_run": true,
+    "max_enablement_minutes": 60,
+    "exact_identifier_confirmation_before_cleanup": true,
+    "production": false,
+    "legacy": false,
+    "onboarding": false,
+    "merge": false
+  },
+  "source_commit": "802d5814b35f70f0a45e62a2723f5b6e2c97ffed",
+  "backend_version": "0f8024b1-b62d-4aff-a8bc-8f7b521498f5",
+  "allowlist_update_evidence": "student-staging-allowlist-update.json",
+  "allowlist": {
+    "configured_by": "agent, on explicit owner request",
+    "approved_accounts": 1,
+    "private_address_retained": false,
+    "actual_google_authorization": "OWNER_OBSERVED_PASS"
+  },
+  "frontend_version": "30f908f3-9faa-4799-b566-c46b3cc8da41",
+  "preflight": "student-staging-live-preflight.json",
+  "approved_document": {
+    "path": "dist/student-acceptance.pdf",
+    "mime": "application/pdf",
+    "bytes": 687,
+    "sha256": "f225b67a86db912394042bca309b0691727e22ef3bd741b044ec0543906151d1"
+  },
+  "student_browser": {
+    "eligible_auth": "OWNER_OBSERVED_PASS",
+    "security_widget": "OWNER_OBSERVED_COMPLETE",
+    "turnstile_server_verification": "PASS_ACTUAL_NORMAL_UI_UPLOAD_AND_RECEIPT_AUDIT",
+    "ineligible_denial": "OWNER_OBSERVED_PASS",
+    "missing_turnstile_denial": "DEFERRED_HOSTED_NOT_PASSED_LOCAL_COVERAGE_PASS",
+    "invalid_turnstile_denial": "DEFERRED_HOSTED_NOT_PASSED_LOCAL_COVERAGE_PASS",
+    "paused_submit": "OWNER_OBSERVED_DENIAL_AND_ZERO_STORAGE_CHANGES"
+  },
+  "submission_window": {
+    "opens_at": "2026-11-15T18:31:15.692Z",
+    "closes_at": "2026-11-15T18:41:15.692Z",
+    "minutes": 10,
+    "operator_paused_at": "2026-11-15T18:37:25.192036Z",
+    "closed_early_after_single_upload": true,
+    "automatic_cutoff_enforced_by_worker": true,
+    "restart_or_extension": "Remaining 10 minutes after original 50-minute interval expired; cumulative budget 60 minutes."
+  },
+  "enablement_executed": true,
+  "new_submission": {
+    "id": "3de6408a-e12a-4573-a772-fd8e0228ea22",
+    "status": "removed",
+    "version": 4,
+    "created_at": "2026-11-15T18:36:39.600Z",
+    "public_credit_present": false,
+    "private_identity_present": false
+  },
+  "new_revisions": [
+    {
+      "id": "3879def6-19ce-4b29-a202-d44b897fde40",
+      "submission_id": "3de6408a-e12a-4573-a772-fd8e0228ea22",
+      "key": "private/v1/3de6408a-e12a-4573-a772-fd8e0228ea22/3879def6-19ce-4b29-a202-d44b897fde40.pdf",
+      "status": "deleted",
+      "bytes": 687,
+      "sha256": "f225b67a86db912394042bca309b0691727e22ef3bd741b044ec0543906151d1"
+    }
+  ],
+  "accepted_uploads": 1,
+  "moderator_discovery": "PASS_OWNER_PORTAL_APPROVAL_AND_D1_AUDIT",
+  "approval_public_download": "PASS_ANONYMOUS_CATALOG_GET_HEAD_200_APPROVED_SHA256",
+  "withdrawal_download_denial": "PASS_FRESH_ANONYMOUS_GET_HEAD_404_CATALOG_EMPTY_PRIVATE_HASH_RETAINED",
+  "administrator_session_recovery": "DEFERRED_NOT_PASSED",
+  "cleanup": {
+    "identifiers_presented": true,
+    "confirmation_received": true,
+    "executed": true,
+    "method": "Owner-authorized Cloudflare D1 guarded updates and exact-key R2 DELETE; portal removal not tested"
+  },
+  "last_observed_state": {
+    "observed_at": "2026-11-15T19:12:30.988Z",
+    "submissions_enabled": false,
+    "window_opens_at": "",
+    "window_closes_at": "",
+    "r2_objects": 0,
+    "submissions": 4,
+    "revision_statuses": {
+      "deleted": 5
+    },
+    "audits": 17,
+    "unresolved_upload_or_delete_operations": 0
+  },
+  "jwt_risk": {
+    "independent_hosted_checks": "UNVERIFIED_NOT_PASSED",
+    "pilot_risk_acceptance": "UNRESOLVED_DECISION_NOT_SILENTLY_ACCEPTED"
+  },
+  "deferred": {
+    "fixture4": "DEFERRED_NOT_PASSED",
+    "focused_pagination": "DEFERRED_NOT_PASSED",
+    "artificial_200ms_interruption": "REMOVED_GATE_DEFERRED_NOT_RUN",
+    "other_synthetic_concurrency_recovery_campaigns": "DEFERRED_NOT_PASSED"
+  },
+  "cleanup_proof": "student-staging-cleanup-proof.json"
+}

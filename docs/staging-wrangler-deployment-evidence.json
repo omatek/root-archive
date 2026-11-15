@@ -1,0 +1,380 @@
+{
+  "checkpoint": "048b998102279d1945870ad5a1226c502ea34841",
+  "reviewed_source": "5f978552dc5a8ed0b515386b6a20bc8e3dcb00d0",
+  "access": {
+    "verified": true,
+    "app": {
+      "id": "bebba566-18d3-42c5-a78e-50213ea2dad6",
+      "domain": "admin.archive.rootamman.com",
+      "aud": "0003d8d8ba905005bfed05fc441631de07c91985c3e2baab528bdb4bbb7ac5be",
+      "allowed_idps": [
+        "0db90b4d-534a-4f75-ab0e-026016e0b1b9"
+      ],
+      "session_duration": "1h",
+      "http_only_cookie_attribute": true,
+      "enable_binding_cookie": true,
+      "options_preflight_bypass": false
+    },
+    "policy": {
+      "id": "1fd4e71c-8a76-4969-8792-2772531ca2a9",
+      "exact_email_count": 1,
+      "updated_at": "2026-11-13T23:30:28Z"
+    },
+    "overlapping_apps": []
+  },
+  "postflight": {
+    "settings": {
+      "placement": {},
+      "compatibility_date": "2026-10-30",
+      "compatibility_flags": [],
+      "usage_model": "standard",
+      "tags": [],
+      "tail_consumers": [],
+      "logpush": false,
+      "observability": {
+        "enabled": true,
+        "head_sampling_rate": 1,
+        "redact_query_string": false,
+        "logs": {
+          "enabled": true,
+          "head_sampling_rate": 1,
+          "persist": true,
+          "invocation_logs": false
+        },
+        "traces": {
+          "enabled": true,
+          "persist": true,
+          "head_sampling_rate": 0.1
+        }
+      },
+      "annotations": {
+        "workers/message": "Owner-approved isolated staging",
+        "workers/triggered_by": "version_upload"
+      },
+      "bindings": [
+        {
+          "name": "ACCESS_AUD",
+          "text": "0003d8d8ba905005bfed05fc441631de07c91985c3e2baab528bdb4bbb7ac5be",
+          "type": "plain_text"
+        },
+        {
+          "name": "ACCESS_ISSUER",
+          "text": "https://rootamman.cloudflareaccess.com",
+          "type": "plain_text"
+        },
+        {
+          "name": "ADMIN_EMAILS",
+          "type": "secret_text"
+        },
+        {
+          "name": "ADMIN_ORIGIN",
+          "text": "https://admin.archive.rootamman.com",
+          "type": "plain_text"
+        },
+        {
+          "name": "ALLOWED_ORIGIN",
+          "text": "https://archive-staging.rootamman.com",
+          "type": "plain_text"
+        },
+        {
+          "name": "ASSETS",
+          "type": "assets"
+        },
+        {
+          "name": "CLEANUP_ENABLED",
+          "text": "false",
+          "type": "plain_text"
+        },
+        {
+          "database_id": "f4aa2a8b-4b27-4ed3-b7a2-4e6e100a94c6",
+          "id": "f4aa2a8b-4b27-4ed3-b7a2-4e6e100a94c6",
+          "name": "DB",
+          "type": "d1"
+        },
+        {
+          "name": "GOOGLE_CLIENT_ID",
+          "text": "",
+          "type": "plain_text"
+        },
+        {
+          "bucket_name": "root-archive-private-staging",
+          "name": "PRIVATE_FILES",
+          "type": "r2_bucket"
+        },
+        {
+          "name": "PUBLIC_API_ORIGIN",
+          "text": "https://api-staging.rootamman.com",
+          "type": "plain_text"
+        },
+        {
+          "name": "SUBMISSIONS_ENABLED",
+          "text": "false",
+          "type": "plain_text"
+        }
+      ]
+    },
+    "subdomain": {
+      "enabled": false,
+      "previews_enabled": false
+    },
+    "deployments": {
+      "deployments": [
+        {
+          "id": "2eaa7db3-f51c-4747-a5ea-e8ec0b86c5a2",
+          "source": "wrangler",
+          "strategy": "percentage",
+          "annotations": {
+            "workers/message": "Owner-approved isolated staging",
+            "workers/triggered_by": "deployment"
+          },
+          "versions": [
+            {
+              "version_id": "bb9e96b3-e789-47b0-aa92-16168fe80db4",
+              "percentage": 100
+            }
+          ],
+          "created_on": "2026-11-14T08:32:53.290691Z"
+        }
+      ]
+    },
+    "domains": [
+      {
+        "id": "18ff115e80d1e21d3b74e146d72bf141227e6f23",
+        "zone_id": "fc80d6a45a703d0fe4d1876f1380870f",
+        "zone_name": "rootamman.com",
+        "hostname": "api.rootamman.com",
+        "service": "root-archive-worker",
+        "environment": "production",
+        "cert_id": "ddec1cda-d044-4ac4-9b49-f02c3534b6b4",
+        "previews_enabled": false,
+        "enabled": true
+      },
+      {
+        "id": "580d38dcab623f69bd2edffa224340c4473435be",
+        "zone_id": "fc80d6a45a703d0fe4d1876f1380870f",
+        "zone_name": "rootamman.com",
+        "hostname": "admin.archive.rootamman.com",
+        "service": "root-archive-moderation-staging",
+        "environment": "production",
+        "cert_id": "ec66ad67-c346-4ff5-a5b1-dc3d59735aa9",
+        "previews_enabled": false,
+        "enabled": true
+      },
+      {
+        "id": "1fc544a0ed42618cfdde24bc360c4686a50675a8",
+        "zone_id": "fc80d6a45a703d0fe4d1876f1380870f",
+        "zone_name": "rootamman.com",
+        "hostname": "api-staging.rootamman.com",
+        "service": "root-archive-moderation-staging",
+        "environment": "production",
+        "cert_id": "2cdcbcd6-7862-46f9-bb0c-1e3ea3b30642",
+        "previews_enabled": false,
+        "enabled": true
+      }
+    ],
+    "dns": [
+      {
+        "id": "4d1cbc33b6585bfd21916d6d49ae0ccb",
+        "name": "archive.rootamman.com",
+        "type": "CNAME",
+        "content": "root-archive.pages.dev",
+        "proxiable": true,
+        "proxied": true,
+        "ttl": 1,
+        "settings": {
+          "flatten_cname": false
+        },
+        "meta": {},
+        "comment": null,
+        "tags": [],
+        "created_on": "2026-11-12T18:59:27.528501Z",
+        "modified_on": "2026-11-12T18:59:27.528501Z"
+      },
+      {
+        "id": "06182d8814d3f6187723db7df63c91e4",
+        "name": "assets.rootamman.com",
+        "type": "CNAME",
+        "content": "public.r2.dev",
+        "proxiable": true,
+        "proxied": true,
+        "ttl": 1,
+        "settings": {
+          "flatten_cname": false
+        },
+        "meta": {
+          "r2_bucket": "root-archive-assets",
+          "read_only": true
+        },
+        "comment": null,
+        "tags": [],
+        "created_on": "2026-11-12T19:31:11.13818Z",
+        "modified_on": "2026-11-12T19:31:11.13818Z"
+      },
+      {
+        "id": "60487f52f1b055e739042149d60f8e45",
+        "name": "admin.archive.rootamman.com",
+        "type": "AAAA",
+        "content": "100::",
+        "proxiable": true,
+        "proxied": true,
+        "ttl": 1,
+        "settings": {},
+        "meta": {
+          "origin_worker_id": "580d38dcab623f69bd2edffa224340c4473435be",
+          "read_only": true
+        },
+        "comment": null,
+        "tags": [],
+        "created_on": "2026-11-14T08:32:55.116966Z",
+        "modified_on": "2026-11-14T08:32:55.116966Z"
+      },
+      {
+        "id": "b75429fff2288f3f2d53fe502ff2b94f",
+        "name": "api.rootamman.com",
+        "type": "AAAA",
+        "content": "100::",
+        "proxiable": true,
+        "proxied": true,
+        "ttl": 1,
+        "settings": {},
+        "meta": {
+          "origin_worker_id": "18ff115e80d1e21d3b74e146d72bf141227e6f23",
+          "read_only": true
+        },
+        "comment": null,
+        "tags": [],
+        "created_on": "2026-11-12T19:02:47.896805Z",
+        "modified_on": "2026-11-12T19:02:47.896805Z"
+      },
+      {
+        "id": "6b07023fca7347ba5d83c67fda5322a4",
+        "name": "api-staging.rootamman.com",
+        "type": "AAAA",
+        "content": "100::",
+        "proxiable": true,
+        "proxied": true,
+        "ttl": 1,
+        "settings": {},
+        "meta": {
+          "origin_worker_id": "1fc544a0ed42618cfdde24bc360c4686a50675a8",
+          "read_only": true
+        },
+        "comment": null,
+        "tags": [],
+        "created_on": "2026-11-14T08:32:55.176734Z",
+        "modified_on": "2026-11-14T08:32:55.176734Z"
+      }
+    ],
+    "certs": [
+      {
+        "id": "ddec1cda-d044-4ac4-9b49-f02c3534b6b4",
+        "type": "advanced",
+        "hosts": [
+          "rootamman.com",
+          "api.rootamman.com",
+          "*.api.rootamman.com"
+        ],
+        "primary_certificate": "56b2687b-c5d4-45dd-9d5d-5d437c1cb893",
+        "status": "active",
+        "certificates": [
+          {
+            "id": "56b2687b-c5d4-45dd-9d5d-5d437c1cb893",
+            "hosts": [
+              "rootamman.com",
+              "api.rootamman.com",
+              "*.api.rootamman.com"
+            ],
+            "issuer": "GoogleTrustServices",
+            "signature": "SHA256WithRSA",
+            "status": "active",
+            "bundle_method": "ubiquitous",
+            "zone_id": "fc80d6a45a703d0fe4d1876f1380870f",
+            "uploaded_on": "2026-11-14T08:33:15.728432Z",
+            "modified_on": "2026-11-12T19:05:15.857682Z",
+            "expires_on": "2027-02-10T19:02:48.000000Z",
+            "priority": null
+          },
+          {
+            "id": "75d61a00-1fdc-4a2a-8f9a-8ab0048bac18",
+            "hosts": [
+              "rootamman.com",
+              "api.rootamman.com",
+              "*.api.rootamman.com"
+            ],
+            "issuer": "GoogleTrustServices",
+            "signature": "ECDSAWithSHA256",
+            "status": "active",
+            "bundle_method": "ubiquitous",
+            "zone_id": "fc80d6a45a703d0fe4d1876f1380870f",
+            "uploaded_on": "2026-11-14T08:33:15.728459Z",
+            "modified_on": "2026-11-12T19:05:15.857682Z",
+            "expires_on": "2027-02-10T19:05:04.000000Z",
+            "priority": null
+          }
+        ],
+        "created_on": "2026-11-12T19:02:47.921018Z",
+        "validity_days": 90,
+        "validation_method": "txt",
+        "certificate_authority": "google"
+      },
+      {
+        "id": "a3ef102a-0a07-4d21-ab30-de59932b3f66",
+        "type": "universal",
+        "hosts": [
+          "rootamman.com",
+          "*.rootamman.com"
+        ],
+        "primary_certificate": "53ac2f51-353c-41d7-bd60-6d20aa29fbc9",
+        "status": "active",
+        "certificates": [
+          {
+            "id": "53ac2f51-353c-41d7-bd60-6d20aa29fbc9",
+            "hosts": [
+              "rootamman.com",
+              "*.rootamman.com"
+            ],
+            "issuer": "LetsEncrypt",
+            "signature": "ECDSAWithSHA384",
+            "status": "active",
+            "bundle_method": "ubiquitous",
+            "zone_id": "fc80d6a45a703d0fe4d1876f1380870f",
+            "uploaded_on": "2026-11-14T08:33:15.786287Z",
+            "modified_on": "2026-11-12T23:41:04.256788Z",
+            "expires_on": "2027-02-10T17:57:38.000000Z",
+            "priority": null
+          }
+        ],
+        "created_on": "2026-11-12T18:54:03.960231Z",
+        "validity_days": 90,
+        "validation_method": "txt",
+        "certificate_authority": "lets_encrypt"
+      }
+    ],
+    "legacy": {
+      "id": "88fef60a-22b0-434a-bbc2-89ac0d569629",
+      "versions": [
+        {
+          "version_id": "e8895ac0-b95b-409e-aff1-af3f549be94f",
+          "percentage": 100
+        }
+      ]
+    },
+    "pages": {
+      "canonical": "60b32faf-7934-4e5b-8a34-c07c1cb0983d",
+      "sha": "4bb136b9a39423737be4ee30ba1239d735e221c9"
+    }
+  },
+  "asset_upload": {
+    "files": 10,
+    "result": "success"
+  },
+  "migrations_reapplied": false,
+  "group_a": "BLOCKED: hosted verification requires network access and owner PIN login",
+  "group_b": "NOT STARTED",
+  "hosted_probe": {
+    "cloud_shell": "curl exit 56; CONNECT tunnel failed, response 403; HTTP 000",
+    "connector": "HTTP 403: Forbidden: requests to api-staging.rootamman.com are not allowed",
+    "classification": "network policy limitation; neither proves origin denial nor a security failure"
+  },
+  "r2_empty_after_deployment": true
+}

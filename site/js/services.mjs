@@ -69,7 +69,9 @@ export function createStudentAuth() {
     const controller = new AbortController();
     pending = controller;
     try {
-      const endpoint = CONFIG.submissionEndpoint.replace(/\/+$/, '').replace(/\/submit$/, '') + '/auth/verify';
+      const endpoint = CONFIG.privateModeration
+        ? new URL('/auth/verify', CONFIG.resourcesEndpoint).href
+        : CONFIG.submissionEndpoint.replace(/\/+$/, '').replace(/\/submit$/, '') + '/auth/verify';
       const result = await fetch(endpoint, {
         method: 'POST', headers: { Authorization: `Bearer ${candidate}`, Accept: 'application/json' },
         signal: AbortSignal.any([controller.signal, AbortSignal.timeout(20000)])
@@ -94,6 +96,10 @@ export function createStudentAuth() {
   }
   async function init() {
     getToken();
+    if (!CONFIG.googleClientId?.trim()) {
+      message('Google sign-in is not configured yet. Contributions remain unavailable.');
+      paint(); return;
+    }
     if (loading || initialized) { paint(); return; }
     loading = true;
     $('retry-signin').disabled = true;

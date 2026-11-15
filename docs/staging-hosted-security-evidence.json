@@ -1,0 +1,2275 @@
+{
+  "checkpoint": "1bcce0009c807167a2d4ade4c9845be99f0c8d58",
+  "observed_at": "2026-11-14T09:33:32.121463+00:00",
+  "kind": "actual hosted HTTP probes; no redirects followed; TLS verification enabled",
+  "assets": [
+    "/README.md",
+    "/assets/fonts/Atkinson-LICENSE.txt",
+    "/assets/fonts/Barlow-LICENSE.txt",
+    "/assets/fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2",
+    "/assets/fonts/barlow-semi-condensed-latin-600-normal.woff2",
+    "/assets/fonts/barlow-semi-condensed-latin-700-normal.woff2",
+    "/index.html",
+    "/js/admin.mjs",
+    "/js/image-editor.mjs",
+    "/styles.css"
+  ],
+  "results": [
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503d75f39394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 510,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true,
+      "body_sha256": "e272fd5659bb5ecc47b28d7b90ef1a3d07130be2b32d6def93d0d1b7ebc87fa6",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503d75f3b394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/README.md",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503d75f3c394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 510,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true,
+      "body_sha256": "e272fd5659bb5ecc47b28d7b90ef1a3d07130be2b32d6def93d0d1b7ebc87fa6",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/README.md",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503d75f38394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/assets/fonts/Atkinson-LICENSE.txt",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503d7bc1d47a5-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 510,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true,
+      "body_sha256": "e272fd5659bb5ecc47b28d7b90ef1a3d07130be2b32d6def93d0d1b7ebc87fa6",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/assets/fonts/Atkinson-LICENSE.txt",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503d75f37394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/assets/fonts/Barlow-LICENSE.txt",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503d7cc2347a5-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 510,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true,
+      "body_sha256": "e272fd5659bb5ecc47b28d7b90ef1a3d07130be2b32d6def93d0d1b7ebc87fa6",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/assets/fonts/Barlow-LICENSE.txt",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503d7cfa7394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/assets/fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503d8786d9716-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 510,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true,
+      "body_sha256": "e272fd5659bb5ecc47b28d7b90ef1a3d07130be2b32d6def93d0d1b7ebc87fa6",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/assets/fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503d81c4247a5-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/assets/fonts/barlow-semi-condensed-latin-600-normal.woff2",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503d83814394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 510,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true,
+      "body_sha256": "e272fd5659bb5ecc47b28d7b90ef1a3d07130be2b32d6def93d0d1b7ebc87fa6",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/assets/fonts/barlow-semi-condensed-latin-600-normal.woff2",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503d83c4d47a5-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/assets/fonts/barlow-semi-condensed-latin-700-normal.woff2",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503d878709716-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 510,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true,
+      "body_sha256": "e272fd5659bb5ecc47b28d7b90ef1a3d07130be2b32d6def93d0d1b7ebc87fa6",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/assets/fonts/barlow-semi-condensed-latin-700-normal.woff2",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503d8784e394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/index.html",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503d898aa9716-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 510,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true,
+      "body_sha256": "e272fd5659bb5ecc47b28d7b90ef1a3d07130be2b32d6def93d0d1b7ebc87fa6",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/index.html",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503d89c6d47a5-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/js/admin.mjs",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503d97b871dc9-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 510,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true,
+      "body_sha256": "e272fd5659bb5ecc47b28d7b90ef1a3d07130be2b32d6def93d0d1b7ebc87fa6",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/js/admin.mjs",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503d97b891dc9-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/js/image-editor.mjs",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503d8ec9147a5-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 510,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true,
+      "body_sha256": "e272fd5659bb5ecc47b28d7b90ef1a3d07130be2b32d6def93d0d1b7ebc87fa6",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/js/image-editor.mjs",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503d97b8a1dc9-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/styles.css",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503d9295f9716-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 510,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true,
+      "body_sha256": "e272fd5659bb5ecc47b28d7b90ef1a3d07130be2b32d6def93d0d1b7ebc87fa6",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/styles.css",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503d97b8b1dc9-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/admin/api/session",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503d9592e394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 510,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true,
+      "body_sha256": "e272fd5659bb5ecc47b28d7b90ef1a3d07130be2b32d6def93d0d1b7ebc87fa6",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/admin/api/session",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503d96941394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/admin/api/courses",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503d99a049716-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 510,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true,
+      "body_sha256": "e272fd5659bb5ecc47b28d7b90ef1a3d07130be2b32d6def93d0d1b7ebc87fa6",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/admin/api/courses",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503d9a979394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/admin/api/submissions",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503d9ea919716-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 510,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true,
+      "body_sha256": "e272fd5659bb5ecc47b28d7b90ef1a3d07130be2b32d6def93d0d1b7ebc87fa6",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/admin/api/submissions",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503d9f9be394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503d9e9af394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 510,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true,
+      "body_sha256": "e272fd5659bb5ecc47b28d7b90ef1a3d07130be2b32d6def93d0d1b7ebc87fa6",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503d9fcfb47a5-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/files/726f6f74-6172-4368-9000-000000000001",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503d9f9c0394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 510,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true,
+      "body_sha256": "e272fd5659bb5ecc47b28d7b90ef1a3d07130be2b32d6def93d0d1b7ebc87fa6",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/files/726f6f74-6172-4368-9000-000000000001",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503da0bfc1dc9-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/admin/api/unknown",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503da6a47394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 510,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true,
+      "body_sha256": "e272fd5659bb5ecc47b28d7b90ef1a3d07130be2b32d6def93d0d1b7ebc87fa6",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/admin/api/unknown",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503da5a38394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/unknown-security-probe",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503da7b339716-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 510,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true,
+      "body_sha256": "e272fd5659bb5ecc47b28d7b90ef1a3d07130be2b32d6def93d0d1b7ebc87fa6",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/unknown-security-probe",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503da7d2e47a5-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/admin/api/cleanup",
+      "method": "POST",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503da7d3047a5-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 510,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true,
+      "body_sha256": "e272fd5659bb5ecc47b28d7b90ef1a3d07130be2b32d6def93d0d1b7ebc87fa6",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/admin/api/cleanup",
+      "method": "OPTIONS",
+      "mode": "anonymous",
+      "status": 400,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503da7c681dc9-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 522,
+      "access_login_redirect": false,
+      "body_sha256": "24437de26c6fe780de8b4fa557a4ed817e1408e0f8992e5bca68ef37bfedb72a",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/review",
+      "method": "POST",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503dafad6394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 510,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true,
+      "body_sha256": "e272fd5659bb5ecc47b28d7b90ef1a3d07130be2b32d6def93d0d1b7ebc87fa6",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/review",
+      "method": "OPTIONS",
+      "mode": "anonymous",
+      "status": 400,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503dadcc31dc9-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 522,
+      "access_login_redirect": false,
+      "body_sha256": "24437de26c6fe780de8b4fa557a4ed817e1408e0f8992e5bca68ef37bfedb72a",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/metadata",
+      "method": "POST",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503daebf99716-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 510,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true,
+      "body_sha256": "e272fd5659bb5ecc47b28d7b90ef1a3d07130be2b32d6def93d0d1b7ebc87fa6",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/metadata",
+      "method": "OPTIONS",
+      "mode": "anonymous",
+      "status": 400,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503dadd5447a5-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 522,
+      "access_login_redirect": false,
+      "body_sha256": "24437de26c6fe780de8b4fa557a4ed817e1408e0f8992e5bca68ef37bfedb72a",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/revisions",
+      "method": "POST",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503dafd5f47a5-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 510,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true,
+      "body_sha256": "e272fd5659bb5ecc47b28d7b90ef1a3d07130be2b32d6def93d0d1b7ebc87fa6",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/revisions",
+      "method": "OPTIONS",
+      "mode": "anonymous",
+      "status": 400,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503db0ae1394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 522,
+      "access_login_redirect": false,
+      "body_sha256": "24437de26c6fe780de8b4fa557a4ed817e1408e0f8992e5bca68ef37bfedb72a",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/approve",
+      "method": "POST",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503db2c4d9716-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 510,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true,
+      "body_sha256": "e272fd5659bb5ecc47b28d7b90ef1a3d07130be2b32d6def93d0d1b7ebc87fa6",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/approve",
+      "method": "OPTIONS",
+      "mode": "anonymous",
+      "status": 400,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503db4b73394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 522,
+      "access_login_redirect": false,
+      "body_sha256": "24437de26c6fe780de8b4fa557a4ed817e1408e0f8992e5bca68ef37bfedb72a",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/unpublish",
+      "method": "POST",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503db4c6f9716-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 510,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true,
+      "body_sha256": "e272fd5659bb5ecc47b28d7b90ef1a3d07130be2b32d6def93d0d1b7ebc87fa6",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/unpublish",
+      "method": "OPTIONS",
+      "mode": "anonymous",
+      "status": 400,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503db5d8947a5-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 522,
+      "access_login_redirect": false,
+      "body_sha256": "24437de26c6fe780de8b4fa557a4ed817e1408e0f8992e5bca68ef37bfedb72a",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/reject",
+      "method": "POST",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503db8d661dc9-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 510,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true,
+      "body_sha256": "e272fd5659bb5ecc47b28d7b90ef1a3d07130be2b32d6def93d0d1b7ebc87fa6",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/reject",
+      "method": "OPTIONS",
+      "mode": "anonymous",
+      "status": 400,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503db7cae9716-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 522,
+      "access_login_redirect": false,
+      "body_sha256": "24437de26c6fe780de8b4fa557a4ed817e1408e0f8992e5bca68ef37bfedb72a",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/remove",
+      "method": "POST",
+      "mode": "anonymous",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503db8d9347a5-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 510,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true,
+      "body_sha256": "e272fd5659bb5ecc47b28d7b90ef1a3d07130be2b32d6def93d0d1b7ebc87fa6",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/remove",
+      "method": "OPTIONS",
+      "mode": "anonymous",
+      "status": 400,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503dbbd881dc9-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 522,
+      "access_login_redirect": false,
+      "body_sha256": "24437de26c6fe780de8b4fa557a4ed817e1408e0f8992e5bca68ef37bfedb72a",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/",
+      "method": "GET",
+      "mode": "forged-assertion",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503dbcbf1394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 510,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true,
+      "body_sha256": "e272fd5659bb5ecc47b28d7b90ef1a3d07130be2b32d6def93d0d1b7ebc87fa6",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/js/admin.mjs",
+      "method": "GET",
+      "mode": "forged-assertion",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503dbcd921dc9-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 510,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true,
+      "body_sha256": "e272fd5659bb5ecc47b28d7b90ef1a3d07130be2b32d6def93d0d1b7ebc87fa6",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/admin/api/session",
+      "method": "GET",
+      "mode": "forged-assertion",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503dbcbf2394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 510,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true,
+      "body_sha256": "e272fd5659bb5ecc47b28d7b90ef1a3d07130be2b32d6def93d0d1b7ebc87fa6",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/files/726f6f74-6172-4368-9000-000000000001",
+      "method": "GET",
+      "mode": "forged-assertion",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503dbec0b394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 510,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true,
+      "body_sha256": "e272fd5659bb5ecc47b28d7b90ef1a3d07130be2b32d6def93d0d1b7ebc87fa6",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/admin/api/session",
+      "method": "GET",
+      "mode": "invalid-session-cookie",
+      "status": 302,
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "CF-Ray": "a5a503dbec0a394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 510,
+      "redirect": {
+        "origin": "https://rootamman.cloudflareaccess.com",
+        "path": "/cdn-cgi/access/login/admin.archive.rootamman.com"
+      },
+      "access_login_redirect": true,
+      "body_sha256": "e272fd5659bb5ecc47b28d7b90ef1a3d07130be2b32d6def93d0d1b7ebc87fa6",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503dd0c52463c-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503dc8c9c394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "access_login_redirect": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/README.md",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503dcae559716-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/README.md",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503dc8c9b394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "access_login_redirect": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/assets/fonts/Atkinson-LICENSE.txt",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503dd0c50463c-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/assets/fonts/Atkinson-LICENSE.txt",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503dcbe669716-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "access_login_redirect": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/assets/fonts/Barlow-LICENSE.txt",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503dd2c5e463c-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/assets/fonts/Barlow-LICENSE.txt",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503ddda1c83ab-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "access_login_redirect": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/assets/fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503dd6f279716-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/assets/fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503ddda1d83ab-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "access_login_redirect": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/assets/fonts/barlow-semi-condensed-latin-600-normal.woff2",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503ddda1f83ab-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/assets/fonts/barlow-semi-condensed-latin-600-normal.woff2",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503dd9f6a9716-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "access_login_redirect": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/assets/fonts/barlow-semi-condensed-latin-700-normal.woff2",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503ddda2183ab-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/assets/fonts/barlow-semi-condensed-latin-700-normal.woff2",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503dddddd394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "access_login_redirect": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/index.html",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503ddffe69716-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/index.html",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503de1a3083ab-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "access_login_redirect": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/js/admin.mjs",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503de38459716-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/js/admin.mjs",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503de9a5083ab-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "access_login_redirect": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/js/image-editor.mjs",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503de9cdc463c-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/js/image-editor.mjs",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503de9a5583ab-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "access_login_redirect": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/styles.css",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503ded95c9716-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/styles.css",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503dedeb8394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "access_login_redirect": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/admin/api/session",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503ded9669716-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/admin/api/session",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503def9899716-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "access_login_redirect": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/admin/api/courses",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503defa7783ab-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/admin/api/courses",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503df2d0f463c-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "access_login_redirect": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/admin/api/submissions",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503df4d16463c-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/admin/api/submissions",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503df4a8c83ab-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "access_login_redirect": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503df6f23394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503df6f21394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "access_login_redirect": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/files/726f6f74-6172-4368-9000-000000000001",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503df6f25394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/files/726f6f74-6172-4368-9000-000000000001",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503dfaaac83ab-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "access_login_redirect": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/admin/api/unknown",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503dfdd4d463c-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/admin/api/unknown",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503dfdf82394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "access_login_redirect": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/unknown-security-probe",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503dfdabb83ab-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/unknown-security-probe",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503dfdd4c463c-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "access_login_redirect": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/admin/api/cleanup",
+      "method": "POST",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503dfdaa69716-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/admin/api/cleanup",
+      "method": "OPTIONS",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503e00af59716-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/review",
+      "method": "POST",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503e05fe8394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/review",
+      "method": "OPTIONS",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503e05af383ab-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/metadata",
+      "method": "POST",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503e05af483ab-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/metadata",
+      "method": "OPTIONS",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503e04b4f9716-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/revisions",
+      "method": "POST",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503e05d7b463c-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/revisions",
+      "method": "OPTIONS",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503e06ffc394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/approve",
+      "method": "POST",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503e0ada9463c-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/approve",
+      "method": "OPTIONS",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503e0c862394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/unpublish",
+      "method": "POST",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503e0cb2083ab-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/unpublish",
+      "method": "OPTIONS",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503e0cc149716-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/reject",
+      "method": "POST",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503e0cdb4463c-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/reject",
+      "method": "OPTIONS",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503e0dc3a9716-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/remove",
+      "method": "POST",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503e10dcb463c-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/remove",
+      "method": "OPTIONS",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503e128aa394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/",
+      "method": "GET",
+      "mode": "forged-assertion",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503e14b7183ab-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/js/admin.mjs",
+      "method": "GET",
+      "mode": "forged-assertion",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503e14ccb9716-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/admin/api/session",
+      "method": "GET",
+      "mode": "forged-assertion",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503e138cb394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/admin/api/submissions/726f6f74-6172-4368-8000-000000000001/files/726f6f74-6172-4368-9000-000000000001",
+      "method": "GET",
+      "mode": "forged-assertion",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503e15cdd9716-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/admin/api/session",
+      "method": "GET",
+      "mode": "invalid-session-cookie",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503e16b7d83ab-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 47,
+      "access_login_redirect": false,
+      "body_sha256": "7309fc89026f2d9ca2f03d4ad8af8eca8b8f353ecfbcb2a35e23b936921c3507",
+      "worker_not_found": true,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/resources",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 200,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503e17df3463c-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 35,
+      "access_login_redirect": false,
+      "body_sha256": "6ef2e67caee31da95619fd58bb5f42b8b6a17823d86a735ed2f5f2bd412803ab",
+      "worker_not_found": false,
+      "proxy_denial": false,
+      "public_catalog": {
+        "resources": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/download/726f6f74-6172-4368-8000-000000000001",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503e1896f394d-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 52,
+      "access_login_redirect": false,
+      "body_sha256": "cf72421b0be259620fbb222f1cc2656a1e1d799ad13875d73f80b5ffd7bf34bd",
+      "worker_not_found": false,
+      "proxy_denial": false
+    },
+    {
+      "host": "https://api-staging.rootamman.com",
+      "path": "/download/726f6f74-6172-4368-8000-000000000001",
+      "method": "HEAD",
+      "mode": "anonymous",
+      "status": 404,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "CF-Ray": "a5a503e19e08463c-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 0,
+      "access_login_redirect": false
+    },
+    {
+      "host": "https://rootamman.cloudflareaccess.com",
+      "path": "/cdn-cgi/access/certs",
+      "method": "GET",
+      "mode": "anonymous",
+      "status": 200,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "public, max-age=14400, must-revalidate, no-transform",
+        "CF-Ray": "a5a503e27c8e6b3f-DFW",
+        "Server": "envoy"
+      },
+      "body_bytes": 5116,
+      "access_login_redirect": false,
+      "body_sha256": "3558fbc3c2e0cca021c7b38c321b2cd3653e0b815b9ac506ec0edbafbd56789f",
+      "worker_not_found": false,
+      "proxy_denial": false,
+      "jwks_key_count": 2
+    },
+    {
+      "host": "https://root-archive-moderation-staging.omar-khldooon33.workers.dev",
+      "path": "/",
+      "method": "GET",
+      "mode": "anonymous",
+      "transport_error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+    }
+  ],
+  "limitations": [
+    "No real administrator login or expired/revoked real session was exercised.",
+    "Access interception does not establish independent Worker JWT/allowlist enforcement.",
+    "Requests use the managed HTTPS proxy; origin certificate SANs require separate verification.",
+    "POST bodies were deliberately invalid JSON to prevent operations if authentication unexpectedly failed."
+  ],
+  "supplementary_probes": [
+    {
+      "host": "https://admin.archive.rootamman.com",
+      "path": "/admin/api/session",
+      "method": "OPTIONS",
+      "request_headers": {
+        "Origin": "https://admin.archive.rootamman.com",
+        "Access-Control-Request-Method": "POST",
+        "Access-Control-Request-Headers": "content-type,x-requested-with"
+      },
+      "status": 403,
+      "ssl_verify_result": 0
+    }
+  ],
+  "tls": {
+    "curl_ssl_verify_result": {
+      "admin": 0,
+      "api_staging": 0,
+      "access_jwks": 0
+    },
+    "observed_admin_certificate": {
+      "subject": "CN=admin.archive.rootamman.com",
+      "issuer": "OpenAI, LLC; CN=openai.com",
+      "subject_alternative_names": [
+        "admin.archive.rootamman.com"
+      ]
+    },
+    "direct_edge_certificate_observed": false
+  }
+}

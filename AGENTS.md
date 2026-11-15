@@ -1,6 +1,133 @@
 # Working on root/archive
 
+## Final student acceptance checkpoint
+
+The authorized real Google/Turnstile/UI PDF acceptance is COMPLETE and CLEANED.
+Read docs/student-staging-final-acceptance.md and student-staging-cleanup-proof.json.
+The owner explicitly authorized autonomous control-plane cleanup of only the
+new UUID/revision/key, superseding earlier portal-only/no-SQL cleanup guidance.
+It is removed/v4, contributor identity scrubbed, revision deleted, bucket empty,
+17 audits and all tombstones retained. Uploads false, timestamps empty, storage
+private, production unchanged. No further work is authorized by this completed
+task. All remaining nonessential campaigns DEFERRED, NOT PASSED; independent
+hosted JWT checks UNVERIFIED and risk acceptance unresolved before onboarding.
+The older dated checkpoints below are historical and do not override this state.
+
 ## Confirmed architecture
+
+- Current acceptance priority (15 November): real contributor integration first.
+  Read `docs/student-staging-acceptance.md`. The separate student frontend and
+  staging configuration and initially paused deployment are approved from
+  e9f72a4; Google-configured paused setup is deployed from 40f6c5d. The owner now
+  approves the single-PDF supervised staging acceptance with at most 60 minutes
+  of upload enablement and a server-enforced automatic cutoff. Verify the actual
+  allowlisted Google session and storage preflight before enabling. Re-pause
+  immediately after the one accepted upload or on any safety issue. Cleanup
+  requires separate confirmation of the exact NEW submission/revision/key;
+  present identifiers first. Preserve unrelated fixtures and all audits. Do not run
+  fixture 4 or n=5..205 pagination as prerequisites. Preserve all older evidence.
+  The new staging account allowlist is fail-closed when empty/missing; provision
+  only owner-approved test accounts as a secret. Hosted independent Worker JWT
+  checks remain unverified with an unresolved pilot risk-acceptance decision.
+  Deterministic fixture 4 concurrency and focused pagination are deferred to
+  merge/launch acceptance. The artificial 200 ms interruption test is no longer
+  an acceptance gate; preserve historical evidence without requiring execution.
+
+- Private moderation replacement is implemented separately in `worker/moderation.ts`,
+  `worker/wrangler.moderation.jsonc`, `worker/migrations/` and `admin/`. Read
+  `docs/private-moderation.md` before changing this boundary. All revisions stay
+  in a new private bucket; D1 publication state gates every anonymous download.
+  Administrator assets and API share a Worker-first Access/allowlist gate.
+  Unpublish retains a private file for review; permanent removal revokes and
+  queues deletion. Do not restore public access using old catalogs or buckets.
+- Isolated private moderation staging is deployed through Wrangler; production
+  integration remains disabled. Current PAUSED backend version is
+  `0f8024b1-b62d-4aff-a8bc-8f7b521498f5`; student frontend version is
+  `30f908f3-9faa-4799-b566-c46b3cc8da41`, on archive-staging.rootamman.com.
+  The backend serves approved admin/API-staging domains with staging D1/R2 only.
+  The separate Turnstile widget/secret and owner-provided Google Web client are
+  configured. The owner clarified that no student had actually been added to the
+  earlier secret and explicitly authorized the agent to set one test account.
+  That single account is now set as a protected secret; its address is excluded
+  from Git/evidence. Owner HTTPS/top notice confirmation stands.
+  The owner has now confirmed actual student account verification and security
+  widget completion in the real frontend. This closes the eligible-account/
+  allowlist check. Owner reports the paused-submit and ineligible denials; fresh
+  reads confirmed no writes from those denials. A normal actual UI upload is now
+  accepted: submission 3de6408a-e12a-4573-a772-fd8e0228ea22, now unpublished/v3, original
+  revision 3879def6-19ce-4b29-a202-d44b897fde40. Its sole private PDF is 687 bytes,
+  SHA256 f225b67a86db912394042bca309b0691727e22ef3bd741b044ec0543906151d1,
+  identical to the approved synthetic document. Google/allowlist and real
+  Siteverify passed through the accepted UI path. The owner approved it through
+  the actual portal at 18:47:21.264Z. D1 snapshot/audit and anonymous catalog,
+  PDF GET/HEAD 200/no-store/exact SHA256 pass. Owner withdrawal at 18:52:02.209Z
+  now passes fresh anonymous GET/HEAD 404, empty catalog and private file retention
+  with the same SHA256. The essential actual UI contributor lifecycle is complete.
+  Uploads remain paused since
+  18:37:25.192Z and both window timestamps cleared. The
+  original 50-minute window expired at 2026-11-15T18:28:39.447Z. The owner's
+  streamlined instruction defers BOTH manual hosted Turnstile denials, contingent
+  on passing local coverage; two relevant regressions plus absent/blank field
+  validation now pass. Hosted cases are DEFERRED, NOT PASSED. A final 10-minute
+  window uses the remaining original 60-minute budget: 18:31:15.692Z through
+  18:41:15.692Z. NO remaining budget; further reopening needs new authorization.
+  Submissions flag is now false, timestamps empty; do not reopen or resubmit.
+  Cron remains off. See docs/student-staging-pending-proof.json and
+  docs/student-staging-window-open.json and docs/student-staging-eligible-auth.json and
+  docs/student-staging-live-manifest.json and docs/student-staging-live-preflight.json.
+  Next is ONLY the separately gated permanent cleanup of this exact new record/
+  revision/key, after explicit owner confirmation of the presented identifiers.
+  No confirmation has been received; do not delete yet. See
+  docs/student-staging-withdrawal-proof.json and docs/student-staging-acceptance-summary.md.
+  The seeded PNG lifecycle was already covered; this is the final actual UI PDF
+  integration step. Do not repeat broader tests. Do not run denial helpers or
+  further campaigns. Do not approve or delete without coordinating the intended
+  owner step. Cleanup still needs separate exact-ID confirmation. Preserve the
+  historical records/audits and only own the new UUID/revision in the live manifest.
+  The original synthetic acceptance below used version bb9e96b3.
+  Access app/policy/PIN/AUD were independently verified through the connector;
+  the deployment token's Access read restriction is not a security failure.
+  Both D1 migrations were already applied; do not reapply them. Group B now has
+  three owned synthetic submissions: n=1 removed and n=2 rejected, both R2 files
+  deleted with audit/tombstones preserved; n=3 reconciled without reseeding and
+  passed editing, replacement publication, same-ID republication and a real
+  two-tab stale-write check, then permanent removal at version 7. All four
+  campaign revisions are deleted and staging R2 is empty; audit/tombstones remain.
+  Inspect docs/staging-functional-manifest.json before writes or cleanup. Never reseed
+  or overwrite that UUID/key blindly.
+  Hosted custom/Access probes now reach staging: anonymous/forged administrator
+  requests are denied and public-host admin paths return 404. The owner confirms
+  presented certificate SAN coverage for both custom hosts, valid WE1 admin TLS,
+  denial at both exact moderation alternate endpoints (statuses not captured),
+  real Proton email-PIN login, portal/empty queue and session JSON. These are
+  owner-observed hosted evidence, not Codex-executed probes. TLS/alternate-host
+  gates are closed; do not require extra network grants or repeat these checks.
+  Group A still needs independent Worker negative-JWT evidence and an actual
+  expired/revoked-session denial. A genuine nonadmin case is conditional on
+  availability under the approved plan; its absence is not a security failure.
+  PR #27's evidence is consolidated into PR #26. Current read-only GitHub
+  metadata shows #27 closed/unmerged since 14 November 11:52:52Z; do not change
+  its state. This acceptance continuation did not close, merge or reopen it.
+  The owner explicitly accepts deferring the unverified independent hosted JWT
+  rejection and real expired/revoked-session cases for isolated synthetic-only
+  functional acceptance. Group A is not fully passed; authorization is unchanged.
+  Group B has started with n=1..3 only. Pending-file privacy/hash checks passed;
+  owner-operated metadata edits/approval and executor-observed public catalog,
+  anonymous PNG GET/HEAD/hash/safe filename/no-store checks passed. The fixture
+  passed withdrawal denial/private retention and permanent removal/physical R2
+  cleanup. The n=2 Start review/rejection and physical deletion pass. The side
+  browser is visible in context, but browser control tools are not exposed in
+  this execution session; no separate browser shares its authenticated session.
+  Image rotation/redaction/replacement, stale-write protection, replacement
+  approval/public hash, original cleanup, same-ID republication and final n=3
+  removal pass. Full pagination, overlapping operation races and interrupted-
+  request recovery remain open. The owner requested a reviewable browser client
+  but explicitly prohibited execution/new seeding until independent review and
+  approval. Read docs/staging-browser-client.md. The client is prepared only;
+  independent review is pending. Keep n=4..205 unseeded for now. Read
+  `docs/staging-execution-results.md` and `docs/staging-deployment.md` before
+  resuming. Legacy/production resources are unchanged; submissions and scheduled
+  cleanup remain disabled. Public `CONFIG.privateModeration` is false.
 
 - `site/`: static vanilla HTML/JS; `courses.json` is an array of `{id, name,
   tracks}`. `resources.json` is an array of `{id, course_id, type, title,

@@ -1,0 +1,98 @@
+{
+  "observed_at": "2026-11-14T20:30:18.072Z",
+  "kind": "Actual private replacement readback after owner image edit; audit actors omitted",
+  "results": [
+    {
+      "rows": [
+        {
+          "id": "726f6f74-6172-4368-8000-000000000003",
+          "status": "pending",
+          "version": 2,
+          "title": "Synthetic staging 3",
+          "course_id": "0401111",
+          "type": "Summary",
+          "semester": "Synthetic",
+          "original_revision_id": "726f6f74-6172-4368-9000-000000000003",
+          "candidate_revision_id": "fa34866f-cd12-4be7-a3fe-fe4a18cc0a45"
+        }
+      ],
+      "rows_written": 0,
+      "changed_db": false
+    },
+    {
+      "rows": [
+        {
+          "id": "726f6f74-6172-4368-9000-000000000003",
+          "submission_id": "726f6f74-6172-4368-8000-000000000003",
+          "object_key": "private/v1/726f6f74-6172-4368-8000-000000000003/726f6f74-6172-4368-9000-000000000003.png",
+          "kind": "original",
+          "filename": "synthetic.png",
+          "mime": "image/png",
+          "size": 1920,
+          "etag": "7b144745bbdb75d47eac1614d0f81ac5",
+          "status": "ready"
+        },
+        {
+          "id": "fa34866f-cd12-4be7-a3fe-fe4a18cc0a45",
+          "submission_id": "726f6f74-6172-4368-8000-000000000003",
+          "object_key": "private/v1/726f6f74-6172-4368-8000-000000000003/fa34866f-cd12-4be7-a3fe-fe4a18cc0a45.png",
+          "kind": "replacement",
+          "filename": "cleaned-resource.png",
+          "mime": "image/png",
+          "size": 2025,
+          "etag": "8927c760b02e49a006c2c1fbf3734154",
+          "status": "ready"
+        }
+      ],
+      "rows_written": 0,
+      "changed_db": false
+    },
+    {
+      "rows": [
+        {
+          "action": "file_replaced",
+          "created_at": "2026-11-14T20:29:17.598Z"
+        }
+      ],
+      "rows_written": 0,
+      "changed_db": false
+    },
+    {
+      "rows": [
+        {
+          "count": 0
+        }
+      ],
+      "rows_written": 0,
+      "changed_db": false
+    }
+  ],
+  "readbacks": [
+    {
+      "revision_id": "726f6f74-6172-4368-9000-000000000003",
+      "kind": "original",
+      "key": "private/v1/726f6f74-6172-4368-8000-000000000003/726f6f74-6172-4368-9000-000000000003.png",
+      "bytes": 1920,
+      "sha256": "1324f212d3fdc38a04671664d9e87bf203d9982696eeff2373ce4ea9f1251383"
+    },
+    {
+      "revision_id": "fa34866f-cd12-4be7-a3fe-fe4a18cc0a45",
+      "kind": "replacement",
+      "key": "private/v1/726f6f74-6172-4368-8000-000000000003/fa34866f-cd12-4be7-a3fe-fe4a18cc0a45.png",
+      "bytes": 2025,
+      "sha256": "f7a2816a18d53b3db6a505a75ceaa01fb0cd3606d7a4f424ca0466beadbfda0b"
+    }
+  ],
+  "r2_inventory": [
+    {
+      "key": "private/v1/726f6f74-6172-4368-8000-000000000003/726f6f74-6172-4368-9000-000000000003.png",
+      "size": 1920,
+      "etag": "7b144745bbdb75d47eac1614d0f81ac5"
+    },
+    {
+      "key": "private/v1/726f6f74-6172-4368-8000-000000000003/fa34866f-cd12-4be7-a3fe-fe4a18cc0a45.png",
+      "size": 2025,
+      "etag": "8927c760b02e49a006c2c1fbf3734154"
+    }
+  ]
+}

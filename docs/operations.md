@@ -1,5 +1,10 @@
 # Owner and contributor guide
 
+For PR #26's private production release, use the current
+[production cutover preparation](production-cutover.md). The legacy deployment
+instructions below remain historical context; they do not authorize rollout,
+draft-policy publication, or real submissions.
+
 ## Development loop
 
 Use [the backlog](backlog.md) and GitHub Issues for priorities. Start with an

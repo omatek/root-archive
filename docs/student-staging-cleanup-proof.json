@@ -1,0 +1,501 @@
+{
+  "authorized_scope": {
+    "id": "3de6408a-e12a-4573-a772-fd8e0228ea22",
+    "revision": "3879def6-19ce-4b29-a202-d44b897fde40",
+    "bucket": "root-archive-private-staging",
+    "key": "private/v1/3de6408a-e12a-4573-a772-fd8e0228ea22/3879def6-19ce-4b29-a202-d44b897fde40.pdf"
+  },
+  "method": "Owner-authorized Cloudflare control-plane guarded D1 cleanup plus exact-key R2 DELETE; not an authenticated portal removal test.",
+  "mutation": {
+    "operation": "70ada049-75ab-470e-af65-e9f970bb5e45",
+    "performed_at": "2026-11-15T19:12:29.293Z",
+    "method": "Owner-authorized Cloudflare control-plane guarded D1 cleanup plus exact-key R2 DELETE; not an authenticated portal removal test.",
+    "scope": {
+      "id": "3de6408a-e12a-4573-a772-fd8e0228ea22",
+      "revision": "3879def6-19ce-4b29-a202-d44b897fde40",
+      "bucket": "root-archive-private-staging",
+      "key": "private/v1/3de6408a-e12a-4573-a772-fd8e0228ea22/3879def6-19ce-4b29-a202-d44b897fde40.pdf"
+    },
+    "mutations": [
+      {
+        "results": [],
+        "success": true,
+        "meta": {
+          "served_by": "v3-prod",
+          "served_by_region": "EEUR",
+          "served_by_colo": "FRA",
+          "served_by_primary": true,
+          "timings": {
+            "sql_duration_ms": 0.8069
+          },
+          "duration": 0.8069,
+          "changes": 1,
+          "last_row_id": 0,
+          "changed_db": true,
+          "size_after": 102400,
+          "rows_read": 4,
+          "rows_written": 3,
+          "total_attempts": 1
+        }
+      },
+      {
+        "results": [],
+        "success": true,
+        "meta": {
+          "served_by": "v3-prod",
+          "served_by_region": "EEUR",
+          "served_by_colo": "FRA",
+          "served_by_primary": true,
+          "timings": {
+            "sql_duration_ms": 0.3547
+          },
+          "duration": 0.3547,
+          "changes": 2,
+          "last_row_id": 0,
+          "changed_db": true,
+          "size_after": 102400,
+          "rows_read": 4,
+          "rows_written": 3,
+          "total_attempts": 1
+        }
+      },
+      {
+        "results": [],
+        "success": true,
+        "meta": {
+          "served_by": "v3-prod",
+          "served_by_region": "EEUR",
+          "served_by_colo": "FRA",
+          "served_by_primary": true,
+          "timings": {
+            "sql_duration_ms": 0.2094
+          },
+          "duration": 0.2094,
+          "changes": 1,
+          "last_row_id": 0,
+          "changed_db": true,
+          "size_after": 102400,
+          "rows_read": 3,
+          "rows_written": 2,
+          "total_attempts": 1
+        }
+      },
+      {
+        "results": [],
+        "success": true,
+        "meta": {
+          "served_by": "v3-prod",
+          "served_by_region": "EEUR",
+          "served_by_colo": "FRA",
+          "served_by_primary": true,
+          "timings": {
+            "sql_duration_ms": 0.364
+          },
+          "duration": 0.364,
+          "changes": 1,
+          "last_row_id": 17,
+          "changed_db": true,
+          "size_after": 102400,
+          "rows_read": 4,
+          "rows_written": 4,
+          "total_attempts": 1
+        }
+      }
+    ],
+    "metadata_guard": {
+      "status": "removed",
+      "version": 4,
+      "last_operation": "70ada049-75ab-470e-af65-e9f970bb5e45",
+      "sub_scrubbed": 1,
+      "email_scrubbed": 1,
+      "revision_status": "delete_pending"
+    },
+    "r2_delete_completed": true,
+    "finalized": [
+      {
+        "results": [],
+        "success": true,
+        "meta": {
+          "served_by": "v3-prod",
+          "served_by_region": "EEUR",
+          "served_by_colo": "FRA",
+          "served_by_primary": true,
+          "timings": {
+            "sql_duration_ms": 0.2732
+          },
+          "duration": 0.2732,
+          "changes": 1,
+          "last_row_id": 17,
+          "changed_db": true,
+          "size_after": 102400,
+          "rows_read": 3,
+          "rows_written": 2,
+          "total_attempts": 1
+        }
+      }
+    ]
+  },
+  "independent_postflight": {
+    "db": [
+      {
+        "results": [
+          {
+            "id": "3de6408a-e12a-4573-a772-fd8e0228ea22",
+            "status": "removed",
+            "version": 4,
+            "title": "Removed material",
+            "semester": "",
+            "credit_scrubbed": 1,
+            "sub_scrubbed": 1,
+            "email_scrubbed": 1,
+            "original_revision_id": null,
+            "candidate_revision_id": null
+          }
+        ],
+        "success": true,
+        "meta": {
+          "served_by": "v3-prod",
+          "served_by_region": "EEUR",
+          "served_by_colo": "FRA",
+          "served_by_primary": true,
+          "timings": {
+            "sql_duration_ms": 0.2355
+          },
+          "duration": 0.2355,
+          "changes": 0,
+          "last_row_id": 0,
+          "changed_db": false,
+          "size_after": 102400,
+          "rows_read": 1,
+          "rows_written": 0,
+          "total_attempts": 1
+        }
+      },
+      {
+        "results": [
+          {
+            "id": "3879def6-19ce-4b29-a202-d44b897fde40",
+            "submission_id": "3de6408a-e12a-4573-a772-fd8e0228ea22",
+            "object_key": "private/v1/3de6408a-e12a-4573-a772-fd8e0228ea22/3879def6-19ce-4b29-a202-d44b897fde40.pdf",
+            "status": "deleted",
+            "filename": "removed",
+            "etag": null,
+            "deleted_at": "2026-11-15T19:12:30.988Z",
+            "delete_attempts": 1,
+            "last_delete_error": null
+          }
+        ],
+        "success": true,
+        "meta": {
+          "served_by": "v3-prod",
+          "served_by_region": "EEUR",
+          "served_by_colo": "FRA",
+          "served_by_primary": true,
+          "timings": {
+            "sql_duration_ms": 0.2825
+          },
+          "duration": 0.2825,
+          "changes": 0,
+          "last_row_id": 0,
+          "changed_db": false,
+          "size_after": 102400,
+          "rows_read": 1,
+          "rows_written": 0,
+          "total_attempts": 1
+        }
+      },
+      {
+        "results": [
+          {
+            "id": "3de6408a-e12a-4573-a772-fd8e0228ea22",
+            "status": "removed",
+            "title": "Removed material",
+            "contributor": null,
+            "revision_id": null
+          }
+        ],
+        "success": true,
+        "meta": {
+          "served_by": "v3-prod",
+          "served_by_region": "EEUR",
+          "served_by_colo": "FRA",
+          "served_by_primary": true,
+          "timings": {
+            "sql_duration_ms": 0.1156
+          },
+          "duration": 0.1156,
+          "changes": 0,
+          "last_row_id": 0,
+          "changed_db": false,
+          "size_after": 102400,
+          "rows_read": 1,
+          "rows_written": 0,
+          "total_attempts": 1
+        }
+      },
+      {
+        "results": [
+          {
+            "id": 1,
+            "action": "metadata_changed",
+            "operation_id": "1ad76709-0b6f-4888-9a88-1c7271b8f7d2"
+          },
+          {
+            "id": 2,
+            "action": "metadata_changed",
+            "operation_id": "5421096f-6be7-424b-a4a6-97575fb6c864"
+          },
+          {
+            "id": 3,
+            "action": "submission_approved",
+            "operation_id": "0de23a4a-2545-4514-bc12-2f906b6a164d"
+          },
+          {
+            "id": 4,
+            "action": "resource_unpublished",
+            "operation_id": "a5758836-9386-4791-ace1-b6b4f41bf448"
+          },
+          {
+            "id": 5,
+            "action": "resource_removed",
+            "operation_id": "267fd0c4-cdca-46b4-8b20-da77728819f6"
+          },
+          {
+            "id": 6,
+            "action": "review_started",
+            "operation_id": "80f97b7b-402b-44e1-aade-987c798d875a"
+          },
+          {
+            "id": 7,
+            "action": "submission_rejected",
+            "operation_id": "e1b62729-7696-4709-b5eb-576e3d57e64d"
+          },
+          {
+            "id": 8,
+            "action": "file_replaced",
+            "operation_id": "5b8c73c3-1325-4274-9009-05580c40b819"
+          },
+          {
+            "id": 9,
+            "action": "metadata_changed",
+            "operation_id": "6b81691c-6685-4d26-a5cf-4d62dfdc2dc1"
+          },
+          {
+            "id": 10,
+            "action": "submission_approved",
+            "operation_id": "5d47d089-ea55-4479-9d78-f734362d7010"
+          },
+          {
+            "id": 11,
+            "action": "resource_unpublished",
+            "operation_id": "e3ebf9a8-ec92-4607-9c01-4129ac990ca0"
+          },
+          {
+            "id": 12,
+            "action": "submission_approved",
+            "operation_id": "70505b1a-13fe-4d8c-b890-be408e8d865b"
+          },
+          {
+            "id": 13,
+            "action": "resource_removed",
+            "operation_id": "8e64a564-0b7c-47e8-92da-7829b82a3175"
+          },
+          {
+            "id": 14,
+            "action": "submission_received",
+            "operation_id": "04d0dddb-1458-4aa4-ac0f-127bb7c02bbd"
+          },
+          {
+            "id": 15,
+            "action": "submission_approved",
+            "operation_id": "049d312a-51de-454c-901f-488826a63b1f"
+          },
+          {
+            "id": 16,
+            "action": "resource_unpublished",
+            "operation_id": "d3c673c7-2f43-457c-825d-77fb1e15dc00"
+          },
+          {
+            "id": 17,
+            "action": "resource_removed",
+            "operation_id": "70ada049-75ab-470e-af65-e9f970bb5e45"
+          }
+        ],
+        "success": true,
+        "meta": {
+          "served_by": "v3-prod",
+          "served_by_region": "EEUR",
+          "served_by_colo": "FRA",
+          "served_by_primary": true,
+          "timings": {
+            "sql_duration_ms": 0.1302
+          },
+          "duration": 0.1302,
+          "changes": 0,
+          "last_row_id": 0,
+          "changed_db": false,
+          "size_after": 102400,
+          "rows_read": 17,
+          "rows_written": 0,
+          "total_attempts": 1
+        }
+      },
+      {
+        "results": [
+          {
+            "id": "3de6408a-e12a-4573-a772-fd8e0228ea22",
+            "status": "removed",
+            "version": 4
+          },
+          {
+            "id": "726f6f74-6172-4368-8000-000000000001",
+            "status": "removed",
+            "version": 6
+          },
+          {
+            "id": "726f6f74-6172-4368-8000-000000000002",
+            "status": "rejected",
+            "version": 3
+          },
+          {
+            "id": "726f6f74-6172-4368-8000-000000000003",
+            "status": "removed",
+            "version": 7
+          }
+        ],
+        "success": true,
+        "meta": {
+          "served_by": "v3-prod",
+          "served_by_region": "EEUR",
+          "served_by_colo": "FRA",
+          "served_by_primary": true,
+          "timings": {
+            "sql_duration_ms": 0.1039
+          },
+          "duration": 0.1039,
+          "changes": 0,
+          "last_row_id": 0,
+          "changed_db": false,
+          "size_after": 102400,
+          "rows_read": 4,
+          "rows_written": 0,
+          "total_attempts": 1
+        }
+      },
+      {
+        "results": [
+          {
+            "count": 0
+          }
+        ],
+        "success": true,
+        "meta": {
+          "served_by": "v3-prod",
+          "served_by_region": "EEUR",
+          "served_by_colo": "FRA",
+          "served_by_primary": true,
+          "timings": {
+            "sql_duration_ms": 0.083
+          },
+          "duration": 0.083,
+          "changes": 0,
+          "last_row_id": 0,
+          "changed_db": false,
+          "size_after": 102400,
+          "rows_read": 5,
+          "rows_written": 0,
+          "total_attempts": 1
+        }
+      },
+      {
+        "results": [],
+        "success": true,
+        "meta": {
+          "served_by": "v3-prod",
+          "served_by_region": "EEUR",
+          "served_by_colo": "FRA",
+          "served_by_primary": true,
+          "timings": {
+            "sql_duration_ms": 0.0621
+          },
+          "duration": 0.0621,
+          "changes": 0,
+          "last_row_id": 0,
+          "changed_db": false,
+          "size_after": 102400,
+          "rows_read": 25,
+          "rows_written": 0,
+          "total_attempts": 1
+        }
+      }
+    ],
+    "exact_key_get": 404,
+    "objects": [],
+    "managed": {
+      "enabled": false,
+      "bucketId": "1a5f949cc506496daa0ff5ff43333c72",
+      "domain": "pub-1a5f949cc506496daa0ff5ff43333c72.r2.dev"
+    },
+    "custom": {
+      "domains": []
+    },
+    "vars": {
+      "ACCESS_AUD": "0003d8d8ba905005bfed05fc441631de07c91985c3e2baab528bdb4bbb7ac5be",
+      "ACCESS_ISSUER": "https://rootamman.cloudflareaccess.com",
+      "ADMIN_ORIGIN": "https://admin.archive.rootamman.com",
+      "ALLOWED_ORIGIN": "https://archive-staging.rootamman.com",
+      "CLEANUP_ENABLED": "false",
+      "GOOGLE_CLIENT_ID": "451085424306-3akhui9717r3s41v1qeqgkn3rhehsk3i.apps.googleusercontent.com",
+      "PUBLIC_API_ORIGIN": "https://api-staging.rootamman.com",
+      "STAGING_SUBMISSIONS_CLOSES_AT": "",
+      "STAGING_SUBMISSIONS_OPENS_AT": "",
+      "SUBMISSIONS_ENABLED": "false"
+    },
+    "production": {
+      "legacy_deployment": "88fef60a-22b0-434a-bbc2-89ac0d569629",
+      "versions": [
+        {
+          "version_id": "e8895ac0-b95b-409e-aff1-af3f549be94f",
+          "percentage": 100
+        }
+      ],
+      "pages_deployment": "60b32faf-7934-4e5b-8a34-c07c1cb0983d"
+    }
+  },
+  "verification": {
+    "exact_r2_key_absent": true,
+    "bucket_empty": true,
+    "public_access_disabled": true,
+    "identity_scrubbed": true,
+    "submission_and_resource_tombstones_preserved": true,
+    "existing_audits_preserved": true,
+    "unrelated_records_unchanged": true,
+    "uploads_paused": true,
+    "window_cleared": true,
+    "production_unchanged": true
+  },
+  "portal_permanent_removal_test": "NOT_EXECUTED_CONTROL_PLANE_CLEANUP_INSTEAD",
+  "nonessential_tests": "DEFERRED_NOT_PASSED",
+  "independent_hosted_jwt": "UNVERIFIED; separate risk acceptance not made; remains a pre-onboarding decision.",
+  "anonymous_post_cleanup": [
+    {
+      "path": "/resources",
+      "method": "GET",
+      "status": 200,
+      "catalog": {
+        "resources": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "path": "/download/3de6408a-e12a-4573-a772-fd8e0228ea22",
+      "method": "GET",
+      "status": 404
+    },
+    {
+      "path": "/download/3de6408a-e12a-4573-a772-fd8e0228ea22",
+      "method": "HEAD",
+      "status": 404
+    }
+  ]
+}

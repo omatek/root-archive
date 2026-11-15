@@ -11,5 +11,5 @@
     "skipLibCheck": true,
     "noEmit": true
   },
-  "include": ["*.ts", "../site/courses.json", "../moderation.config.json"]
+  "include": ["*.ts", ".wrangler/moderation-env.d.ts", "../site/courses.json", "../moderation.config.json"]
 }

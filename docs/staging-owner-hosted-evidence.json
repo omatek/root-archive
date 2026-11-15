@@ -1,0 +1,68 @@
+{
+  "reported_date": "2026-11-14",
+  "observed_at": null,
+  "provenance": "Owner-observed hosted browser checks outside the Codex network; supplied in conversation",
+  "codex_executed_hosted_requests_this_update": 0,
+  "tls": [
+    {
+      "hostname": "admin.archive.rootamman.com",
+      "presented_certificate_san_contains_exact_hostname": true,
+      "issuer": "Google Trust Services",
+      "issuer_identifier": "WE1",
+      "valid_from_date": "2026-11-14",
+      "valid_until_date": "2027-02-12",
+      "exact_validity_times_reported": false
+    },
+    {
+      "hostname": "api-staging.rootamman.com",
+      "presented_certificate_san_contains_exact_hostname": true,
+      "issuer": null,
+      "valid_from_date": null,
+      "valid_until_date": null,
+      "note": "Owner reports presented SAN coverage; prior Cloudflare API inventory separately reports active unexpired coverage. Admin issuer/dates are not copied to this certificate."
+    }
+  ],
+  "alternate_endpoints": [
+    {
+      "hostname": "root-archive-moderation-staging.omar-khldooon33.workers.dev",
+      "direct_browser_access": "denied",
+      "http_status": null
+    },
+    {
+      "hostname": "bb9e96b3-root-archive-moderation-staging.omar-khldooon33.workers.dev",
+      "direct_browser_access": "denied",
+      "http_status": null
+    }
+  ],
+  "positive_login": {
+    "provenance": "Owner reconfirmation of earlier real hosted login",
+    "approved_proton_email_pin_succeeded": true,
+    "portal_loaded": true,
+    "correct_identity_displayed": true,
+    "empty_queue_rendered": true,
+    "session_endpoint": "https://admin.archive.rootamman.com/admin/api/session",
+    "session_json_succeeded": true,
+    "actual_email_retained": false
+  },
+  "assessment": {
+    "tls_coverage": "PASS using owner-observed presented coverage and existing certificate inventory",
+    "alternate_endpoints": "PASS using owner-observed denials and existing disabled routing inventory; no HTTP statuses asserted",
+    "positive_login": "PASS, owner-observed",
+    "independent_worker_jwt_negative_cases": "NOT EXERCISED; gateway interception prevents isolated Worker rejection evidence",
+    "signed_nonadministrator_allowlist_case": "UNAVAILABLE under unchanged policy; conditional on identity availability in approved plan",
+    "real_expired_or_revoked_session_denial": "NOT EXERCISED / not yet owner-reported",
+    "group_a": "BLOCKED by remaining authentication evidence; no demonstrated security failure",
+    "group_b": "NOT STARTED",
+    "additional_network_grants_needed_for_completed_hostname_gates": false
+  },
+  "constraints": {
+    "authentication_configuration_changed": false,
+    "credentials_requested_or_retained": false,
+    "new_harness_or_infrastructure_created": false,
+    "migrations_reapplied": false,
+    "application_storage_operations": false,
+    "production_or_legacy_mutations": false,
+    "acceptance_exception_assumed": false
+  },
+  "details": "staging-execution-results.md#owner-hostname-verification--current-checkpoint"
+}
