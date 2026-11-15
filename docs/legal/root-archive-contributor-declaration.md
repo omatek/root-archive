@@ -1,7 +1,5 @@
 # root/archive Contributor Declaration
 
-> **BLOCKED FOR LIVE USE — REVIEW DRAFT.** File-specific electronic acceptance is implemented, with the exact wording, authenticated identity, file hash, revision and submission event recorded privately. Its legal sufficiency remains unresolved, and the linked Privacy Notice still has material placeholders. These technical records do not resolve those legal questions.
-
 **Declaration version** 1.0-reconciled-2026-11-15
 
 This declaration applies to the specific file and version identified in my submission. By affirmatively accepting it, I confirm the following.

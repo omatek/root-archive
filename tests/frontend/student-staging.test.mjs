@@ -85,6 +85,7 @@ test('generated staging UI uses staging OAuth, Turnstile and /submit, preserves 
     assert.equal(await page.evaluate(()=>window.gsiOptions.client_id),settings.googleClientId);
     assert.equal(await page.evaluate(()=>window.securityOptions.sitekey),settings.turnstileSiteKey);
     await page.locator('#contribution-declaration').check();
+    await page.locator('#contribution-privacy-consent').check();
     await page.locator('#submit-resource').click();
     await page.locator('#submission-message').filter({hasText:/security check was not accepted/}).waitFor();
     assert.equal(await page.locator('#signout').isVisible(),true);

@@ -10,7 +10,7 @@ const settings = {databaseId:'11111111-1111-4111-8111-111111111111', accessAud:'
   googleClientId:'123456789-production-fixture.apps.googleusercontent.com', turnstileSiteKey:'0x4SYNTHETIC_PRODUCTION_WIDGET',
   privacyNoticeApproved:false, contributorDeclarationApproved:false};
 
-test('production preparation isolates bindings, emits paused phases and pins all three migration hashes', async()=>{
+test('production preparation isolates bindings, emits paused phases and pins the migration hashes', async()=>{
   const protectedFiles=['worker/wrangler.moderation.jsonc','worker/wrangler.student-staging.jsonc','site/js/config.mjs'];
   const before=await Promise.all(protectedFiles.map(p=>readFile(resolve(root,p))));
   const parent=resolve(root,'worker/.wrangler');await mkdir(parent,{recursive:true});
@@ -48,5 +48,5 @@ test('production preparation rejects staging identity/resources and cannot publi
     {turnstileSiteKey:'0x4AAAAAAGCJAasfjeVYO_Ia'}]) await assert.rejects(prepareProduction({...settings,...patch}));
   await assert.rejects(prepareProduction(settings,{configOutput:root}),/ignored/);
   await assert.rejects(prepareProduction(settings,{pages:true}),/publication blocked/);
-  await assert.rejects(assertProductionPolicies({...settings,privacyNoticeApproved:true,contributorDeclarationApproved:true}),/unresolved review wording/);
+  await assertProductionPolicies({...settings,privacyNoticeApproved:true,contributorDeclarationApproved:true});
 });

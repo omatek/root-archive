@@ -5,6 +5,7 @@ import {Miniflare, convertV4MiniflareOptions, Response as MiniflareResponse} fro
 import {generateKeyPair, exportJWK, SignJWT} from 'jose';
 import {createHash} from 'node:crypto';
 import {CONTRIBUTOR_AUTHORIZATION} from '../../site/js/contributor-authorization.mjs';
+import {CONTRIBUTOR_PRIVACY_CONSENT} from '../../site/js/contributor-privacy-consent.mjs';
 
 // Real local workerd, D1 and R2 emulation. Google, Access and Turnstile are
 // signed/offline fixtures; no request may reach a real third-party service.
@@ -57,6 +58,7 @@ const form = (patch={}) => {
   const data = new FormData();
   for (const [k,v] of Object.entries({course_id:course.id,type:'Summary',title:'Synthetic academic material',semester:'Fall 2026',
     turnstile_token:'synthetic-challenge',declaration_accepted:'true',declaration_version:CONTRIBUTOR_AUTHORIZATION.version,
+    privacy_consent_accepted:'true',privacy_consent_version:CONTRIBUTOR_PRIVACY_CONSENT.version,
     file:new File(['%PDF-original'], 'original.pdf',{type:'application/pdf'}),...patch})) {
     if(v !== undefined) data.set(k,v);
   }
@@ -281,6 +283,7 @@ test('explicit production mode retains Google, origin, Turnstile, declaration an
   assert.equal((await invokeNode(await request(),production)).status,403);
   turnstileSuccess=true;
   assert.equal((await invokeNode(await request('/submit',{},studentOrigin,{declaration_accepted:undefined}),production)).status,400);
+  assert.equal((await invokeNode(await request('/submit',{},studentOrigin,{privacy_consent_accepted:undefined}),production)).status,400);
   assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM submissions').first()).n,0);
   assert.equal((await bucket.list()).objects.length,0);
   const accepted=await invokeNode(await request('/submit',{email:'another@std.aum.edu.jo'}),production);
@@ -612,10 +615,12 @@ test('R2 PUT and post-PUT D1 failures leave no public bytes and preserve the pri
 
 test('private submissions reject absent, false, stale or duplicate contributor acceptance before any writes',async () => {
   for (const patch of [{declaration_accepted:undefined},{declaration_accepted:'false'},
-    {declaration_accepted:'on'},{declaration_version:undefined},{declaration_version:'old-version'}]) {
+    {declaration_accepted:'on'},{declaration_version:undefined},{declaration_version:'old-version'},
+    {privacy_consent_accepted:undefined},{privacy_consent_accepted:'false'},{privacy_consent_accepted:'on'},
+    {privacy_consent_version:undefined},{privacy_consent_version:'old-version'}]) {
     assert.equal((await submit(patch)).status,400);
   }
-  for (const field of ['declaration_accepted','declaration_version']) {
+  for (const field of ['declaration_accepted','declaration_version','privacy_consent_accepted','privacy_consent_version']) {
     const body=form(); body.append(field,body.get(field));
     assert.equal((await dispatch(new Request(publicOrigin+'/submit',{method:'POST',
       headers:{Origin:studentOrigin,Authorization:`Bearer ${await studentToken()}`},body}))).status,400);
@@ -635,6 +640,7 @@ test('authorization binds verified identity, exact wording, file hash, original 
     declaration_version:CONTRIBUTOR_AUTHORIZATION.version,declaration_language:'en',declaration_text:CONTRIBUTOR_AUTHORIZATION.text,
     acceptance_method:'affirmative_checkbox',public_credit:'Chosen pseudonym',
     file_sha256:createHash('sha256').update('%PDF-original').digest('hex'),accepted_at:event.created_at,
+    privacy_consent_version:CONTRIBUTOR_PRIVACY_CONSENT.version,privacy_consent_text:CONTRIBUTOR_PRIVACY_CONSENT.text,
   });
   assert.deepEqual(record.authorization,receipt);
   await assert.rejects(db.prepare("UPDATE contributor_authorizations SET declaration_version='changed' WHERE submission_id=?").bind(id).run(),/immutable/);
@@ -642,7 +648,7 @@ test('authorization binds verified identity, exact wording, file hash, original 
   record=await read(await action(record,'approve',{revision_id:record.submission.candidate_revision_id}));
   const catalog=JSON.stringify(await publicCatalog());
   assert.match(catalog,/Chosen pseudonym/);
-  assert.ok(!catalog.includes(studentEmail) && !catalog.includes('synthetic-identity') && !catalog.includes('declaration_'));
+  assert.ok(!catalog.includes(studentEmail) && !catalog.includes('synthetic-identity') && !catalog.includes('declaration_') && !catalog.includes('privacy_consent'));
   record=await read(await action(record,'remove',{reason:'Contributor withdrawal'}));
   assert.equal(record.submission.contributor_email,null);
   assert.deepEqual(await db.prepare('SELECT * FROM contributor_authorizations WHERE submission_id=?').bind(id).first(),receipt);

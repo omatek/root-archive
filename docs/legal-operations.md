@@ -39,13 +39,13 @@ Preserve revision tombstones and cleanup cursor state for late-upload recovery.
 ## Records, correspondence and provider copies
 
 Review due dates daily; a private calendar or existing task list is sufficient.
-At removal, schedule permission-record deletion for 24 months later. At each
+At rejection or removal, schedule contributor-receipt deletion for 24 months later. At each
 final moderation action schedule audit expiry for 24 months later. At complaint
 resolution schedule correspondence deletion for 12 months later. A specific
 unresolved dispute or legal hold needs its reason, affected records and next
 review date recorded; it is not a reason to retain unrelated files indefinitely.
 
-The protected detail API retrieves permission evidence but has no purge route.
+The protected detail API retrieves the copyright permission and privacy consent recorded in the contributor receipt. It has no purge route.
 Use the restricted D1 console for due record deletion: inspect the exact IDs,
 current status, last action and holds first. Delete expired rows from
 `contributor_authorizations` (DELETE is supported; UPDATE is intentionally
@@ -73,7 +73,7 @@ Monitor privacy@rootamman.com and omar@rootamman.com daily; both already work.
 For each request keep only receipt time, reference, necessary contact/authority
 information, due date, action and outcome. Use minimum identity verification;
 never request passwords or Google credentials. Apply the existing takedown
-procedure and record any withdrawal requiring moderator action.
+procedure and record any withdrawal requiring moderator action. Stop processing that relies on contributor privacy consent after verifying a withdrawal. Apply the applicable Unpublish, Reject or Remove action and keep limited evidence only while there is a separate lawful basis for retention.
 
 Use the prior assessment's deadlines: rights requests within 15 working days
 from the day after receipt, with only the permitted justified extension and

@@ -7,6 +7,7 @@ import { resolve, extname, sep } from 'node:path';
 import { chromium } from 'playwright';
 import { CONFIG, TYPES } from '../../site/js/config.mjs';
 import { CONTRIBUTOR_AUTHORIZATION } from '../../site/js/contributor-authorization.mjs';
+import { CONTRIBUTOR_PRIVACY_CONSENT } from '../../site/js/contributor-privacy-consent.mjs';
 
 const root = resolve(fileURLToPath(new URL('../../site/', import.meta.url)));
 const realCourses = JSON.parse(await readFile(resolve(root, 'courses.json')));
@@ -131,7 +132,10 @@ async function fillContribution(page) {
   await page.locator('#contribution-semester').fill('Fall 2026');
   await page.locator('#contribution-file').setInputFiles(pdf);
   await page.locator('#selected-file').filter({ hasText: 'synthetic.pdf' }).waitFor();
-  if (await page.locator('#contributor-authorization').isVisible()) await page.locator('#contribution-declaration').check();
+  if (await page.locator('#contributor-authorization').isVisible()) {
+    await page.locator('#contribution-declaration').check();
+    await page.locator('#contribution-privacy-consent').check();
+  }
 }
 async function signIn(page) {
   await page.getByRole('button', { name: 'Google sign-in (simulated)' }).click();
@@ -458,6 +462,8 @@ test('private submission keeps drafts, opts into credit and confirms only a refe
     assert(uploads.every(r => r.url.endsWith('/submit')));
     assert(uploads.every(r => r.body.includes('name="declaration_accepted"\r\n\r\ntrue')
       && r.body.includes(CONTRIBUTOR_AUTHORIZATION.version)));
+    assert(uploads.every(r => r.body.includes('name="privacy_consent_accepted"\r\n\r\ntrue')
+      && r.body.includes(CONTRIBUTOR_PRIVACY_CONSENT.version)));
     await p.locator('#contribute-another').click();
     await noOverflow(p);
     await p.locator('#contribution-course').selectOption('0401212'); await fillContribution(p);
@@ -474,7 +480,7 @@ test('private submission keeps drafts, opts into credit and confirms only a refe
   } finally { await s.close(); }
 });
 
-test('private contributor permission needs an explicit choice for each selected file (mocked services)', async () => {
+test('private contributor authorization and privacy consent need separate choices for each file (mocked services)', async () => {
   const s = await setup({privateModeration: true}); const p = s.page;
   try {
     await s.goto('/?course=0401212'); await openContribution(p); await fillContribution(p); await signIn(p);
@@ -484,13 +490,21 @@ test('private contributor permission needs an explicit choice for each selected 
     assert.equal(await p.evaluate(() => document.activeElement.id), 'contribution-declaration');
     assert.equal(s.requests.filter(r => r.type === 'submit').length, 0);
     await p.locator('#contribution-declaration').check();
+    await p.locator('#contribution-privacy-consent').uncheck();
+    await p.locator('#submit-resource').click();
+    assert.equal(await p.evaluate(() => document.activeElement.id), 'contribution-privacy-consent');
+    assert.equal(s.requests.filter(r => r.type === 'submit').length, 0);
+    assert.equal(await p.locator('#contribution-privacy-consent-text').innerText(), CONTRIBUTOR_PRIVACY_CONSENT.text);
+    await p.locator('#contribution-privacy-consent').check();
     await p.locator('#contribution-file').setInputFiles({...pdf, name:'another.pdf'});
     await p.locator('#selected-file').filter({hasText:'another.pdf'}).waitFor();
     assert.equal(await p.locator('#contribution-declaration').isChecked(), false);
+    assert.equal(await p.locator('#contribution-privacy-consent').isChecked(), false);
     await p.locator('#submit-resource').click();
     assert.equal(s.requests.filter(r => r.type === 'submit').length, 0);
     await p.setViewportSize({width:320,height:800}); await noOverflow(p); await accessible(p);
     await p.locator('#contribution-declaration').check();
+    await p.locator('#contribution-privacy-consent').check();
     await p.locator('#submit-resource').click(); await p.locator('#contribution-success').waitFor();
     assert.equal(s.requests.filter(r => r.type === 'submit').length, 1);
   } finally { await s.close(); }
@@ -511,7 +525,8 @@ test('all six policy pages are readable, cross-linked and usable without JavaScr
       assert.equal(await p.locator('a[href*="implementation-checklist"]').count(),0);
       await noOverflow(p); await accessible(p);
       if (/privacy-notice|contributor-declaration/.test(href)) {
-        assert.match(await p.locator('blockquote').innerText(),/BLOCKED/);
+        assert.equal(await p.locator('meta[name="robots"]').getAttribute('content'),'index, follow');
+        assert.doesNotMatch(await p.locator('article').innerText(),/BLOCKED FOR|REVIEW DRAFT/);
       }
     }
     if (process.env.SCREENSHOT_DIR) {

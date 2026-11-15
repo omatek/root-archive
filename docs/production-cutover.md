@@ -14,13 +14,28 @@ authorizes publishing the preparation branch/PR only, not executing the cutover.
 
 ## Ready and blocked
 
+Release update (16 November 2026): The publication build now contains the
+operative Privacy Notice and the existing Contributor Declaration. Migration
+0004 adds the separate versioned privacy consent to the private receipt, using
+the same verified identity, submission event and timestamp. It leaves earlier
+receipts without any inferred consent. Cloudflare's transfer assessment is
+complete under the standard self-serve DPA v6.4.
+
+An unauthenticated request to the hosted staging administrator session route
+returned HTTP 302 to the configured Cloudflare Access team. This verifies the
+gateway response. The routed request did not exercise the Worker with an
+invalid or expired Access assertion, so RA-JWT-01 remains open. The local
+Worker auth tests pass. For production onboarding, the decision required is
+whether to accept the remaining hosted-verification gap with Cloudflare Access
+and Worker JWT validation both enabled, or obtain direct Worker evidence first.
+
 The private moderation architecture and essential real Google/Turnstile/UI
 staging lifecycle already passed; preserve [that evidence](student-staging-final-acceptance.md).
 PR #28 added locally verified permission receipts and policy integration; its
 schema 0003 is **not remotely applied**. No staging campaign needs repeating.
 
 Prepared here: separate production Wrangler template, local-only release
-generator, staged routing configurations, legacy pause configuration, all three
+generator, staged routing configurations, legacy pause configuration, all four
 migration hashes, blocked-policy Pages build guard, and explicit contributor
 mode. Production mode keeps signed Google verification, verified email/exact
 student domain, exact-origin CORS, Turnstile, declaration/version, private
@@ -28,7 +43,7 @@ storage, Access/JWT/allowlist checks and moderation controls. Missing mode keeps
 staging's account allowlist and one-hour cutoff; unknown modes fail closed.
 Generated production releases always have `SUBMISSIONS_ENABLED=false`.
 
-**Not ready for public publication or real intake:** Privacy Notice and
+**Original preparation status:** Privacy Notice and
 Contributor Declaration remain review drafts. Do not remove their banners as an
 engineering shortcut or publish them as operative notices. Resolve the existing
 five remaining disclosures and targeted legal questions in
@@ -141,7 +156,8 @@ release delta if it changed; that is provenance checking, not another review cyc
    production DB the list must be exactly, in order:
 
    `0001_private_moderation.sql` → `0002_catalog_generation.sql` →
-   `0003_contributor_authorizations.sql`.
+   `0003_contributor_authorizations.sql` →
+   `0004_contributor_privacy_consent.sql`.
 
    Only after those checks, from `worker/`, use the installed Wrangler:
 
@@ -153,13 +169,13 @@ release delta if it changed; that is provenance checking, not another review cyc
    node_modules/.bin/wrangler d1 execute root-archive-moderation-production --remote --config .wrangler/production/moderation-unrouted.json --command "SELECT id,name FROM d1_migrations ORDER BY id; PRAGMA foreign_key_check; SELECT COUNT(*) AS submissions FROM submissions; SELECT COUNT(*) AS receipts FROM contributor_authorizations; SELECT COUNT(*) AS resources FROM resources;"
    ```
 
-   Expect three migration ledger entries, no FK violations, empty submissions/
+   Expect four migration ledger entries, no FK violations, empty submissions/
    receipts/resources, singleton cleanup/catalog state and the catalog/receipt
    triggers. No data import or acceptance backfill. On any error, stop and inspect
    ledger/schema before applying **only** genuinely unapplied migrations; earlier
    migrations can have committed. No blanket retry/reset or direct SQL replay.
-   Staging already has 0001/0002: do not reapply them; staging 0003 is separate
-   maintenance, not a prerequisite to or authorization in this production plan.
+   Staging already has 0001/0002: do not reapply them. Staging 0003/0004 are
+   separate maintenance outside this production plan.
 4. **Deploy paused private service.** From `worker/`, dry-run then deploy
    `.wrangler/production/moderation-unrouted.json`, using installed Wrangler
    `deploy --config ... --secrets-file /protected/path/production-secrets.json`.
@@ -194,7 +210,8 @@ release delta if it changed; that is provenance checking, not another review cyc
    deploy cutover config with CLI `--var SUBMISSIONS_ENABLED:true`; use one
    authorized eligible account and one synthetic file only. Re-pause immediately
    with the unchanged cutover config; its saved flag is false. Verify new schema
-   0003 receipt and the short lifecycle below. Permanent canary removal needs
+   0003 authorization, 0004 consent and the short lifecycle below. Permanent
+   canary removal needs
    explicit exact-ID/key authorization; retain receipt/audit/tombstones. Once the
    result and any required cleanup are recorded, a separate final authorization
    enables real submissions. Persist true in the approved release configuration
@@ -217,7 +234,7 @@ release delta if it changed; that is provenance checking, not another review cyc
 ## Minimum production-specific acceptance (future authorization required)
 
 - Read-back: pinned Worker/Pages commit/version, new D1/R2 identities, migrations
-  0001/0002/0003, private R2 endpoints, exact origins/client/widget, separate Access
+  0001/0002/0003/0004, private R2 endpoints, exact origins/client/widget, separate Access
   AUD/policy/secret names, no alternate Worker/preview endpoints, paused intake,
   rate rule still applying to API POST, Cron installed and one observed progress.
 - Routing boundary: production admin login/session works on the new hostname;
@@ -228,8 +245,8 @@ release delta if it changed; that is provenance checking, not another review cyc
   anonymous catalog; operative approved policy pages/version match the receipt
   snapshot. Legacy custom/alternate paths reject uploads; old tabs fail safely.
 - One authorized synthetic file through actual production Google/Turnstile/UI:
-  pending absent publicly; protected receipt has exact declaration, identity,
-  file SHA-256 and event; approve → exact anonymous GET/HEAD bytes/no-store;
+  pending absent publicly; protected receipt has the exact declaration and
+  privacy consent, identity, file SHA-256 and event; approve → exact anonymous GET/HEAD bytes/no-store;
   withdraw → fresh same-URL GET/HEAD 404; re-pause → new submit denied with no
   writes. Separately authorized exact-file removal checks durable cleanup while
   retaining permission/audit evidence. No 205-record campaign, races, artificial
@@ -241,11 +258,11 @@ Any wrong binding, public private-bucket endpoint, unexpected data/catalog,
 Access/TLS failure, schema mismatch, legal gate, or inability to pause is a stop.
 Before traffic moves, leave legacy paused and public Pages at its recorded safe
 version as appropriate; do not resume intake just to restore availability.
-After any private acceptance, pause submissions and fix forward with schema 0003
+After any private acceptance, pause submissions and fix forward with schema 0004
 and compatible Worker/UI. Keep D1 revocations, private R2, permission receipts,
 audits and tombstones. Never restore public uploads/static catalogs as rollback;
-do not restore a D1 backup over later revocations or drop 0003. Worker rollback
-does not restore database/object state.
+do not restore a D1 backup over later revocations or drop the authorization and
+consent schema. Worker rollback does not restore database/object state.
 
 ## Authorization boundary and focused validation
 

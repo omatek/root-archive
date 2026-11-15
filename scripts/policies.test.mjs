@@ -3,11 +3,12 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {buildPolicies, policyArtifacts, POLICIES} from './build-policies.mjs';
 import {CONTRIBUTOR_AUTHORIZATION} from '../site/js/contributor-authorization.mjs';
+import {CONTRIBUTOR_PRIVACY_CONSENT} from '../site/js/contributor-privacy-consent.mjs';
 
 test('six public policies and the accepted declaration snapshot match the reconciled Markdown',async () => {
   await buildPolicies({check:true});
   const artifacts=await policyArtifacts();
-  assert.equal(artifacts.size,7);
+  assert.equal(artifacts.size,8);
   assert.equal([...artifacts.keys()].filter(path=>path.startsWith('site/policies/')).length,6);
   for (const [path,html] of artifacts) {
     if (!path.endsWith('.html')) continue;
@@ -23,4 +24,7 @@ test('six public policies and the accepted declaration snapshot match the reconc
   assert.ok(CONTRIBUTOR_AUTHORIZATION.text.includes('Changes beyond that scope require appropriate permission'));
   assert.equal(CONTRIBUTOR_AUTHORIZATION.language,'en');
   assert.ok(!CONTRIBUTOR_AUTHORIZATION.text.includes('BLOCKED FOR LIVE USE'));
+  const notice=await readFile(new URL('../docs/legal/root-archive-privacy-notice.md',import.meta.url),'utf8');
+  assert.ok(notice.includes(`**Consent version** ${CONTRIBUTOR_PRIVACY_CONSENT.version}\n\n${CONTRIBUTOR_PRIVACY_CONSENT.text}`));
+  assert.ok(!CONTRIBUTOR_AUTHORIZATION.text.includes(CONTRIBUTOR_PRIVACY_CONSENT.text));
 });

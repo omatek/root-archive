@@ -3,6 +3,7 @@ import { cleanText, CONTROL_CHARS, httpsUrl, validateFile } from './catalog.mjs'
 import { $, externalLink, focusHeading } from './dom.mjs';
 import { createStudentAuth, createSecurityCheck } from './services.mjs';
 import { CONTRIBUTOR_AUTHORIZATION } from './contributor-authorization.mjs';
+import { CONTRIBUTOR_PRIVACY_CONSENT } from './contributor-privacy-consent.mjs';
 
 export function createContribution(getCourses) {
   const dialog = $('contribution-dialog');
@@ -27,6 +28,9 @@ export function createContribution(getCourses) {
     $('contribution-notice').textContent = 'Submissions stay private until approved. Share only material you have the right to share and remove personal details first. The Contributor Declaration covers private review, technical formatting and redactions, and public distribution of the approved version. You retain ownership of your original work.';
     $('contributor-authorization').hidden = false;
     $('contribution-declaration').required = true;
+    $('contributor-privacy-consent').hidden = false;
+    $('contribution-privacy-consent').required = true;
+    $('contribution-privacy-consent-text').textContent = CONTRIBUTOR_PRIVACY_CONSENT.text;
     updateCreditChoice();
   }
 
@@ -49,7 +53,7 @@ export function createContribution(getCourses) {
     $(`contribution-${field}`)?.setAttribute('aria-invalid', String(!!text));
   }
   function clearErrors() {
-    for (const field of ['course', 'title', 'type', 'semester', 'contributor', 'file', 'turnstile', 'declaration']) error(field, '');
+    for (const field of ['course', 'title', 'type', 'semester', 'contributor', 'file', 'turnstile', 'privacy-consent', 'declaration']) error(field, '');
   }
   function populateCourses() {
     const select = $('contribution-course');
@@ -84,6 +88,7 @@ export function createContribution(getCourses) {
   async function selectFile(file) {
     const revision = ++fileRevision;
     $('contribution-declaration').checked = false;
+    $('contribution-privacy-consent').checked = false;
     selectedFile = null; markDirty(); error('file', '');
     $('selected-file').textContent = 'Checking your file…';
     $('remove-file').hidden = false;
@@ -115,6 +120,7 @@ export function createContribution(getCourses) {
     if (CONFIG.privateModeration && wantsCredit && !contributor) invalid('contributor', 'Enter the name you want shown, or turn off public credit.');
     if (contributor === null) invalid('contributor', 'Use up to 40 characters, without angle brackets or hidden control characters.');
     if (!selectedFile) invalid('file', 'Choose a valid file and wait for it to finish checking.');
+    if (CONFIG.privateModeration && !$('contribution-privacy-consent').checked) invalid('privacy-consent', 'Agree to the processing and transfer for this submission.');
     if (CONFIG.privateModeration && !$('contribution-declaration').checked) invalid('declaration', 'Accept the contributor permission for this file before submitting.');
     if (issues.length) {
       status('Please check the highlighted fields. Your draft has been kept.');
@@ -138,6 +144,8 @@ export function createContribution(getCourses) {
     if (contributor) data.set('contributor', contributor);
     data.set('file', file, file.name); data.set('turnstile_token', challenge);
     if (CONFIG.privateModeration) {
+      data.set('privacy_consent_accepted', 'true');
+      data.set('privacy_consent_version', CONTRIBUTOR_PRIVACY_CONSENT.version);
       data.set('declaration_accepted', 'true');
       data.set('declaration_version', CONTRIBUTOR_AUTHORIZATION.version);
     }
@@ -206,6 +214,7 @@ export function createContribution(getCourses) {
   });
   $('remove-file').addEventListener('click', () => {
     $('contribution-declaration').checked = false;
+    $('contribution-privacy-consent').checked = false;
     fileRevision++; selectedFile = null; $('contribution-file').value = '';
     $('selected-file').textContent = ''; $('remove-file').hidden = true; error('file', ''); markDirty();
   });

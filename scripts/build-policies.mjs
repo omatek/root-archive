@@ -53,6 +53,12 @@ ${content}
   </div></footer>
 </body></html>
 `);
+    if (slug === 'privacy-notice') {
+      const consent = /^## Contributor privacy and transfer consent\n\n\*\*Consent version\*\* ([^\n]+)\n\n([^\n]+)$/m.exec(source);
+      if (!consent) throw new Error('Privacy Notice must include the versioned contributor consent text');
+      const [, version, text] = consent;
+      artifacts.set('site/js/contributor-privacy-consent.mjs', `// Generated from the Privacy Notice. Update the version when the consent text changes.\nexport const CONTRIBUTOR_PRIVACY_CONSENT = Object.freeze(${JSON.stringify({version, text},null,2)});\n`);
+    }
     if (slug === 'contributor-declaration') {
       const version = /^\*\*Declaration version\*\* (.+)$/m.exec(source)?.[1];
       if (!version) throw new Error('Contributor declaration must have an explicit version');

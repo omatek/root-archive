@@ -2,6 +2,7 @@
 import courses from '../site/courses.json';
 import {TYPES} from '../site/js/config.mjs';
 import {CONTRIBUTOR_AUTHORIZATION} from '../site/js/contributor-authorization.mjs';
+import {CONTRIBUTOR_PRIVACY_CONSENT} from '../site/js/contributor-privacy-consent.mjs';
 import {
   WorkerHttpError, verifyGoogleStudentToken, parseMultipartWithByteLimit,
   validateAndExtractPayload, verifyTurnstileToken, sanitizeFilename,
@@ -232,6 +233,11 @@ async function submission(request: Request, env: ModerationEnv) {
     throw new WorkerHttpError(400, 'Accept the current contributor permission before submitting. Reload the page if its wording has changed.');
   }
   form.delete('declaration_accepted'); form.delete('declaration_version');
+  if (form.getAll('privacy_consent_accepted').length !== 1 || form.get('privacy_consent_accepted') !== 'true'
+    || form.getAll('privacy_consent_version').length !== 1 || form.get('privacy_consent_version') !== CONTRIBUTOR_PRIVACY_CONSENT.version) {
+    throw new WorkerHttpError(400, 'Agree to the current contributor privacy and transfer consent. Reload the page if its wording has changed.');
+  }
+  form.delete('privacy_consent_accepted'); form.delete('privacy_consent_version');
   const payload = await validateAndExtractPayload(form, {optionalSemester:true});
   const fileHash = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new Uint8Array(payload.fileBytes))),
     byte => byte.toString(16).padStart(2,'0')).join('');
@@ -262,10 +268,11 @@ async function submission(request: Request, env: ModerationEnv) {
       // Receipt, ready revision and submission event commit together. Identity
       // comes from verified Google claims, never public credit or form fields.
       statement(env, `INSERT INTO contributor_authorizations(submission_id,original_revision_id,received_operation_id,
-        contributor_sub,contributor_email,declaration_version,declaration_language,declaration_text,acceptance_method,public_credit,file_sha256,accepted_at)
-        SELECT id,?,?,?,?,?,?,?,'affirmative_checkbox',?,?,? FROM submissions WHERE id=? AND last_operation=? AND status='pending'`,
+        contributor_sub,contributor_email,declaration_version,declaration_language,declaration_text,acceptance_method,
+        public_credit,file_sha256,accepted_at,privacy_consent_version,privacy_consent_text)
+        SELECT id,?,?,?,?,?,?,?,'affirmative_checkbox',?,?,?,?,? FROM submissions WHERE id=? AND last_operation=? AND status='pending'`,
         revisionId,operation,identity.sub,identity.email,CONTRIBUTOR_AUTHORIZATION.version,CONTRIBUTOR_AUTHORIZATION.language,
-        CONTRIBUTOR_AUTHORIZATION.text,payload.contributor,fileHash,now,id,operation),
+        CONTRIBUTOR_AUTHORIZATION.text,payload.contributor,fileHash,now,CONTRIBUTOR_PRIVACY_CONSENT.version,CONTRIBUTOR_PRIVACY_CONSENT.text,id,operation),
     ]);
   } catch {
     await abandonUpload(env,id,revisionId).catch(() => console.error(JSON.stringify({event:'private_upload_recovery_needed',id})));
