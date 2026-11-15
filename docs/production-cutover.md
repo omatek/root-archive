@@ -5,6 +5,13 @@ includes merged PR #28. This is a preparation record, not deployment authority.
 No merge, deployment, routing/configuration mutation, live submission, migration,
 data deletion, new review cycle or hosted acceptance campaign was performed.
 
+Integration update: preparation commit `6849fabc629ad7641d189d8c917965c8383da82a`
+is preserved and reconciled with `feat/private-moderation` HEAD
+`b1d0ce36f30a9560057d1c341bf315148a14235c`, including PR #29. The merge had no
+Git conflicts. The observations below remain the original preparation snapshot;
+no production investigation or staging acceptance was repeated. This update
+authorizes publishing the preparation branch/PR only, not executing the cutover.
+
 ## Ready and blocked
 
 The private moderation architecture and essential real Google/Turnstile/UI
@@ -24,8 +31,17 @@ Generated production releases always have `SUBMISSIONS_ENABLED=false`.
 **Not ready for public publication or real intake:** Privacy Notice and
 Contributor Declaration remain review drafts. Do not remove their banners as an
 engineering shortcut or publish them as operative notices. Resolve the existing
-legal/provider/date/location/backup facts, electronic-permission sufficiency and
-retention/rights operations in [the coherence report](legal-technical-coherence.md).
+five remaining disclosures and targeted legal questions in
+[PR #29's publication completion report](legal-publication-completion.md), which
+supersedes earlier legal-status summaries. The effective date is now linked to
+operative release publication; Lark incoming MX and the narrow application
+profiling disclosure are established. Do not reopen those resolved items.
+The Declaration text/version and receipt implementation are unchanged;
+electronic sufficiency is a targeted unresolved question, not a proven technical
+defect or an independently established launch prohibition. Its linked incomplete
+Privacy Notice still prevents operative publication/intake. Activate the now
+documented [manual operations procedure](legal-operations.md) before intake;
+do not require a new retention service or assume that the procedure is operating.
 Production resource locations/plan and actual log/backup lifecycle must be
 recorded, not inferred from staging. RA-JWT-01 remains OPEN: independent hosted
 Worker JWT rejection/session evidence is unverified. A recorded owner disposition
