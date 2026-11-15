@@ -1,5 +1,18 @@
 # Staging execution results
 
+## Student integration preparation — 15 November 2026 UTC
+
+The owner's revised priority supersedes the earlier "next owner action" below:
+prepare and execute the minimum actual student UI acceptance before remaining
+hosted race/pagination campaigns. Fixture 4 and n=5..205 remain unseeded/deferred.
+See [the concrete release and acceptance instructions](student-staging-acceptance.md)
+and [new read-only preflight evidence](student-staging-preflight.json).
+Preparation and local checks pass; real Google/Turnstile/UI acceptance has NOT
+run. No external configuration, deployment or persistent staging write occurred.
+Existing evidence and manifest ownership remain unchanged. Independent hosted
+Worker JWT negatives remain NOT EXECUTED, with a separate unresolved pilot
+risk-acceptance decision; the new priority does not mark Group A as passed.
+
 ## Final fixture 3 cleanup and browser-client preparation — 14 November 2026 UTC
 
 **Fixture 3 permanent removal PASS; Group B PARTIAL. Client prepared, NOT RUN;

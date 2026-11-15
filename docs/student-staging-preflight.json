@@ -1,0 +1,447 @@
+{
+  "observed_at": "2026-11-15T15:12:50Z",
+  "baseline": "6ab4023bc628107dc6e07c5c5937fcbf64a3a1c6",
+  "mode": "read_only_inspection_no_infrastructure_mutations_no_hosted_student_tests",
+  "inventory": {
+    "settings": {
+      "result": {
+        "placement": {},
+        "compatibility_date": "2026-10-30",
+        "compatibility_flags": [],
+        "usage_model": "standard",
+        "tags": [],
+        "tail_consumers": [],
+        "logpush": false,
+        "observability": {
+          "enabled": true,
+          "head_sampling_rate": 1,
+          "redact_query_string": false,
+          "logs": {
+            "enabled": true,
+            "head_sampling_rate": 1,
+            "persist": true,
+            "invocation_logs": false
+          },
+          "traces": {
+            "enabled": true,
+            "persist": true,
+            "head_sampling_rate": 0.1
+          }
+        },
+        "annotations": {
+          "workers/message": "Owner-approved isolated staging",
+          "workers/triggered_by": "version_upload"
+        },
+        "bindings": [
+          {
+            "name": "ACCESS_AUD",
+            "text": "0003d8d8ba905005bfed05fc441631de07c91985c3e2baab528bdb4bbb7ac5be",
+            "type": "plain_text"
+          },
+          {
+            "name": "ACCESS_ISSUER",
+            "text": "https://rootamman.cloudflareaccess.com",
+            "type": "plain_text"
+          },
+          {
+            "name": "ADMIN_EMAILS",
+            "type": "secret_text"
+          },
+          {
+            "name": "ADMIN_ORIGIN",
+            "text": "https://admin.archive.rootamman.com",
+            "type": "plain_text"
+          },
+          {
+            "name": "ALLOWED_ORIGIN",
+            "text": "https://archive-staging.rootamman.com",
+            "type": "plain_text"
+          },
+          {
+            "name": "ASSETS",
+            "type": "assets"
+          },
+          {
+            "name": "CLEANUP_ENABLED",
+            "text": "false",
+            "type": "plain_text"
+          },
+          {
+            "database_id": "f4aa2a8b-4b27-4ed3-b7a2-4e6e100a94c6",
+            "id": "f4aa2a8b-4b27-4ed3-b7a2-4e6e100a94c6",
+            "name": "DB",
+            "type": "d1"
+          },
+          {
+            "name": "GOOGLE_CLIENT_ID",
+            "text": "",
+            "type": "plain_text"
+          },
+          {
+            "bucket_name": "root-archive-private-staging",
+            "name": "PRIVATE_FILES",
+            "type": "r2_bucket"
+          },
+          {
+            "name": "PUBLIC_API_ORIGIN",
+            "text": "https://api-staging.rootamman.com",
+            "type": "plain_text"
+          },
+          {
+            "name": "SUBMISSIONS_ENABLED",
+            "text": "false",
+            "type": "plain_text"
+          }
+        ]
+      },
+      "success": true,
+      "errors": [],
+      "messages": []
+    },
+    "deployments": {
+      "result": {
+        "deployments": [
+          {
+            "id": "2eaa7db3-f51c-4747-a5ea-e8ec0b86c5a2",
+            "source": "wrangler",
+            "strategy": "percentage",
+            "annotations": {
+              "workers/message": "Owner-approved isolated staging",
+              "workers/triggered_by": "deployment"
+            },
+            "versions": [
+              {
+                "version_id": "bb9e96b3-e789-47b0-aa92-16168fe80db4",
+                "percentage": 100
+              }
+            ],
+            "created_on": "2026-11-14T08:32:53.290691Z"
+          }
+        ]
+      },
+      "success": true,
+      "errors": [],
+      "messages": [],
+      "result_info": {
+        "page": 1,
+        "per_page": 10,
+        "count": 1,
+        "total_count": 1,
+        "total_pages": 1
+      }
+    },
+    "domains": {
+      "result": [
+        {
+          "id": "18ff115e80d1e21d3b74e146d72bf141227e6f23",
+          "zone_id": "fc80d6a45a703d0fe4d1876f1380870f",
+          "zone_name": "rootamman.com",
+          "hostname": "api.rootamman.com",
+          "service": "root-archive-worker",
+          "environment": "production",
+          "cert_id": "ddec1cda-d044-4ac4-9b49-f02c3534b6b4",
+          "previews_enabled": false,
+          "enabled": true
+        },
+        {
+          "id": "580d38dcab623f69bd2edffa224340c4473435be",
+          "zone_id": "fc80d6a45a703d0fe4d1876f1380870f",
+          "zone_name": "rootamman.com",
+          "hostname": "admin.archive.rootamman.com",
+          "service": "root-archive-moderation-staging",
+          "environment": "production",
+          "cert_id": "ec66ad67-c346-4ff5-a5b1-dc3d59735aa9",
+          "previews_enabled": false,
+          "enabled": true
+        },
+        {
+          "id": "1fc544a0ed42618cfdde24bc360c4686a50675a8",
+          "zone_id": "fc80d6a45a703d0fe4d1876f1380870f",
+          "zone_name": "rootamman.com",
+          "hostname": "api-staging.rootamman.com",
+          "service": "root-archive-moderation-staging",
+          "environment": "production",
+          "cert_id": "2cdcbcd6-7862-46f9-bb0c-1e3ea3b30642",
+          "previews_enabled": false,
+          "enabled": true
+        }
+      ],
+      "success": true,
+      "errors": null,
+      "messages": null,
+      "result_info": {
+        "page": 1,
+        "per_page": 3,
+        "count": 3,
+        "total_count": 3
+      }
+    },
+    "r2Objects": {
+      "success": true,
+      "errors": [],
+      "messages": [],
+      "result": []
+    },
+    "r2Managed": {
+      "success": true,
+      "errors": [],
+      "messages": [],
+      "result": {
+        "enabled": false,
+        "bucketId": "1a5f949cc506496daa0ff5ff43333c72",
+        "domain": "pub-1a5f949cc506496daa0ff5ff43333c72.r2.dev"
+      }
+    },
+    "r2Custom": {
+      "success": true,
+      "errors": [],
+      "messages": [],
+      "result": {
+        "domains": []
+      }
+    },
+    "pages": {
+      "result": [
+        {
+          "name": "root-archive",
+          "domains": [
+            "root-archive.pages.dev",
+            "archive.rootamman.com"
+          ],
+          "canonical_deployment": {
+            "id": "60b32faf-7934-4e5b-8a34-c07c1cb0983d",
+            "sha": "4bb136b9a39423737be4ee30ba1239d735e221c9"
+          }
+        },
+        {
+          "name": "root-website",
+          "domains": [
+            "root-website-bsw.pages.dev",
+            "rootamman.com"
+          ],
+          "canonical_deployment": {
+            "id": "b9de5c6d-fa76-4a92-85c3-7282f60a93a3",
+            "sha": "a3b9f8af010c9087fc948f76038ed5f67d9223cc"
+          }
+        }
+      ],
+      "success": true,
+      "errors": [],
+      "messages": [],
+      "result_info": {
+        "page": 1,
+        "per_page": 10,
+        "count": 2,
+        "total_count": 2,
+        "total_pages": 1
+      }
+    }
+  },
+  "state": {
+    "turnstile": {
+      "result": [
+        {
+          "sitekey": "0x4AAAAAAFtYsxdbI-Zx8mjy",
+          "name": "root-archive",
+          "domains": [
+            "archive.rootamman.com",
+            "root-archive.pages.dev"
+          ],
+          "mode": "managed"
+        }
+      ],
+      "success": true,
+      "errors": [],
+      "messages": [],
+      "result_info": {
+        "page": 1,
+        "per_page": 25,
+        "count": 1,
+        "total_count": 1,
+        "total_pages": 1
+      }
+    },
+    "d1": {
+      "result": [
+        {
+          "results": [
+            {
+              "id": "726f6f74-6172-4368-8000-000000000001",
+              "status": "removed",
+              "version": 6
+            },
+            {
+              "id": "726f6f74-6172-4368-8000-000000000002",
+              "status": "rejected",
+              "version": 3
+            },
+            {
+              "id": "726f6f74-6172-4368-8000-000000000003",
+              "status": "removed",
+              "version": 7
+            }
+          ],
+          "success": true,
+          "meta": {
+            "served_by": "v3-prod",
+            "served_by_region": "EEUR",
+            "served_by_colo": "FRA",
+            "served_by_primary": true,
+            "timings": {
+              "sql_duration_ms": 0.6865
+            },
+            "duration": 0.6865,
+            "changes": 0,
+            "last_row_id": 0,
+            "changed_db": false,
+            "size_after": 102400,
+            "rows_read": 3,
+            "rows_written": 0,
+            "total_attempts": 1
+          }
+        },
+        {
+          "results": [
+            {
+              "id": "726f6f74-6172-4368-9000-000000000001",
+              "status": "deleted",
+              "submission_id": "726f6f74-6172-4368-8000-000000000001"
+            },
+            {
+              "id": "726f6f74-6172-4368-9000-000000000002",
+              "status": "deleted",
+              "submission_id": "726f6f74-6172-4368-8000-000000000002"
+            },
+            {
+              "id": "726f6f74-6172-4368-9000-000000000003",
+              "status": "deleted",
+              "submission_id": "726f6f74-6172-4368-8000-000000000003"
+            },
+            {
+              "id": "fa34866f-cd12-4be7-a3fe-fe4a18cc0a45",
+              "status": "deleted",
+              "submission_id": "726f6f74-6172-4368-8000-000000000003"
+            }
+          ],
+          "success": true,
+          "meta": {
+            "served_by": "v3-prod",
+            "served_by_region": "EEUR",
+            "served_by_colo": "FRA",
+            "served_by_primary": true,
+            "timings": {
+              "sql_duration_ms": 0.3573
+            },
+            "duration": 0.3573,
+            "changes": 0,
+            "last_row_id": 0,
+            "changed_db": false,
+            "size_after": 102400,
+            "rows_read": 4,
+            "rows_written": 0,
+            "total_attempts": 1
+          }
+        },
+        {
+          "results": [
+            {
+              "status": "removed",
+              "count": 2
+            }
+          ],
+          "success": true,
+          "meta": {
+            "served_by": "v3-prod",
+            "served_by_region": "EEUR",
+            "served_by_colo": "FRA",
+            "served_by_primary": true,
+            "timings": {
+              "sql_duration_ms": 0.2151
+            },
+            "duration": 0.2151,
+            "changes": 0,
+            "last_row_id": 0,
+            "changed_db": false,
+            "size_after": 102400,
+            "rows_read": 2,
+            "rows_written": 0,
+            "total_attempts": 1
+          }
+        },
+        {
+          "results": [
+            {
+              "audit_count": 13
+            }
+          ],
+          "success": true,
+          "meta": {
+            "served_by": "v3-prod",
+            "served_by_region": "EEUR",
+            "served_by_colo": "FRA",
+            "served_by_primary": true,
+            "timings": {
+              "sql_duration_ms": 0.2444
+            },
+            "duration": 0.2444,
+            "changes": 0,
+            "last_row_id": 0,
+            "changed_db": false,
+            "size_after": 102400,
+            "rows_read": 13,
+            "rows_written": 0,
+            "total_attempts": 1
+          }
+        },
+        {
+          "results": [],
+          "success": true,
+          "meta": {
+            "served_by": "v3-prod",
+            "served_by_region": "EEUR",
+            "served_by_colo": "FRA",
+            "served_by_primary": true,
+            "timings": {
+              "sql_duration_ms": 0.4445
+            },
+            "duration": 0.4445,
+            "changes": 0,
+            "last_row_id": 0,
+            "changed_db": false,
+            "size_after": 102400,
+            "rows_read": 19,
+            "rows_written": 0,
+            "total_attempts": 1
+          }
+        }
+      ],
+      "errors": [],
+      "messages": [],
+      "success": true
+    },
+    "legacyDeployments": {
+      "deployments": [
+        {
+          "id": "88fef60a-22b0-434a-bbc2-89ac0d569629",
+          "versions": [
+            {
+              "version_id": "e8895ac0-b95b-409e-aff1-af3f549be94f",
+              "percentage": 100
+            }
+          ],
+          "created_on": "2026-11-12T19:55:22.85177Z"
+        }
+      ]
+    }
+  },
+  "dns": {
+    "dns": [],
+    "count": 0
+  },
+  "github_metadata": "Git fetch succeeded and matched baseline; GitHub GraphQL and REST reads forbidden in this environment. Current draft/check state not reverified.",
+  "hosted_jwt_risk": {
+    "status": "UNRESOLVED_RISK_ACCEPTANCE_DECISION",
+    "tests": "NOT_EXECUTED_NOT_PASSED",
+    "prior_acceptance_scope": "Isolated synthetic functional acceptance only; pilot/public launch decision remains open."
+  }
+}

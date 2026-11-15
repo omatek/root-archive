@@ -23,6 +23,9 @@
     // Release config must remove this placeholder and supply an ADMIN_EMAILS secret.
     "ADMIN_EMAILS": "",
     "GOOGLE_CLIENT_ID": "",
+    // Empty is fail-closed. Release config removes this variable; supply the
+    // exact owner-approved test account(s) as a secret, never in Git.
+    "STAGING_STUDENT_EMAILS": "",
     "SUBMISSIONS_ENABLED": "false",
     "CLEANUP_ENABLED": "false"
   },

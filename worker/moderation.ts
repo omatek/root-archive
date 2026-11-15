@@ -12,6 +12,19 @@ export interface ModerationEnv extends RuntimeBindings {
   TURNSTILE_SECRET: string;
 }
 
+// Bound an isolated staging window to owner-approved accounts, after Google's
+// signature, audience, verified email and exact student domain checks succeed.
+async function verifyContributor(request: Request, env: ModerationEnv) {
+  const identity = await verifyGoogleStudentToken(request, env);
+  const allowed = (env.STAGING_STUDENT_EMAILS ?? '').split(',')
+    .map(email => email.trim().toLowerCase()).filter(Boolean);
+  if (!allowed.length) throw new WorkerHttpError(503, 'Staging contributions are not configured.');
+  if (!allowed.includes(identity.email.toLowerCase())) {
+    throw new WorkerHttpError(403, 'This account is not enabled for staging contributions.');
+  }
+  return identity;
+}
+
 type Status = 'receiving' | 'pending' | 'under_review' | 'published' | 'unpublished' | 'rejected' | 'removed';
 interface Submission {
   id: string; course_id: string; type: string; title: string; semester: string; contributor: string | null;
@@ -184,7 +197,7 @@ async function download(request: Request, env: ModerationEnv, id: string) {
   return new Response(request.method === 'HEAD' ? null : (object as R2ObjectBody).body, {headers});
 }
 async function submission(request: Request, env: ModerationEnv) {
-  const identity = await verifyGoogleStudentToken(request, env);
+  const identity = await verifyContributor(request, env);
   if (env.SUBMISSIONS_ENABLED !== 'true') throw new WorkerHttpError(503, 'Contributions are temporarily unavailable. Please try again later.');
   if (!env.TURNSTILE_SECRET?.trim()) throw new WorkerHttpError(503, 'Contributions are temporarily unavailable.');
   const form = await parseMultipartWithByteLimit(request, MAX_BODY);
@@ -451,7 +464,7 @@ export default {
       cors={'Access-Control-Allow-Origin':origin,'Vary':'Origin','Access-Control-Allow-Methods':'POST, OPTIONS','Access-Control-Allow-Headers':'Authorization, Content-Type'};
       if(request.method==='OPTIONS') return json({success:true},200,cors);
       if(request.method!=='POST') throw new WorkerHttpError(405,'Method not allowed.');
-      if(url.pathname==='/auth/verify') {await verifyGoogleStudentToken(request,env);return json({success:true,authorized:true},200,cors);}
+      if(url.pathname==='/auth/verify') {await verifyContributor(request,env);return json({success:true,authorized:true},200,cors);}
       const response=await submission(request,env);
       for(const [key,value] of Object.entries(cors)) response.headers.set(key,value);
       return response;

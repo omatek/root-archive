@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "root-archive-student-staging",
+  "account_id": "1b409400fea16e7142f62ac19ecd361d",
+  "compatibility_date": "2026-11-15",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [],
+  "assets": {
+    "directory": "../dist/student-staging",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "none"
+  }
+}

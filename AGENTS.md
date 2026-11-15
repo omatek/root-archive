@@ -2,6 +2,15 @@
 
 ## Confirmed architecture
 
+- Current acceptance priority (15 November): real contributor integration first.
+  Read `docs/student-staging-acceptance.md`. The separate student frontend and
+  release preparation are local only; Google/Turnstile configuration, deployment
+  and the bounded hosted PDF run still need explicit owner approval. Do not run
+  fixture 4 or n=5..205 pagination as prerequisites. Preserve all older evidence.
+  The new staging account allowlist is fail-closed when empty/missing; provision
+  only owner-approved test accounts as a secret. Hosted independent Worker JWT
+  checks remain unverified with an unresolved pilot risk-acceptance decision.
+
 - Private moderation replacement is implemented separately in `worker/moderation.ts`,
   `worker/wrangler.moderation.jsonc`, `worker/migrations/` and `admin/`. Read
   `docs/private-moderation.md` before changing this boundary. All revisions stay

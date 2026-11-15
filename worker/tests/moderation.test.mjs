@@ -22,6 +22,7 @@ const baseBindings = {
   ADMIN_ORIGIN:adminOrigin, PUBLIC_API_ORIGIN:publicOrigin, ALLOWED_ORIGIN:studentOrigin,
   ACCESS_ISSUER:issuer, ACCESS_AUD:'synthetic-admin-app', ADMIN_EMAILS:actor,
   GOOGLE_CLIENT_ID:'synthetic-google-app', TURNSTILE_SECRET:'synthetic-turnstile',
+  STAGING_STUDENT_EMAILS:studentEmail,
   SUBMISSIONS_ENABLED:'true', CLEANUP_ENABLED:'true',
 };
 let mf, db, bucket, turnstileSuccess=true;
@@ -197,6 +198,23 @@ test('student submission requires signed eligible Google identity, exact origin 
   for(const patch of [{title:'<script>x</script>'},{title:'line\nbreak'},{course_id:'9999999'},{type:'Past Paper'}]) assert.equal((await submit(patch)).status,400);
   const accepted=await create({semester:undefined});assert.equal(accepted.submission.semester,'');
   assert.equal(outbound.some(x=>x.includes('github.com')),false,'private path never creates a PR');
+});
+
+test('staging account allowlist gates verification and submission; pause prevents all D1/R2 writes',async () => {
+  const jwt=await studentToken();
+  const request=path=>new Request(publicOrigin+path,{method:'POST',headers:{Origin:studentOrigin,
+    Authorization:`Bearer ${jwt}`},...(path==='/submit'?{body:form()}: {})});
+  for(const allowlist of [undefined, '', 'other@std.aum.edu.jo']) {
+    for(const path of ['/auth/verify','/submit']) {
+      assert.equal((await invokeNode(request(path),{STAGING_STUDENT_EMAILS:allowlist})).status,allowlist ? 403 : 503);
+    }
+  }
+  assert.equal((await invokeNode(request('/auth/verify'),{STAGING_STUDENT_EMAILS:` ${studentEmail.toUpperCase()} `})).status,200);
+  assert.equal((await submit({},await studentToken({email:'other@std.aum.edu.jo'}))).status,403);
+  assert.equal((await invokeNode(request('/submit'),{SUBMISSIONS_ENABLED:'false'})).status,503);
+  assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM submissions').first()).n,0);
+  assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM file_revisions').first()).n,0);
+  assert.equal((await bucket.list()).objects.length,0);
 });
 
 test('pending and replacement revisions stay private; only selected approved snapshot appears anonymously',async () => {
