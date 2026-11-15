@@ -17,7 +17,8 @@ audits, R2 remains empty. Production Pages/legacy Worker versions and production
 widget are unchanged. No migrations, Access changes, student authentication,
 submission POST, moderation action or deletion occurred. The temporary secret
 file was removed. New-host HTTP is blocked by the Cloud environment's allowlist;
-its dedicated certificate is pending validation, so presented TLS is unverified.
+its dedicated certificate became active at the 16:41:09Z control-plane recheck,
+but presented TLS remains unverified from this environment.
 [Sanitized deployment/state evidence](student-staging-paused-deployment.json)
 and [remaining owner steps](student-staging-acceptance.md#exact-owner-assisted-setup).
 

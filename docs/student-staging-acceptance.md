@@ -27,6 +27,8 @@ deployment IDs match the baseline. Presented TLS/page content on the new host
 cannot yet be checked from this environment's destination allowlist. The new
 dedicated certificate was `pending_validation` at 16:38:08Z; existing active
 Universal SSL covers `*.rootamman.com`. Neither observation is a presented-TLS pass.
+The 16:41:09Z recheck confirms that dedicated certificate is now **active**;
+the owner's browser check of the served page/TLS remains outstanding.
 
 [Read-only preflight](student-staging-preflight.json), 15 November 2026 UTC:
 

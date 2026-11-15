@@ -313,7 +313,7 @@
     "no_cron_schedules": true,
     "frontend_host_probe": "Blocked by this environment's proxy destination allowlist; not a TLS/application pass or failure.",
     "initial_default_python_user_agent": "API probe received Cloudflare 1010; documented root-archive probe User-Agent received 200.",
-    "new_host_presented_tls": "Unverified; dedicated certificate pending_validation; existing active universal *.rootamman.com certificate includes this hostname."
+    "new_host_presented_tls": "Unverified from this environment; dedicated certificate became active in the later control-plane recheck below."
   },
   "live_acceptance": "NOT_STARTED_NOT_AUTHORIZED",
   "jwt_risk": {
@@ -325,6 +325,13 @@
     "fixture4": "Deterministic concurrency deferred to merge/launch acceptance; unseeded.",
     "pagination": "Focused pagination deferred to merge/launch acceptance; unseeded.",
     "artificial_200ms_interruption": "No longer an acceptance gate; not executed."
+  },
+  "certificate_recheck": {
+    "observed_at": "2026-11-15T16:41:09Z",
+    "id": "16822825-90e4-4a9f-980d-b1d2775a1512",
+    "status": "active",
+    "hosts": ["rootamman.com", "archive-staging.rootamman.com", "*.archive-staging.rootamman.com"],
+    "presented_tls_verified": false
   },
   "validation": {
     "repository_tests": 67,
