@@ -1,0 +1,172 @@
+{
+  "recorded_at": "2026-11-15T18:56:48Z",
+  "owner_report": "withdrawn",
+  "result": "PASS_CORE_REAL_CONTRIBUTOR_WORKFLOW_WITHDRAWAL",
+  "submission": {
+    "id": "3de6408a-e12a-4573-a772-fd8e0228ea22",
+    "status": "unpublished",
+    "version": 3,
+    "original_revision_id": "3879def6-19ce-4b29-a202-d44b897fde40",
+    "candidate_revision_id": "3879def6-19ce-4b29-a202-d44b897fde40",
+    "private_sub_present": 1,
+    "private_email_present": 1,
+    "updated_at": "2026-11-15T18:52:02.209Z"
+  },
+  "revision": {
+    "id": "3879def6-19ce-4b29-a202-d44b897fde40",
+    "submission_id": "3de6408a-e12a-4573-a772-fd8e0228ea22",
+    "object_key": "private/v1/3de6408a-e12a-4573-a772-fd8e0228ea22/3879def6-19ce-4b29-a202-d44b897fde40.pdf",
+    "mime": "application/pdf",
+    "size": 687,
+    "status": "ready",
+    "etag": "bdd67c1a010fb6a649ce4c105a495444",
+    "delete_attempts": 0,
+    "last_delete_error": null
+  },
+  "private_snapshot": {
+    "id": "3de6408a-e12a-4573-a772-fd8e0228ea22",
+    "status": "unpublished",
+    "revision_id": "3879def6-19ce-4b29-a202-d44b897fde40"
+  },
+  "audit": [
+    {
+      "action": "submission_received",
+      "created_at": "2026-11-15T18:36:39.600Z"
+    },
+    {
+      "action": "submission_approved",
+      "created_at": "2026-11-15T18:47:21.264Z"
+    },
+    {
+      "action": "resource_unpublished",
+      "created_at": "2026-11-15T18:52:02.209Z"
+    }
+  ],
+  "all_submissions": [
+    {
+      "id": "3de6408a-e12a-4573-a772-fd8e0228ea22",
+      "status": "unpublished",
+      "version": 3
+    },
+    {
+      "id": "726f6f74-6172-4368-8000-000000000001",
+      "status": "removed",
+      "version": 6
+    },
+    {
+      "id": "726f6f74-6172-4368-8000-000000000002",
+      "status": "rejected",
+      "version": 3
+    },
+    {
+      "id": "726f6f74-6172-4368-8000-000000000003",
+      "status": "removed",
+      "version": 7
+    }
+  ],
+  "unresolved": [
+    {
+      "count": 0
+    }
+  ],
+  "audit_count": [
+    {
+      "count": 16
+    }
+  ],
+  "foreign_key_violations": [],
+  "inspection_rows_written": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "retained_pdf": {
+    "sha256": "f225b67a86db912394042bca309b0691727e22ef3bd741b044ec0543906151d1",
+    "bytes": 687,
+    "approved_hash_matches": true
+  },
+  "r2_objects": [
+    {
+      "key": "private/v1/3de6408a-e12a-4573-a772-fd8e0228ea22/3879def6-19ce-4b29-a202-d44b897fde40.pdf",
+      "etag": "bdd67c1a010fb6a649ce4c105a495444",
+      "last_modified": "2026-11-15T18:36:39.776Z",
+      "size": 687,
+      "http_metadata": {
+        "contentType": "application/pdf"
+      },
+      "custom_metadata": {},
+      "storage_class": "Standard"
+    }
+  ],
+  "anonymous_http": [
+    {
+      "path": "/resources",
+      "method": "GET",
+      "status": 200,
+      "authenticated_request": false,
+      "cache_control": "private, no-store, max-age=0",
+      "catalog": {
+        "resources": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "path": "/download/3de6408a-e12a-4573-a772-fd8e0228ea22",
+      "method": "GET",
+      "status": 404,
+      "authenticated_request": false,
+      "cache_control": "private, no-store, max-age=0"
+    },
+    {
+      "path": "/download/3de6408a-e12a-4573-a772-fd8e0228ea22",
+      "method": "HEAD",
+      "status": 404,
+      "authenticated_request": false,
+      "cache_control": "private, no-store, max-age=0"
+    }
+  ],
+  "submissions": {
+    "paused": true,
+    "opens_at": "",
+    "closes_at": "",
+    "cleanup_enabled": "false"
+  },
+  "production": {
+    "legacy_deployment": "88fef60a-22b0-434a-bbc2-89ac0d569629",
+    "legacy_versions": [
+      {
+        "version_id": "e8895ac0-b95b-409e-aff1-af3f549be94f",
+        "percentage": 100
+      }
+    ],
+    "pages_deployment": "60b32faf-7934-4e5b-8a34-c07c1cb0983d",
+    "pages_sha": "4bb136b9a39423737be4ee30ba1239d735e221c9"
+  },
+  "cleanup": {
+    "confirmation_required": true,
+    "confirmation_received": false,
+    "executed": false,
+    "exact_scope": {
+      "submission_id": "3de6408a-e12a-4573-a772-fd8e0228ea22",
+      "revision_id": "3879def6-19ce-4b29-a202-d44b897fde40",
+      "bucket": "root-archive-private-staging",
+      "key": "private/v1/3de6408a-e12a-4573-a772-fd8e0228ea22/3879def6-19ce-4b29-a202-d44b897fde40.pdf",
+      "bytes": 687
+    },
+    "preserve": "All historical fixtures/records and all audit/tombstone history; only this new file may be physically removed after confirmation."
+  },
+  "deferred": {
+    "hosted_missing_turnstile": "DEFERRED_NOT_PASSED",
+    "hosted_invalid_turnstile": "DEFERRED_NOT_PASSED",
+    "independent_hosted_worker_jwt": "UNVERIFIED_NOT_PASSED",
+    "actual_expired_or_revoked_admin_session": "NOT_RUN_NO_EXTRA_FORCED_SESSION_CAMPAIGN",
+    "fixture4_and_pagination": "MERGE_LAUNCH_DEFERRED",
+    "artificial_200ms_interruption": "NOT_AN_ACCEPTANCE_GATE"
+  },
+  "risk_acceptance": "UNRESOLVED_SEPARATE_OWNER_DECISION_BEFORE_TRUSTED_CONTRIBUTOR_ONBOARDING"
+}

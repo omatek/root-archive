@@ -1,7 +1,17 @@
 # Real student staging acceptance
 
-Status: **Actual Google/Turnstile upload, private pending, portal approval and
-anonymous PDF download PASS. Uploads PAUSED. Coordinated withdrawal is next.**
+Status: **Essential real contributor acceptance PASS, including withdrawal and
+fresh-download 404. Uploads PAUSED. Exact-scope cleanup confirmation pending.**
+
+[Withdrawal proof](student-staging-withdrawal-proof.json): owner withdrawal at
+18:52:02.209Z leaves this exact item unpublished/v3. The public catalog is empty
+and fresh anonymous GET/HEAD at the same download URL return 404/no-store. The
+private 687-byte PDF remains ready with its approved hash. Zero unresolved
+operations/FK violations; prior records and production Worker/Pages versions are
+unchanged. Both upload timestamps remain empty and submissions are false.
+The essential UI lifecycle is complete; do not add campaigns. [Acceptance summary
+and separate pilot/public-launch requirements](student-staging-acceptance-summary.md).
+Only the new exact submission/revision/key awaits explicit cleanup confirmation.
 
 [Publication proof](student-staging-publication-proof.json): owner portal
 approval at 18:47:21.264Z is recorded in D1, published/v2, selecting the exact

@@ -1,5 +1,25 @@
 # Staging execution results
 
+## Essential real contributor cycle passes through withdrawal — 15 November 2026 UTC
+
+Owner withdrawal is recorded at 18:52:02.209Z, unpublished/v3, for the one UI
+submission `3de6408a-e12a-4573-a772-fd8e0228ea22`. Fresh anonymous catalog is empty;
+same-URL GET/HEAD both return 404/no-store. The sole private PDF remains ready,
+687 bytes and approved SHA256 unchanged. D1 has four submissions (the original
+three terminal rows unchanged plus this unpublished row), five revisions (four
+historical deleted plus this ready original), 16 audits, no unresolved operations
+and no FK violations. Inspection writes zero rows. Submissions are false, both
+timestamps empty and cleanup false. Production legacy Worker/Pages deployment
+IDs match baseline. [Withdrawal/pause/private-retention proof](student-staging-withdrawal-proof.json).
+
+The essential actual Google → Turnstile → UI PDF → private pending → moderator
+approval → anonymous exact download → withdrawal → fresh 404 path now passes.
+No extra campaign is needed. Permanent cleanup is held for the owner's explicit
+confirmation of the exact new submission/revision/R2 key; audits and older
+fixtures must remain. Hosted Turnstile negatives stay deferred, independent
+Worker JWT/session negatives remain unverified, and no pilot risk acceptance or
+contributor onboarding is inferred. [Minimum pilot versus public-launch scope](student-staging-acceptance-summary.md).
+
 ## Actual UI PDF approved and downloaded anonymously — 15 November 2026 UTC
 
 The owner reports approval in the actual portal. D1 confirms published/v2 at

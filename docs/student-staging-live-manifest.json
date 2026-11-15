@@ -1,5 +1,7 @@
 {
-  "phase": "PUBLICATION_VERIFIED_UPLOADS_PAUSED_AWAITING_COORDINATED_WITHDRAWAL",
+  "phase": "CORE_ACCEPTANCE_PASS_UPLOADS_PAUSED_AWAITING_EXACT_CLEANUP_CONFIRMATION",
+  "essential_acceptance_complete": true,
+  "withdrawal_proof": "student-staging-withdrawal-proof.json",
   "publication_proof": "student-staging-publication-proof.json",
   "pending_proof": "student-staging-pending-proof.json",
   "streamlined_window_evidence": "student-staging-streamlined-window.json",
@@ -55,8 +57,8 @@
   "enablement_executed": true,
   "new_submission": {
     "id": "3de6408a-e12a-4573-a772-fd8e0228ea22",
-    "status": "published",
-    "version": 2,
+    "status": "unpublished",
+    "version": 3,
     "created_at": "2026-11-15T18:36:39.600Z",
     "public_credit_present": false,
     "private_identity_present": true
@@ -72,10 +74,10 @@
   "accepted_uploads": 1,
   "moderator_discovery": "PASS_OWNER_PORTAL_APPROVAL_AND_D1_AUDIT",
   "approval_public_download": "PASS_ANONYMOUS_CATALOG_GET_HEAD_200_APPROVED_SHA256",
-  "withdrawal_download_denial": "NOT_RUN",
+  "withdrawal_download_denial": "PASS_FRESH_ANONYMOUS_GET_HEAD_404_CATALOG_EMPTY_PRIVATE_HASH_RETAINED",
   "administrator_session_recovery": "NOT_RUN",
   "cleanup": {
-    "identifiers_presented": false,
+    "identifiers_presented": true,
     "confirmation_received": false,
     "executed": false
   },
@@ -90,7 +92,7 @@
       "deleted": 4,
       "ready": 1
     },
-    "audits": 15,
+    "audits": 16,
     "unresolved_upload_or_delete_operations": 0
   },
   "jwt_risk": {
