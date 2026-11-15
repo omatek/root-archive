@@ -27,6 +27,11 @@
     // exact owner-approved test account(s) as a secret, never in Git.
     "STAGING_STUDENT_EMAILS": "",
     "SUBMISSIONS_ENABLED": "false",
+    // Both canonical UTC timestamps are required when enabled; max window 60m.
+    // The Worker denies new upload intents at/after CLOSES_AT independently of
+    // the operator session. Paused releases clear both timestamps.
+    "STAGING_SUBMISSIONS_OPENS_AT": "",
+    "STAGING_SUBMISSIONS_CLOSES_AT": "",
     "CLEANUP_ENABLED": "false"
   },
   "d1_databases": [{

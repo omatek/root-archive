@@ -12,7 +12,7 @@ const root = fileURLToPath(new URL('../', import.meta.url));
 const jsonc = async path => JSON.parse((await readFile(path, 'utf8')).replace(/^\s*\/\/.*$/gm, ''));
 
 export async function prepareStudentStaging({googleClientId, turnstileSiteKey, enabled = false,
-  pausedSetup = false,
+  pausedSetup = false, windowStart = '', windowEnd = '',
   output = resolve(root, 'dist/student-staging'), configOutput = resolve(root, 'worker/.wrangler/student-acceptance')} = {}) {
   if (typeof pausedSetup !== 'boolean' || (pausedSetup && enabled)) throw new Error('Paused setup cannot enable submissions.');
   googleClientId = googleClientId || '';
@@ -23,6 +23,12 @@ export async function prepareStudentStaging({googleClientId, turnstileSiteKey, e
     throw new Error('Supply a distinct real staging widget key via STAGING_TURNSTILE_SITE_KEY.');
   }
   if (typeof enabled !== 'boolean') throw new Error('enabled must be a boolean');
+  if (enabled) {
+    const start=Date.parse(windowStart), end=Date.parse(windowEnd);
+    if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start || end-start > 3600000
+      || new Date(start).toISOString() !== windowStart || new Date(end).toISOString() !== windowEnd
+      || end <= Date.now()) throw new Error('Enablement requires a valid UTC window of at most 60 minutes, ending in the future.');
+  }
   // Only remove an output directory owned by this build, never the source site.
   if (resolve(output) === resolve(root, 'site') || !resolve(output).startsWith(resolve(root, 'dist') + '/')) {
     throw new Error('Frontend output must be under this repository dist/.');
@@ -58,6 +64,8 @@ export async function prepareStudentStaging({googleClientId, turnstileSiteKey, e
   backend.secrets = {required:['ADMIN_EMAILS', 'STAGING_STUDENT_EMAILS', 'TURNSTILE_SECRET']};
   backend.vars.GOOGLE_CLIENT_ID = googleClientId;
   backend.vars.SUBMISSIONS_ENABLED = String(enabled);
+  backend.vars.STAGING_SUBMISSIONS_OPENS_AT = enabled ? windowStart : '';
+  backend.vars.STAGING_SUBMISSIONS_CLOSES_AT = enabled ? windowEnd : '';
   await mkdir(configOutput, {recursive:true});
   await writeFile(resolve(configOutput, 'frontend.json'), JSON.stringify(frontend, null, 2) + '\n');
   await writeFile(resolve(configOutput, 'moderation.json'), JSON.stringify(backend, null, 2) + '\n');
@@ -65,16 +73,20 @@ export async function prepareStudentStaging({googleClientId, turnstileSiteKey, e
   const pdfPath = resolve(root, 'dist/student-acceptance.pdf');
   await writeFile(pdfPath, pdf);
   await writeFile(resolve(configOutput, 'manifest.json'), JSON.stringify({studentOrigin:STUDENT_ORIGIN,
-    apiOrigin:API_ORIGIN, submissionsEnabled:enabled, setupPending:!googleClientId, config,
+    apiOrigin:API_ORIGIN, submissionsEnabled:enabled, setupPending:!googleClientId,
+    submissionWindow:enabled ? {opensAt:windowStart,closesAt:windowEnd} : null, config,
     fixture:{path:pdfPath, bytes:pdf.length, sha256:createHash('sha256').update(pdf).digest('hex')}}, null, 2) + '\n');
   return {output, configOutput, submissionsEnabled:enabled};
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const args = process.argv.slice(2);
-  if (args.some(arg => !['--enable-submissions','--paused-setup'].includes(arg))) throw new Error('Use --paused-setup or --enable-submissions. Default is paused.');
+  if (args.some(arg => !['--enable-submissions','--paused-setup'].includes(arg) && !/^--window-(start|end)=/.test(arg))) throw new Error('Use --paused-setup or --enable-submissions with --window-start/--window-end. Default is paused.');
+  for (const name of ['start','end']) if(args.filter(arg=>arg.startsWith(`--window-${name}=`)).length>1) throw new Error('Duplicate window argument.');
   const settings=await jsonc(resolve(root,'staging/student-public-config.json'));
   console.log(JSON.stringify(await prepareStudentStaging({googleClientId:process.env.STAGING_GOOGLE_CLIENT_ID ?? settings.googleClientId,
     turnstileSiteKey:process.env.STAGING_TURNSTILE_SITE_KEY ?? settings.turnstileSiteKey,
-    enabled:args.includes('--enable-submissions'),pausedSetup:args.includes('--paused-setup')})));
+    enabled:args.includes('--enable-submissions'),pausedSetup:args.includes('--paused-setup'),
+    windowStart:args.find(arg=>arg.startsWith('--window-start='))?.slice('--window-start='.length),
+    windowEnd:args.find(arg=>arg.startsWith('--window-end='))?.slice('--window-end='.length)})));
 }

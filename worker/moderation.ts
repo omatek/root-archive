@@ -60,6 +60,19 @@ const EDITABLE = "('pending','under_review','published','unpublished')";
 const statement = (env: ModerationEnv, sql: string, ...values: (string | number | null)[]) => env.DB.prepare(sql).bind(...values);
 const iso = () => new Date().toISOString();
 
+export function stagingSubmissionWindowOpen(env: Pick<ModerationEnv,
+  'SUBMISSIONS_ENABLED' | 'STAGING_SUBMISSIONS_OPENS_AT' | 'STAGING_SUBMISSIONS_CLOSES_AT'>, now = Date.now()) {
+  const opens = Date.parse(env.STAGING_SUBMISSIONS_OPENS_AT ?? '');
+  const closes = Date.parse(env.STAGING_SUBMISSIONS_CLOSES_AT ?? '');
+  return env.SUBMISSIONS_ENABLED === 'true' && Number.isFinite(opens) && Number.isFinite(closes)
+    && new Date(opens).toISOString() === env.STAGING_SUBMISSIONS_OPENS_AT
+    && new Date(closes).toISOString() === env.STAGING_SUBMISSIONS_CLOSES_AT
+    && closes > opens && closes - opens <= HOUR && now >= opens && now < closes;
+}
+function requireSubmissionWindow(env: ModerationEnv) {
+  if (!stagingSubmissionWindowOpen(env)) throw new WorkerHttpError(503, 'Contributions are temporarily unavailable. Please try again later.');
+}
+
 function json(value: unknown, status = 200, headers: Record<string, string> = {}) {
   return new Response(JSON.stringify(value), {status, headers: {...PRIVATE_HEADERS, 'Content-Type': 'application/json; charset=utf-8', ...headers}});
 }
@@ -198,11 +211,14 @@ async function download(request: Request, env: ModerationEnv, id: string) {
 }
 async function submission(request: Request, env: ModerationEnv) {
   const identity = await verifyContributor(request, env);
-  if (env.SUBMISSIONS_ENABLED !== 'true') throw new WorkerHttpError(503, 'Contributions are temporarily unavailable. Please try again later.');
+  requireSubmissionWindow(env);
   if (!env.TURNSTILE_SECRET?.trim()) throw new WorkerHttpError(503, 'Contributions are temporarily unavailable.');
   const form = await parseMultipartWithByteLimit(request, MAX_BODY);
   const payload = await validateAndExtractPayload(form, {optionalSemester:true});
   await verifyTurnstileToken(env.TURNSTILE_SECRET, payload.turnstileToken, request.headers.get('CF-Connecting-IP'));
+  // Parsing/uploading a body or Siteverify may span the cutoff. Recheck before
+  // creating any D1 upload intent; no operator process or scheduled task needed.
+  requireSubmissionWindow(env);
   const id = crypto.randomUUID(), revisionId = crypto.randomUUID(), intentOperation = crypto.randomUUID(), operation = crypto.randomUUID(), now = iso();
   const key = `private/v1/${id}/${revisionId}${payload.fileExtension}`;
   const deadline = new Date(Date.now() + HOUR).toISOString();

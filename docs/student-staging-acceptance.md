@@ -1,7 +1,26 @@
 # Real student staging acceptance
 
-Status: **Google-configured staging frontend/backend DEPLOYED PAUSED; owner
-reports eligible-account secret configured. Live acceptance and enablement NOT authorized.**
+Status: **Single-PDF supervised live staging acceptance APPROVED. Preflight and
+server cutoff preparation in progress; uploads remain paused pending gates.**
+
+Current owner authorization supersedes the older setup-only checkpoint below:
+one synthetic UI PDF, representative Google/Turnstile denials, private pending
+discovery, approval/download/withdrawal, and practical admin session recovery.
+Upload enablement is permitted for at most 60 minutes **only after** actual
+eligible-account verification and storage/deployment preflight. The Worker must
+enforce canonical `STAGING_SUBMISSIONS_OPENS_AT`/`STAGING_SUBMISSIONS_CLOSES_AT`
+timestamps, a maximum 60-minute interval and an automatic cutoff independent
+of Codex. Invalid/missing/expired windows fail closed even if the boolean is true;
+the cutoff is rechecked after Siteverify before any upload intent. Re-pause
+explicitly immediately after the single accepted upload, on completion or any
+safety issue. In-flight storage work already admitted before cutoff can finish.
+No timers/Cron or operator process is required to reject new intents at expiry.
+
+**Destructive cleanup is held for a separate confirmation of the exact new
+submission UUID, revision UUID and R2 key.** The broader live approval does not
+satisfy that confirmation. Preserve all previous fixtures, records and audits.
+Independent hosted JWT checks remain unverified; trusted-contributor risk
+acceptance will be a separate documented decision, not inferred from this run.
 Baseline: `6ab4023bc628107dc6e07c5c5937fcbf64a3a1c6`, existing PR [#26](https://github.com/omatek/root-archive/pull/26).
 The owner prioritizes this run over fixture 4 and the 201-record campaign. Those
 campaigns remain deferred, unseeded, and are not prerequisites for this run.
@@ -149,9 +168,9 @@ public staging keys; the local dummy-key build is **not deployable acceptance**.
 
 The owner has supplied the Google client ID, reports updating the protected
 student allowlist, and confirms HTTPS/the staging notice. Both configs have been
-redeployed paused. These setup steps do not need repetition. The remaining owner
-gate is explicit approval for the bounded live run below, including temporary
-enablement and cleanup of only its new UUID. No live sign-in or submission yet.
+redeployed paused. These setup steps do not need repetition. The bounded live
+run is now approved, subject to the preflight/cutoff gates above. Destructive
+cleanup still needs confirmation of the actual new identifiers before execution.
 The following setup instructions remain as reference; do not repeat them or
 change production OAuth settings to manufacture a passing test.
 
@@ -205,7 +224,7 @@ separately: it immediately deploys a version. The generated configs declare
 required secret names so a missing secret blocks deployment.
 
 Record the actual deployment/version IDs. For the approved active window,
-rebuild using `node scripts/prepare-student-staging.mjs --enable-submissions` and
+rebuild using `node scripts/prepare-student-staging.mjs --enable-submissions --window-start=<UTC-ISO> --window-end=<UTC-ISO>` and
 deploy **only the backend** with the generated moderation config. To pause, run
 the builder with no flag and redeploy only that backend. No rollback to the old
 deployed code: it lacks the new account gate. Pause first on any unexpected

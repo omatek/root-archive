@@ -18,12 +18,15 @@ const course = JSON.parse(readFileSync(new URL('../../site/courses.json', import
 const {privateKey, publicKey} = await generateKeyPair('RS256');
 const {privateKey: wrongKey} = await generateKeyPair('RS256');
 const jwks = {keys:[{...await exportJWK(publicKey), kid:'moderation-fixture', alg:'RS256', use:'sig'}]};
+const testWindowStart=Date.now()-60000;
 const baseBindings = {
   ADMIN_ORIGIN:adminOrigin, PUBLIC_API_ORIGIN:publicOrigin, ALLOWED_ORIGIN:studentOrigin,
   ACCESS_ISSUER:issuer, ACCESS_AUD:'synthetic-admin-app', ADMIN_EMAILS:actor,
   GOOGLE_CLIENT_ID:'synthetic-google-app', TURNSTILE_SECRET:'synthetic-turnstile',
   STAGING_STUDENT_EMAILS:studentEmail,
   SUBMISSIONS_ENABLED:'true', CLEANUP_ENABLED:'true',
+  STAGING_SUBMISSIONS_OPENS_AT:new Date(testWindowStart).toISOString(),
+  STAGING_SUBMISSIONS_CLOSES_AT:new Date(testWindowStart+3600000).toISOString(),
 };
 let mf, db, bucket, turnstileSuccess=true;
 let outbound=[];
@@ -212,6 +215,46 @@ test('staging account allowlist gates verification and submission; pause prevent
   assert.equal((await invokeNode(request('/auth/verify'),{STAGING_STUDENT_EMAILS:` ${studentEmail.toUpperCase()} `})).status,200);
   assert.equal((await submit({},await studentToken({email:'other@std.aum.edu.jo'}))).status,403);
   assert.equal((await invokeNode(request('/submit'),{SUBMISSIONS_ENABLED:'false'})).status,503);
+  assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM submissions').first()).n,0);
+  assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM file_revisions').first()).n,0);
+  assert.equal((await bucket.list()).objects.length,0);
+});
+
+test('server cutoff fails closed independently of enabled flag and prevents upload intents',async()=>{
+  const {stagingSubmissionWindowOpen}=await import('../.wrangler/moderation-dist/moderation.js');
+  const opens=Date.now(),closes=opens+3600000;
+  const window={SUBMISSIONS_ENABLED:'true',STAGING_SUBMISSIONS_OPENS_AT:new Date(opens).toISOString(),
+    STAGING_SUBMISSIONS_CLOSES_AT:new Date(closes).toISOString()};
+  assert.equal(stagingSubmissionWindowOpen(window,opens-1),false);
+  assert.equal(stagingSubmissionWindowOpen(window,opens),true);
+  assert.equal(stagingSubmissionWindowOpen(window,closes-1),true);
+  assert.equal(stagingSubmissionWindowOpen(window,closes),false);
+  assert.equal(stagingSubmissionWindowOpen(window,closes+1),false);
+  assert.equal(stagingSubmissionWindowOpen({...window,SUBMISSIONS_ENABLED:'false'},opens),false);
+  const jwt=await studentToken();
+  for(const patch of [
+    {STAGING_SUBMISSIONS_OPENS_AT:undefined}, {STAGING_SUBMISSIONS_CLOSES_AT:''},
+    {STAGING_SUBMISSIONS_CLOSES_AT:'invalid'},
+    {STAGING_SUBMISSIONS_OPENS_AT:new Date(opens-7200000).toISOString(),STAGING_SUBMISSIONS_CLOSES_AT:new Date(opens-3600000).toISOString()},
+    {STAGING_SUBMISSIONS_OPENS_AT:new Date(opens+60000).toISOString(),STAGING_SUBMISSIONS_CLOSES_AT:new Date(opens+120000).toISOString()},
+    {STAGING_SUBMISSIONS_OPENS_AT:new Date(opens-1000).toISOString(),STAGING_SUBMISSIONS_CLOSES_AT:new Date(opens+3600000).toISOString()},
+  ]) {
+    const response=await invokeNode(new Request(publicOrigin+'/submit',{method:'POST',headers:{Origin:studentOrigin,
+      Authorization:`Bearer ${jwt}`},body:form()}),patch);
+    assert.equal(response.status,503);
+  }
+  // Advance the request clock inside the mocked Siteverify response. This
+  // proves a request admitted before cutoff cannot create an intent afterwards,
+  // without sleeps, a running operator process, or any hosted fault injection.
+  const originalNow=Date.now;let requestNow=originalNow();const cutoff=requestNow+60000;
+  Date.now=()=>requestNow;
+  try {
+    const response=await invokeNode(new Request(publicOrigin+'/submit',{method:'POST',headers:{Origin:studentOrigin,
+      Authorization:`Bearer ${jwt}`},body:form()}),{
+      STAGING_SUBMISSIONS_OPENS_AT:new Date(requestNow).toISOString(),STAGING_SUBMISSIONS_CLOSES_AT:new Date(cutoff).toISOString(),
+    },()=>{requestNow=cutoff;});
+    assert.equal(response.status,503);
+  } finally {Date.now=originalNow;}
   assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM submissions').first()).n,0);
   assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM file_revisions').first()).n,0);
   assert.equal((await bucket.list()).objects.length,0);
@@ -494,13 +537,13 @@ test('a late R2 PUT after terminal cleanup is reconciled and deleted again witho
   assert.equal((await db.prepare('SELECT status FROM submissions WHERE id=?').bind(id).first()).status,'removed');
 });
 
-async function invokeNode(request, overrides={}) {
+async function invokeNode(request, overrides={}, onSiteverify) {
   const {default:worker}=await import('../.wrangler/moderation-dist/moderation.js');
   const originalFetch=globalThis.fetch;
   globalThis.fetch=async (input) => {
     const url=new URL(input instanceof Request?input.url:input);
     if(url.href===`${issuer}/cdn-cgi/access/certs` || url.href==='https://www.googleapis.com/oauth2/v3/certs') return Response.json(jwks);
-    if(url.href==='https://challenges.cloudflare.com/turnstile/v0/siteverify') return Response.json({success:true});
+    if(url.href==='https://challenges.cloudflare.com/turnstile/v0/siteverify') {onSiteverify?.();return Response.json({success:true});}
     throw new Error('Unexpected Node fixture network request');
   };
   try {return await worker.fetch(request,{...baseBindings,DB:db,PRIVATE_FILES:bucket,...overrides});}

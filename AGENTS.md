@@ -5,8 +5,13 @@
 - Current acceptance priority (15 November): real contributor integration first.
   Read `docs/student-staging-acceptance.md`. The separate student frontend and
   staging configuration and initially paused deployment are approved from
-  e9f72a4; Google-configured paused setup is deployed from 40f6c5d. Keep SUBMISSIONS_ENABLED=false: the bounded hosted
-  PDF run and enablement still need explicit owner approval. Do not run
+  e9f72a4; Google-configured paused setup is deployed from 40f6c5d. The owner now
+  approves the single-PDF supervised staging acceptance with at most 60 minutes
+  of upload enablement and a server-enforced automatic cutoff. Verify the actual
+  allowlisted Google session and storage preflight before enabling. Re-pause
+  immediately after the one accepted upload or on any safety issue. Cleanup
+  requires separate confirmation of the exact NEW submission/revision/key;
+  present identifiers first. Preserve unrelated fixtures and all audits. Do not run
   fixture 4 or n=5..205 pagination as prerequisites. Preserve all older evidence.
   The new staging account allowlist is fail-closed when empty/missing; provision
   only owner-approved test accounts as a secret. Hosted independent Worker JWT

@@ -28,6 +28,8 @@ test('isolated student build routes the real UI to staging and leaves production
     assert.match(await readFile(resolve(output,'index.html'),'utf8'),/Synthetic staging acceptance only/);
     const backend=JSON.parse(await readFile(resolve(configOutput,'moderation.json')));
     assert.equal(backend.vars.SUBMISSIONS_ENABLED,'false');
+    assert.equal(backend.vars.STAGING_SUBMISSIONS_OPENS_AT,'');
+    assert.equal(backend.vars.STAGING_SUBMISSIONS_CLOSES_AT,'');
     assert.equal(backend.vars.CLEANUP_ENABLED,'false');
     assert.equal(backend.vars.ALLOWED_ORIGIN,STUDENT_ORIGIN);
     assert.equal('ADMIN_EMAILS' in backend.vars,false);
@@ -49,9 +51,26 @@ test('build rejects missing or reused production OAuth/widget settings and unsaf
     {...fixtureSettings,turnstileSiteKey:CONFIG.turnstileSiteKey},
     {...fixtureSettings,turnstileSiteKey:'1x00000000000000000000AA'},
     {...fixtureSettings,pausedSetup:true,enabled:true},
+    {...fixtureSettings,enabled:true},
+    {...fixtureSettings,enabled:true,windowStart:new Date(Date.now()-1000).toISOString(),windowEnd:new Date(Date.now()+3600000).toISOString()},
     {...fixtureSettings,output:fileURLToPath(new URL('../site',import.meta.url))}]) {
     await assert.rejects(prepareStudentStaging(settings));
   }
+});
+
+test('enabled release requires a bounded explicit UTC window and records the server cutoff',async()=>{
+  const root=fileURLToPath(new URL('../',import.meta.url));
+  await mkdir(resolve(root,'dist'),{recursive:true});
+  const temp=await mkdtemp(resolve(root,'dist/student-window-test-'));
+  const windowStart=new Date().toISOString(),windowEnd=new Date(Date.now()+1800000).toISOString();
+  try {
+    const output=resolve(temp,'site'),configOutput=resolve(temp,'configs');
+    await prepareStudentStaging({...fixtureSettings,enabled:true,windowStart,windowEnd,output,configOutput});
+    const backend=JSON.parse(await readFile(resolve(configOutput,'moderation.json')));
+    assert.equal(backend.vars.SUBMISSIONS_ENABLED,'true');
+    assert.equal(backend.vars.STAGING_SUBMISSIONS_OPENS_AT,windowStart);
+    assert.equal(backend.vars.STAGING_SUBMISSIONS_CLOSES_AT,windowEnd);
+  } finally {await rm(temp,{recursive:true,force:true});}
 });
 
 test('explicit paused setup accepts no Google client and produces only a paused, clearly marked deployment',async()=>{
@@ -84,5 +103,13 @@ test('owner denial helper is staging-only, idle until a UI submit, changes only 
   assert.equal(calls[1].options.body.get('title'),'Synthetic');
   assert.equal(calls[1].options.headers,headers);
   assert.equal(form.get('turnstile_token'),'synthetic-valid-fixture');
+  assert.equal(sandbox.window.fetch,original);
+  sandbox.window.rootStagingTurnstileFailure='missing';
+  runInNewContext(source,sandbox);
+  assert.equal(calls.length,2);
+  await sandbox.window.fetch(API_ORIGIN+'/submit',{method:'POST',headers,body:form});
+  assert.equal(calls[2].options.body.has('turnstile_token'),false);
+  assert.equal(calls[2].options.body.get('title'),'Synthetic');
+  assert.equal(calls[2].options.headers,headers);
   assert.equal(sandbox.window.fetch,original);
 });
