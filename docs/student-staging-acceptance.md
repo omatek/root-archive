@@ -1,5 +1,12 @@
 # Real student staging acceptance
 
+**FINAL: passing essential workflow, authorized exact-scope cleanup verified,
+uploads paused.** [Final acceptance record](student-staging-final-acceptance.md)
+and [independent cleanup proof](student-staging-cleanup-proof.json) supersede the
+older checkpoint statuses below. No remaining nonessential campaign is passed;
+all are DEFERRED. Hosted independent JWT verification remains UNVERIFIED with
+no risk acceptance. No onboarding, production cutover or PR merge occurred.
+
 Status: **Essential real contributor acceptance PASS, including withdrawal and
 fresh-download 404. Uploads PAUSED. Exact-scope cleanup confirmation pending.**
 

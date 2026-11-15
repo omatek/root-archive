@@ -1,6 +1,10 @@
 # Real contributor staging acceptance — minimum scope
 
-**Essential functional cycle PASS. Uploads PAUSED. Cleanup confirmation pending.**
+**Essential functional cycle PASS. Uploads PAUSED. Authorized cleanup COMPLETE.**
+
+See [final acceptance](student-staging-final-acceptance.md) and
+[cleanup verification](student-staging-cleanup-proof.json). The dated details
+below describe the earlier retained-file checkpoint; cleanup is no longer pending.
 This is isolated staging evidence for one synthetic PDF, not production cutover,
 permission to onboard contributors, or exhaustive certification. PR #26 remains
 unmerged by this task; production/legacy infrastructure was not mutated.

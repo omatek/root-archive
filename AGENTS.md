@@ -1,5 +1,18 @@
 # Working on root/archive
 
+## Final student acceptance checkpoint
+
+The authorized real Google/Turnstile/UI PDF acceptance is COMPLETE and CLEANED.
+Read docs/student-staging-final-acceptance.md and student-staging-cleanup-proof.json.
+The owner explicitly authorized autonomous control-plane cleanup of only the
+new UUID/revision/key, superseding earlier portal-only/no-SQL cleanup guidance.
+It is removed/v4, contributor identity scrubbed, revision deleted, bucket empty,
+17 audits and all tombstones retained. Uploads false, timestamps empty, storage
+private, production unchanged. No further work is authorized by this completed
+task. All remaining nonessential campaigns DEFERRED, NOT PASSED; independent
+hosted JWT checks UNVERIFIED and risk acceptance unresolved before onboarding.
+The older dated checkpoints below are historical and do not override this state.
+
 ## Confirmed architecture
 
 - Current acceptance priority (15 November): real contributor integration first.

@@ -1,5 +1,23 @@
 # Staging execution results
 
+## Final authorized cleanup — 15 November 2026 UTC
+
+The owner confirmed the exact new submission/revision/key and required autonomous
+execution. Guarded Cloudflare D1 updates removed only that submission (v4),
+scrubbed contributor identity, retained resource/submission tombstones, appended
+an honestly attributed control-plane cleanup audit, and queued its sole file.
+Exact-key R2 DELETE succeeded; a separate GET returns 404 and the full bucket
+listing is empty. The revision is deleted, all 16 prior audits remain plus the
+new event (17 total), historical fixtures are unchanged, and FK checks are clean.
+Uploads remain false with empty timestamps; private storage endpoints remain
+disabled; production Worker/Pages IDs match baseline. No raw identity was recorded.
+This cleanup proves authorized control-plane removal, not authenticated portal
+permanent-removal behavior. The real UI submit/approval/download/withdrawal path
+passes. All additional campaigns are DEFERRED, NOT PASSED; independent hosted JWT
+checks remain UNVERIFIED and risk acceptance remains unresolved.
+[Final summary](student-staging-final-acceptance.md),
+[mutation and independent verification](student-staging-cleanup-proof.json).
+
 ## Essential real contributor cycle passes through withdrawal — 15 November 2026 UTC
 
 Owner withdrawal is recorded at 18:52:02.209Z, unpublished/v3, for the one UI

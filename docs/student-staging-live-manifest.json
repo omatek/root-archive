@@ -1,5 +1,5 @@
 {
-  "phase": "CORE_ACCEPTANCE_PASS_UPLOADS_PAUSED_AWAITING_EXACT_CLEANUP_CONFIRMATION",
+  "phase": "COMPLETE_CLEANED_UPLOADS_PAUSED",
   "essential_acceptance_complete": true,
   "withdrawal_proof": "student-staging-withdrawal-proof.json",
   "publication_proof": "student-staging-publication-proof.json",
@@ -7,7 +7,7 @@
   "streamlined_window_evidence": "student-staging-streamlined-window.json",
   "enablement_budget_used_minutes": 60,
   "remaining_enablement_budget_minutes": 0,
-  "workflow_complete": false,
+  "workflow_complete": true,
   "window_evidence": "student-staging-window-open.json",
   "eligible_auth_evidence": "student-staging-eligible-auth.json",
   "authorization": {
@@ -57,42 +57,44 @@
   "enablement_executed": true,
   "new_submission": {
     "id": "3de6408a-e12a-4573-a772-fd8e0228ea22",
-    "status": "unpublished",
-    "version": 3,
+    "status": "removed",
+    "version": 4,
     "created_at": "2026-11-15T18:36:39.600Z",
     "public_credit_present": false,
-    "private_identity_present": true
+    "private_identity_present": false
   },
-  "new_revisions": [{
-    "id": "3879def6-19ce-4b29-a202-d44b897fde40",
-    "submission_id": "3de6408a-e12a-4573-a772-fd8e0228ea22",
-    "key": "private/v1/3de6408a-e12a-4573-a772-fd8e0228ea22/3879def6-19ce-4b29-a202-d44b897fde40.pdf",
-    "status": "ready",
-    "bytes": 687,
-    "sha256": "f225b67a86db912394042bca309b0691727e22ef3bd741b044ec0543906151d1"
-  }],
+  "new_revisions": [
+    {
+      "id": "3879def6-19ce-4b29-a202-d44b897fde40",
+      "submission_id": "3de6408a-e12a-4573-a772-fd8e0228ea22",
+      "key": "private/v1/3de6408a-e12a-4573-a772-fd8e0228ea22/3879def6-19ce-4b29-a202-d44b897fde40.pdf",
+      "status": "deleted",
+      "bytes": 687,
+      "sha256": "f225b67a86db912394042bca309b0691727e22ef3bd741b044ec0543906151d1"
+    }
+  ],
   "accepted_uploads": 1,
   "moderator_discovery": "PASS_OWNER_PORTAL_APPROVAL_AND_D1_AUDIT",
   "approval_public_download": "PASS_ANONYMOUS_CATALOG_GET_HEAD_200_APPROVED_SHA256",
   "withdrawal_download_denial": "PASS_FRESH_ANONYMOUS_GET_HEAD_404_CATALOG_EMPTY_PRIVATE_HASH_RETAINED",
-  "administrator_session_recovery": "NOT_RUN",
+  "administrator_session_recovery": "DEFERRED_NOT_PASSED",
   "cleanup": {
     "identifiers_presented": true,
-    "confirmation_received": false,
-    "executed": false
+    "confirmation_received": true,
+    "executed": true,
+    "method": "Owner-authorized Cloudflare D1 guarded updates and exact-key R2 DELETE; portal removal not tested"
   },
   "last_observed_state": {
-    "observed_at": "2026-11-15T18:40:15Z",
+    "observed_at": "2026-11-15T19:12:30.988Z",
     "submissions_enabled": false,
     "window_opens_at": "",
     "window_closes_at": "",
-    "r2_objects": 1,
+    "r2_objects": 0,
     "submissions": 4,
     "revision_statuses": {
-      "deleted": 4,
-      "ready": 1
+      "deleted": 5
     },
-    "audits": 16,
+    "audits": 17,
     "unresolved_upload_or_delete_operations": 0
   },
   "jwt_risk": {
@@ -100,8 +102,10 @@
     "pilot_risk_acceptance": "UNRESOLVED_DECISION_NOT_SILENTLY_ACCEPTED"
   },
   "deferred": {
-    "fixture4": "MERGE_LAUNCH",
-    "focused_pagination": "MERGE_LAUNCH",
-    "artificial_200ms_interruption": "NOT_AN_ACCEPTANCE_GATE"
-  }
+    "fixture4": "DEFERRED_NOT_PASSED",
+    "focused_pagination": "DEFERRED_NOT_PASSED",
+    "artificial_200ms_interruption": "REMOVED_GATE_DEFERRED_NOT_RUN",
+    "other_synthetic_concurrency_recovery_campaigns": "DEFERRED_NOT_PASSED"
+  },
+  "cleanup_proof": "student-staging-cleanup-proof.json"
 }
