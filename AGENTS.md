@@ -41,12 +41,13 @@
   widget completion in the real frontend. This closes the eligible-account/
   allowlist check. Owner reports the paused-submit and ineligible denials; fresh
   reads confirmed no writes from those denials. A normal actual UI upload is now
-  accepted: submission 3de6408a-e12a-4573-a772-fd8e0228ea22, pending/v1, original
+  accepted: submission 3de6408a-e12a-4573-a772-fd8e0228ea22, now published/v2, original
   revision 3879def6-19ce-4b29-a202-d44b897fde40. Its sole private PDF is 687 bytes,
   SHA256 f225b67a86db912394042bca309b0691727e22ef3bd741b044ec0543906151d1,
   identical to the approved synthetic document. Google/allowlist and real
-  Siteverify passed through the accepted UI path. No public row exists and
-  anonymous GET/HEAD return 404. Uploads were immediately re-paused at
+  Siteverify passed through the accepted UI path. The owner approved it through
+  the actual portal at 18:47:21.264Z. D1 snapshot/audit and anonymous catalog,
+  PDF GET/HEAD 200/no-store/exact SHA256 now pass. Uploads remain paused since
   18:37:25.192Z and both window timestamps cleared. The
   original 50-minute window expired at 2026-11-15T18:28:39.447Z. The owner's
   streamlined instruction defers BOTH manual hosted Turnstile denials, contingent
@@ -58,9 +59,10 @@
   Cron remains off. See docs/student-staging-pending-proof.json and
   docs/student-staging-window-open.json and docs/student-staging-eligible-auth.json and
   docs/student-staging-live-manifest.json and docs/student-staging-live-preflight.json.
-  Next is coordinated moderator discovery/inspection/approval of this exact
-  candidate, then anonymous publication/download verification, coordinated
-  withdrawal, and new-request 404 verification. Do not run denial helpers or
+  Next is ONLY coordinated withdrawal of this exact resource and fresh-request
+  404/private-retention verification. See docs/student-staging-publication-proof.json.
+  The seeded PNG lifecycle was already covered; this is the final actual UI PDF
+  integration step. Do not repeat broader tests. Do not run denial helpers or
   further campaigns. Do not approve or delete without coordinating the intended
   owner step. Cleanup still needs separate exact-ID confirmation. Preserve the
   historical records/audits and only own the new UUID/revision in the live manifest.

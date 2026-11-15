@@ -1,5 +1,23 @@
 # Staging execution results
 
+## Actual UI PDF approved and downloaded anonymously — 15 November 2026 UTC
+
+The owner reports approval in the actual portal. D1 confirms published/v2 at
+18:47:21.264Z for `3de6408a-e12a-4573-a772-fd8e0228ea22`, public snapshot selecting
+original revision `3879def6-19ce-4b29-a202-d44b897fde40`, with the corresponding
+`submission_approved` audit. Anonymous catalog now lists the exact item; fresh
+anonymous PDF GET/HEAD both return 200. The GET is 687 bytes, approved SHA256
+matches, filename is UUID-based, and browser/CDN cache headers all prohibit
+storage. R2 still contains only this ready private PDF; zero unresolved operations
+or FK violations, prior records preserved, 15 total audits. Uploads remain paused
+and both window timestamps empty. [Publication proof](student-staging-publication-proof.json).
+
+The owner asked whether prior tests already covered this. Earlier seeded PNGs
+did cover the lifecycle; this final PDF cycle closes the actual student Google/
+Turnstile/UI integration path. No broader rerun is necessary. Next is coordinated
+withdrawal of this exact item, fresh GET/HEAD 404 and retained private file
+verification. No permanent cleanup until separate exact-identifier confirmation.
+
 ## Actual UI PDF received privately; uploads re-paused — 15 November 2026 UTC
 
 The owner reports normal UI receipt for

@@ -1,7 +1,16 @@
 # Real student staging acceptance
 
-Status: **Actual Google/Turnstile PDF upload PASS; private pending state verified.
-Uploads PAUSED. Coordinated moderator approval is next.**
+Status: **Actual Google/Turnstile upload, private pending, portal approval and
+anonymous PDF download PASS. Uploads PAUSED. Coordinated withdrawal is next.**
+
+[Publication proof](student-staging-publication-proof.json): owner portal
+approval at 18:47:21.264Z is recorded in D1, published/v2, selecting the exact
+approved revision. Anonymous catalog contains the item; GET and HEAD return 200,
+safe UUID attachment filename, no-store and the exact approved 687-byte SHA256.
+No duplicate records, extra revisions or unresolved operations appeared, and
+uploads remain paused. The earlier seeded PNG lifecycle evidence stands; only
+this real UI PDF's withdrawal/new-request 404 is needed to close the essential
+end-to-end path. Do not expand or repeat the campaign.
 
 [Pending proof](student-staging-pending-proof.json): submission
 `3de6408a-e12a-4573-a772-fd8e0228ea22` was received through the normal UI at

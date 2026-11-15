@@ -1,0 +1,183 @@
+{
+  "recorded_at": "2026-11-15T18:50:33Z",
+  "submission_id": "3de6408a-e12a-4573-a772-fd8e0228ea22",
+  "owner_report": "approved",
+  "purpose": "Close the real student UI PDF integration path; seeded PNG lifecycle evidence already exists and is not rerun as a campaign.",
+  "submission": {
+    "id": "3de6408a-e12a-4573-a772-fd8e0228ea22",
+    "course_id": "0401111",
+    "type": "Summary",
+    "title": "Synthetic student acceptance",
+    "semester": "",
+    "status": "published",
+    "version": 2,
+    "original_revision_id": "3879def6-19ce-4b29-a202-d44b897fde40",
+    "candidate_revision_id": "3879def6-19ce-4b29-a202-d44b897fde40",
+    "updated_at": "2026-11-15T18:47:21.264Z"
+  },
+  "revisions": [
+    {
+      "id": "3879def6-19ce-4b29-a202-d44b897fde40",
+      "submission_id": "3de6408a-e12a-4573-a772-fd8e0228ea22",
+      "object_key": "private/v1/3de6408a-e12a-4573-a772-fd8e0228ea22/3879def6-19ce-4b29-a202-d44b897fde40.pdf",
+      "mime": "application/pdf",
+      "size": 687,
+      "status": "ready",
+      "etag": "bdd67c1a010fb6a649ce4c105a495444"
+    }
+  ],
+  "public_snapshot": {
+    "id": "3de6408a-e12a-4573-a772-fd8e0228ea22",
+    "status": "published",
+    "revision_id": "3879def6-19ce-4b29-a202-d44b897fde40",
+    "course_id": "0401111",
+    "type": "Summary",
+    "title": "Synthetic student acceptance",
+    "semester": "",
+    "contributor": null,
+    "published_at": "2026-11-15T18:47:21.264Z"
+  },
+  "audit": [
+    {
+      "action": "submission_received",
+      "created_at": "2026-11-15T18:36:39.600Z",
+      "reason": null
+    },
+    {
+      "action": "submission_approved",
+      "created_at": "2026-11-15T18:47:21.264Z",
+      "reason": null
+    }
+  ],
+  "all_submission_states": [
+    {
+      "id": "3de6408a-e12a-4573-a772-fd8e0228ea22",
+      "status": "published",
+      "version": 2
+    },
+    {
+      "id": "726f6f74-6172-4368-8000-000000000001",
+      "status": "removed",
+      "version": 6
+    },
+    {
+      "id": "726f6f74-6172-4368-8000-000000000002",
+      "status": "rejected",
+      "version": 3
+    },
+    {
+      "id": "726f6f74-6172-4368-8000-000000000003",
+      "status": "removed",
+      "version": 7
+    }
+  ],
+  "unresolved": [
+    {
+      "count": 0
+    }
+  ],
+  "audit_count": [
+    {
+      "count": 15
+    }
+  ],
+  "foreign_key_violations": [],
+  "rows_written": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "r2_objects": [
+    {
+      "key": "private/v1/3de6408a-e12a-4573-a772-fd8e0228ea22/3879def6-19ce-4b29-a202-d44b897fde40.pdf",
+      "etag": "bdd67c1a010fb6a649ce4c105a495444",
+      "last_modified": "2026-11-15T18:36:39.776Z",
+      "size": 687,
+      "http_metadata": {
+        "contentType": "application/pdf"
+      },
+      "custom_metadata": {},
+      "storage_class": "Standard"
+    }
+  ],
+  "anonymous_http": [
+    {
+      "path": "/resources",
+      "method": "GET",
+      "status": 200,
+      "authenticated_request": false,
+      "cache_control": "private, no-store, max-age=0",
+      "cdn_cache_control": "no-store",
+      "cloudflare_cdn_cache_control": "no-store",
+      "content_type": "application/json; charset=utf-8",
+      "content_length": "325",
+      "content_disposition": null,
+      "catalog": {
+        "resources": [
+          {
+            "id": "3de6408a-e12a-4573-a772-fd8e0228ea22",
+            "course_id": "0401111",
+            "type": "Summary",
+            "title": "Synthetic student acceptance",
+            "semester": "",
+            "contributor": null,
+            "created_at": "2026-11-15T18:47:21.264Z",
+            "asset_url": "https://api-staging.rootamman.com/download/3de6408a-e12a-4573-a772-fd8e0228ea22"
+          }
+        ],
+        "next_cursor": null
+      }
+    },
+    {
+      "path": "/download/3de6408a-e12a-4573-a772-fd8e0228ea22",
+      "method": "GET",
+      "status": 200,
+      "authenticated_request": false,
+      "cache_control": "private, no-store, max-age=0",
+      "cdn_cache_control": "no-store",
+      "cloudflare_cdn_cache_control": "no-store",
+      "content_type": "application/pdf",
+      "content_length": "687",
+      "content_disposition": "attachment; filename=\"resource-3de6408a-e12a-4573-a772-fd8e0228ea22.pdf\"",
+      "bytes": 687,
+      "sha256": "f225b67a86db912394042bca309b0691727e22ef3bd741b044ec0543906151d1",
+      "approved_hash_matches": true
+    },
+    {
+      "path": "/download/3de6408a-e12a-4573-a772-fd8e0228ea22",
+      "method": "HEAD",
+      "status": 200,
+      "authenticated_request": false,
+      "cache_control": "private, no-store, max-age=0",
+      "cdn_cache_control": "no-store",
+      "cloudflare_cdn_cache_control": "no-store",
+      "content_type": "application/pdf",
+      "content_length": "687",
+      "content_disposition": "attachment; filename=\"resource-3de6408a-e12a-4573-a772-fd8e0228ea22.pdf\""
+    }
+  ],
+  "uploads": {
+    "paused": true,
+    "opens_at": "",
+    "closes_at": ""
+  },
+  "result": {
+    "moderator_discovery_and_approval": "PASS_OWNER_UI_WITH_INDEPENDENT_D1_AUDIT",
+    "public_catalog": "PASS",
+    "anonymous_pdf_get_head": "PASS_200",
+    "approved_pdf_hash": "PASS",
+    "withdrawal": "AWAITING_COORDINATED_OWNER_ACTION"
+  },
+  "next": "Owner unpublishes only this resource for re-review; reason Synthetic acceptance withdrawal. Then verify fresh anonymous GET/HEAD 404 and private retention. No permanent removal until separate exact-ID confirmation.",
+  "deferred": {
+    "hosted_turnstile_negatives": "DEFERRED_NOT_PASSED",
+    "independent_hosted_jwt": "UNVERIFIED_NOT_PASSED",
+    "additional_campaigns": "NOT_RUN"
+  },
+  "cleanup_executed": false
+}
