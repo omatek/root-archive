@@ -5,7 +5,7 @@
 - Current acceptance priority (15 November): real contributor integration first.
   Read `docs/student-staging-acceptance.md`. The separate student frontend and
   staging configuration and initially paused deployment are approved from
-  e9f72a4; paused setup is deployed from 6a22c29. Keep SUBMISSIONS_ENABLED=false: the bounded hosted
+  e9f72a4; Google-configured paused setup is deployed from 40f6c5d. Keep SUBMISSIONS_ENABLED=false: the bounded hosted
   PDF run and enablement still need explicit owner approval. Do not run
   fixture 4 or n=5..205 pagination as prerequisites. Preserve all older evidence.
   The new staging account allowlist is fail-closed when empty/missing; provision
@@ -24,13 +24,14 @@
   queues deletion. Do not restore public access using old catalogs or buckets.
 - Isolated private moderation staging is deployed through Wrangler; production
   integration remains disabled. Current paused backend version is
-  `6d658a5a-4f5b-4848-b32a-7d63d5bd6986`; student frontend version is
-  `53a70251-f36b-4e97-a592-8fec66ad2c5b`, on archive-staging.rootamman.com.
+  `2bf35f0b-8c6f-4c0f-9fbb-11740b646d3c`; student frontend version is
+  `30f908f3-9faa-4799-b566-c46b3cc8da41`, on archive-staging.rootamman.com.
   The backend serves approved admin/API-staging domains with staging D1/R2 only.
-  The separate Turnstile widget/secret are installed. Google client remains
-  empty; the allowlist secret contains a non-email sentinel that authorizes
-  nobody, pending private owner configuration. Both submissions and Cron remain
-  off. See docs/student-staging-paused-deployment.json and current owner steps.
+  The separate Turnstile widget/secret and owner-provided Google Web client are
+  configured. The owner reports replacing the allowlist secret and confirms
+  HTTPS/top notice; secret values and actual Google/Turnstile authorization have
+  not been inspected/tested. Both submissions and Cron remain off. See
+  docs/student-staging-google-ready.json; live acceptance is the next approval gate.
   The original synthetic acceptance below used version bb9e96b3.
   Access app/policy/PIN/AUD were independently verified through the connector;
   the deployment token's Access read restriction is not a security failure.

@@ -1,7 +1,7 @@
 # Real student staging acceptance
 
-Status: **Staging frontend/backend DEPLOYED PAUSED; Google client and eligible
-account configuration pending. Live acceptance and enablement NOT authorized.**
+Status: **Google-configured staging frontend/backend DEPLOYED PAUSED; owner
+reports eligible-account secret configured. Live acceptance and enablement NOT authorized.**
 Baseline: `6ab4023bc628107dc6e07c5c5937fcbf64a3a1c6`, existing PR [#26](https://github.com/omatek/root-archive/pull/26).
 The owner prioritizes this run over fixture 4 and the 201-record campaign. Those
 campaigns remain deferred, unseeded, and are not prerequisites for this run.
@@ -10,7 +10,29 @@ and focused pagination to merge/launch acceptance. The artificial 200 ms client
 interruption test is no longer an acceptance gate; preserve its historical code
 and evidence without requiring or running it.
 
-## Verified missing configuration
+## Current configured checkpoint — 15 November 2026 UTC
+
+[New deployment and state evidence](student-staging-google-ready.json) supersedes
+the bootstrap configuration below without replacing historical evidence.
+Source `40f6c5d7e456e26686e0cbac3bc1177024140aae` is deployed: backend version
+`2bf35f0b-8c6f-4c0f-9fbb-11740b646d3c`, frontend version
+`30f908f3-9faa-4799-b566-c46b3cc8da41`. Both use the supplied distinct Google Web
+client `451085424306-3akhui9717r3s41v1qeqgkn3rhehsk3i.apps.googleusercontent.com`.
+All three protected secret bindings are present and preserved; their values
+were not retrieved. The owner reports updating the student allowlist and
+confirms HTTPS plus the expected top notice on the staging page. These are
+owner observations, not an executed Google/Turnstile or allowlist acceptance.
+
+Submissions/cleanup remain false; no Cron or alternate URLs are enabled.
+Catalog GET and submission CORS OPTIONS return 200, with an empty catalog and
+the exact staging origin. D1 retains the same terminal records and audits,
+R2 remains empty, and production Worker/Pages/domains are unchanged. No student
+authentication, submission POST, moderation action or cleanup was performed.
+Four focused preparation tests and both real-config dry-runs pass. The UI no
+longer reports missing Google configuration; actual OAuth issuance, eligibility
+and Turnstile verification await the explicit live-run gate.
+
+## Historical bootstrap and missing-configuration verification
 
 The list below is the retained pre-setup baseline. Current deployed state is in
 [the paused-deployment evidence](student-staging-paused-deployment.json).
@@ -72,8 +94,9 @@ The staging notice and sign-in panel explain that setup is incomplete; the UI
 does not call Google with an invented client ID. This flag cannot be combined
 with `--enable-submissions`. Public widget/client values live in
 `staging/student-public-config.json`; environment values can override them.
-Until the owner configures the eligible account, the protected allowlist contains
-the non-email sentinel `staging-account-not-configured`, which authorizes nobody.
+The initial bootstrap used the non-email allowlist sentinel
+`staging-account-not-configured`, which authorized nobody. The owner has since
+reported replacing it privately; the actual value was not retrieved.
 
 The generated **687-byte valid one-page PDF** contains only artificial practice
 text. SHA256 `f225b67a86db912394042bca309b0691727e22ef3bd741b044ec0543906151d1`.
@@ -124,27 +147,19 @@ public staging keys; the local dummy-key build is **not deployable acceptance**.
 
 ## Exact owner-assisted setup
 
-Next owner actions (no live sign-in or submission yet):
-
-1. Create the Google Web client below and send **only its public client ID**.
-   The agent can then update both staging configurations and redeploy paused
-   under the existing setup approval; no new infrastructure approval is needed.
-2. In Cloudflare Dashboard → Workers & Pages →
-   `root-archive-moderation-staging` → Settings → Variables and Secrets → edit
-   `STAGING_STUDENT_EMAILS` as a **Secret**. Replace the disabled sentinel with
-   the exact eligible `@std.aum.edu.jo` test-account address, then Save/Deploy.
-   Preserve `SUBMISSIONS_ENABLED=false`, `CLEANUP_ENABLED=false` and every other
-   setting. Do not send the address or secret through chat. This authorizes the
-   account only for the later separately approved acceptance window; it does
-   not open submissions or authorize onboarding.
-3. Open `https://archive-staging.rootamman.com/` in your browser and report
-   whether it has valid HTTPS and the synthetic/setup-pending notice. Do not
-   click Google sign-in or submit until live acceptance is explicitly approved.
+The owner has supplied the Google client ID, reports updating the protected
+student allowlist, and confirms HTTPS/the staging notice. Both configs have been
+redeployed paused. These setup steps do not need repetition. The remaining owner
+gate is explicit approval for the bounded live run below, including temporary
+enablement and cleanup of only its new UUID. No live sign-in or submission yet.
+The following setup instructions remain as reference; do not repeat them or
+change production OAuth settings to manufacture a passing test.
 
 Google Cloud (owner authentication required; do not share credentials):
 
 1. Open [Google Cloud Console](https://console.cloud.google.com/), select a
-   separate owner-controlled staging project, then **Google Auth Platform**.
+   owner-controlled project, then **Google Auth Platform**. Use a distinct
+   staging Web client and preserve the production client/origins.
 2. Set Branding/Audience as required, using Testing where available. Authorize
    only the eligible test identity and a separate owner-controlled ineligible
    Google identity for this synthetic run. If organizational policy prevents

@@ -1,5 +1,27 @@
 # Staging execution results
 
+## Google-configured paused checkpoint — 15 November 2026 UTC
+
+The owner supplied a distinct Google Web client ID, reports updating the student
+allowlist secret in Cloudflare, and confirms HTTPS/the top staging notice. Source
+`40f6c5d7e456e26686e0cbac3bc1177024140aae` is deployed to both staging Workers:
+backend `2bf35f0b-8c6f-4c0f-9fbb-11740b646d3c`, frontend
+`30f908f3-9faa-4799-b566-c46b3cc8da41`. The three existing secrets are preserved
+as secret bindings; no secret value or account address was retrieved or retained.
+SUBMISSIONS_ENABLED/CLEANUP_ENABLED remain false and no Cron exists. Public
+catalog GET and staging-origin CORS OPTIONS both return 200. D1/R2, historical
+audits, production Worker/Pages and domains are unchanged. No student login,
+submission POST, moderator operation or deletion has run. Four focused build
+tests and both deployment dry-runs pass. Full previous local test evidence is
+preserved; it is not a live Google/Turnstile pass.
+
+[Sanitized current evidence](student-staging-google-ready.json). The next gate is
+explicit owner approval for the bounded live synthetic PDF acceptance window,
+including temporary submission enablement, withdrawal and cleanup of its exact
+new UUID. Independent hosted Worker JWT checks remain unverified under the open
+RA-JWT-01 decision. Fixture 4 concurrency/focused pagination remain deferred;
+the artificial 200 ms interruption test is not an acceptance gate.
+
 ## Approved paused student setup deployed — 15 November 2026 UTC
 
 The owner approved only staging configuration and initially paused deployment.
