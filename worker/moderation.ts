@@ -17,6 +17,12 @@ export interface ModerationEnv extends RuntimeBindings {
 // signature, audience, verified email and exact student domain checks succeed.
 async function verifyContributor(request: Request, env: ModerationEnv) {
   const identity = await verifyGoogleStudentToken(request, env);
+  // Only the explicit production configuration admits the full eligible domain.
+  // Missing mode retains the deployed staging allowlist and cutoff behavior.
+  if (env.CONTRIBUTOR_MODE === 'production') return identity;
+  if (env.CONTRIBUTOR_MODE && env.CONTRIBUTOR_MODE !== 'staging') {
+    throw new WorkerHttpError(503, 'Contributions are not configured.');
+  }
   const allowed = (env.STAGING_STUDENT_EMAILS ?? '').split(',')
     .map(email => email.trim().toLowerCase()).filter(Boolean);
   if (!allowed.length) throw new WorkerHttpError(503, 'Staging contributions are not configured.');
@@ -71,7 +77,10 @@ export function stagingSubmissionWindowOpen(env: Pick<ModerationEnv,
     && closes > opens && closes - opens <= HOUR && now >= opens && now < closes;
 }
 function requireSubmissionWindow(env: ModerationEnv) {
-  if (!stagingSubmissionWindowOpen(env)) throw new WorkerHttpError(503, 'Contributions are temporarily unavailable. Please try again later.');
+  const open = env.CONTRIBUTOR_MODE === 'production'
+    ? env.SUBMISSIONS_ENABLED === 'true'
+    : (!env.CONTRIBUTOR_MODE || env.CONTRIBUTOR_MODE === 'staging') && stagingSubmissionWindowOpen(env);
+  if (!open) throw new WorkerHttpError(503, 'Contributions are temporarily unavailable. Please try again later.');
 }
 
 function json(value: unknown, status = 200, headers: Record<string, string> = {}) {

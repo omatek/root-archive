@@ -263,6 +263,34 @@ test('server cutoff fails closed independently of enabled flag and prevents uplo
   assert.equal((await bucket.list()).objects.length,0);
 });
 
+test('explicit production mode retains Google, origin, Turnstile, declaration and pause gates without staging-only limits',async()=>{
+  const production = {CONTRIBUTOR_MODE:'production', STAGING_STUDENT_EMAILS:'',
+    STAGING_SUBMISSIONS_OPENS_AT:'', STAGING_SUBMISSIONS_CLOSES_AT:''};
+  const request = async (path='/submit', claims={}, origin=studentOrigin, patch={}) => new Request(publicOrigin+path,
+    {method:'POST', headers:{Origin:origin, Authorization:`Bearer ${await studentToken(claims)}`},
+      ...(path==='/submit' ? {body:form(patch)} : {})});
+  assert.equal((await invokeNode(await request('/auth/verify',{email:'another@std.aum.edu.jo'}),production)).status,200);
+  for (const claims of [{aud:'wrong'},{hd:'aum.edu.jo'},{email:'x@gmail.com'},{email_verified:false},
+    {exp:Math.floor(Date.now()/1000)-60}]) {
+    assert.ok([401,403].includes((await invokeNode(await request('/submit',claims),production)).status));
+  }
+  assert.equal((await invokeNode(await request('/submit',{},'https://attacker.invalid'),production)).status,403);
+  assert.equal((await invokeNode(await request(),{...production,SUBMISSIONS_ENABLED:'false'})).status,503);
+  assert.equal((await invokeNode(await request(),{...production,CONTRIBUTOR_MODE:'prod'})).status,503);
+  turnstileSuccess=false;
+  assert.equal((await invokeNode(await request(),production)).status,403);
+  turnstileSuccess=true;
+  assert.equal((await invokeNode(await request('/submit',{},studentOrigin,{declaration_accepted:undefined}),production)).status,400);
+  assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM submissions').first()).n,0);
+  assert.equal((await bucket.list()).objects.length,0);
+  const accepted=await invokeNode(await request('/submit',{email:'another@std.aum.edu.jo'}),production);
+  assert.equal(accepted.status,201,await accepted.clone().text());
+  const {submission_id:id}=await accepted.json();
+  assert.equal((await db.prepare('SELECT contributor_email FROM contributor_authorizations WHERE submission_id=?').bind(id).first()).contributor_email,'another@std.aum.edu.jo');
+  assert.equal((await publicDownload(id)).status,404);
+  assert.deepEqual((await publicCatalog()).resources,[]);
+});
+
 test('pending and replacement revisions stay private; only selected approved snapshot appears anonymously',async () => {
   let record=await create();const id=record.submission.id;
   assert.equal(record.submission.status,'pending');assert.equal(record.submission.contributor_email,studentEmail);
@@ -546,7 +574,7 @@ async function invokeNode(request, overrides={}, onSiteverify) {
   globalThis.fetch=async (input) => {
     const url=new URL(input instanceof Request?input.url:input);
     if(url.href===`${issuer}/cdn-cgi/access/certs` || url.href==='https://www.googleapis.com/oauth2/v3/certs') return Response.json(jwks);
-    if(url.href==='https://challenges.cloudflare.com/turnstile/v0/siteverify') {onSiteverify?.();return Response.json({success:true});}
+    if(url.href==='https://challenges.cloudflare.com/turnstile/v0/siteverify') {onSiteverify?.();return Response.json({success:turnstileSuccess});}
     throw new Error('Unexpected Node fixture network request');
   };
   try {return await worker.fetch(request,{...baseBindings,DB:db,PRIVATE_FILES:bucket,...overrides});}
