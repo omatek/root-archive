@@ -1,5 +1,11 @@
 # Hosted Group B browser client — review candidate, not executed
 
+Current owner instruction (15 November): deterministic fixture 4 concurrency and
+focused pagination are deferred to merge/launch acceptance. The artificial
+200 ms client interruption attempt described below is no longer an acceptance
+gate. Preserve this historical candidate; do not execute it during student setup
+or use it as a prerequisite for real Google/Turnstile UI acceptance.
+
 The owner requested preparation and **independent review before execution or
 any additional seeding**. That hold remains in force. No command below is
 authorization to execute now. This is a test operator tool, not a deployed

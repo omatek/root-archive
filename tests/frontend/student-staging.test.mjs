@@ -7,6 +7,33 @@ import {chromium} from 'playwright';
 import {prepareStudentStaging, STUDENT_ORIGIN, API_ORIGIN} from '../../scripts/prepare-student-staging.mjs';
 import {syntheticStudentPDF} from '../../scripts/synthetic-student-pdf.mjs';
 
+test('paused setup shows missing Google configuration and makes no sign-in or submission requests',async()=>{
+  const root=fileURLToPath(new URL('../../',import.meta.url));
+  await mkdir(resolve(root,'dist'),{recursive:true});
+  const temp=await mkdtemp(resolve(root,'dist/student-paused-browser-'));
+  const output=resolve(temp,'site');
+  await prepareStudentStaging({pausedSetup:true,turnstileSiteKey:'0x4SYNTHETIC_STAGING_WIDGET',output,configOutput:resolve(temp,'configs')});
+  const browser=await chromium.launch({executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE || undefined,args:['--no-sandbox']});
+  try {
+    const page=await browser.newPage();const blocked=[];
+    await page.route('**/*',async route=>{
+      const url=new URL(route.request().url());
+      if(url.href===API_ORIGIN+'/resources') return route.fulfill({json:{resources:[],next_cursor:null}});
+      if(url.origin==='https://challenges.cloudflare.com') return route.fulfill({contentType:'text/javascript',body:'window.turnstile={render(){return "widget"}};'});
+      if(url.origin!==STUDENT_ORIGIN) {blocked.push(url.href);return route.abort();}
+      const path=resolve(output,'.'+decodeURIComponent(url.pathname==='/'?'/index.html':url.pathname));
+      if(!path.startsWith(output+'/')) return route.abort();
+      return route.fulfill({contentType:({'.html':'text/html','.mjs':'text/javascript','.json':'application/json','.css':'text/css','.svg':'image/svg+xml','.woff2':'font/woff2'})[extname(path)] || 'application/octet-stream',body:await readFile(path)});
+    });
+    await page.goto(STUDENT_ORIGIN+'/?course=0401212');
+    await page.locator('#load-state').waitFor({state:'hidden'});
+    await page.locator('.empty-course [data-contribute]').click();
+    await page.locator('#auth-message').filter({hasText:/Google sign-in is not configured yet/}).waitFor();
+    assert.equal(await page.locator('#google-signin-slot button').count(),0);
+    assert.deepEqual(blocked,[]);
+  } finally {await browser.close();await rm(temp,{recursive:true,force:true});}
+});
+
 test('generated staging UI uses staging OAuth, Turnstile and /submit, preserves denied drafts and returns a private reference (all external services mocked)',async()=>{
   const root=fileURLToPath(new URL('../../',import.meta.url));
   await mkdir(resolve(root,'dist'),{recursive:true});

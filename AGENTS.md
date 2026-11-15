@@ -4,12 +4,16 @@
 
 - Current acceptance priority (15 November): real contributor integration first.
   Read `docs/student-staging-acceptance.md`. The separate student frontend and
-  release preparation are local only; Google/Turnstile configuration, deployment
-  and the bounded hosted PDF run still need explicit owner approval. Do not run
+  staging configuration and initially paused deployment are approved from
+  e9f72a4; setup is in progress. Keep SUBMISSIONS_ENABLED=false: the bounded hosted
+  PDF run and enablement still need explicit owner approval. Do not run
   fixture 4 or n=5..205 pagination as prerequisites. Preserve all older evidence.
   The new staging account allowlist is fail-closed when empty/missing; provision
   only owner-approved test accounts as a secret. Hosted independent Worker JWT
   checks remain unverified with an unresolved pilot risk-acceptance decision.
+  Deterministic fixture 4 concurrency and focused pagination are deferred to
+  merge/launch acceptance. The artificial 200 ms interruption test is no longer
+  an acceptance gate; preserve historical evidence without requiring execution.
 
 - Private moderation replacement is implemented separately in `worker/moderation.ts`,
   `worker/wrangler.moderation.jsonc`, `worker/migrations/` and `admin/`. Read

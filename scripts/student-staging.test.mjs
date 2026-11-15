@@ -48,9 +48,24 @@ test('build rejects missing or reused production OAuth/widget settings and unsaf
   for(const settings of [{}, {...fixtureSettings,googleClientId:CONFIG.googleClientId},
     {...fixtureSettings,turnstileSiteKey:CONFIG.turnstileSiteKey},
     {...fixtureSettings,turnstileSiteKey:'1x00000000000000000000AA'},
+    {...fixtureSettings,pausedSetup:true,enabled:true},
     {...fixtureSettings,output:fileURLToPath(new URL('../site',import.meta.url))}]) {
     await assert.rejects(prepareStudentStaging(settings));
   }
+});
+
+test('explicit paused setup accepts no Google client and produces only a paused, clearly marked deployment',async()=>{
+  const root=fileURLToPath(new URL('../',import.meta.url));
+  await mkdir(resolve(root,'dist'),{recursive:true});
+  const temp=await mkdtemp(resolve(root,'dist/student-paused-test-'));
+  try {
+    const output=resolve(temp,'site'),configOutput=resolve(temp,'configs');
+    await prepareStudentStaging({turnstileSiteKey:fixtureSettings.turnstileSiteKey,pausedSetup:true,output,configOutput});
+    const backend=JSON.parse(await readFile(resolve(configOutput,'moderation.json')));
+    assert.equal(backend.vars.SUBMISSIONS_ENABLED,'false');assert.equal(backend.vars.GOOGLE_CLIENT_ID,'');
+    assert.equal(JSON.parse(await readFile(resolve(configOutput,'manifest.json'))).setupPending,true);
+    assert.match(await readFile(resolve(output,'index.html'),'utf8'),/Google sign-in is not configured; submissions remain paused/);
+  } finally {await rm(temp,{recursive:true,force:true});}
 });
 
 test('owner denial helper is staging-only, idle until a UI submit, changes only the challenge once',async()=>{

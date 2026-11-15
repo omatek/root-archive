@@ -12,8 +12,11 @@ const root = fileURLToPath(new URL('../', import.meta.url));
 const jsonc = async path => JSON.parse((await readFile(path, 'utf8')).replace(/^\s*\/\/.*$/gm, ''));
 
 export async function prepareStudentStaging({googleClientId, turnstileSiteKey, enabled = false,
+  pausedSetup = false,
   output = resolve(root, 'dist/student-staging'), configOutput = resolve(root, 'worker/.wrangler/student-acceptance')} = {}) {
-  if (!/^\d+-[a-z0-9-]+\.apps\.googleusercontent\.com$/.test(googleClientId || '') || googleClientId === CONFIG.googleClientId) {
+  if (typeof pausedSetup !== 'boolean' || (pausedSetup && enabled)) throw new Error('Paused setup cannot enable submissions.');
+  googleClientId = googleClientId || '';
+  if (!(pausedSetup && googleClientId === '') && (!/^\d+-[a-z0-9-]+\.apps\.googleusercontent\.com$/.test(googleClientId) || googleClientId === CONFIG.googleClientId)) {
     throw new Error('Supply a distinct staging Google Web client ID via STAGING_GOOGLE_CLIENT_ID.');
   }
   if (!/^[a-zA-Z0-9_-]{20,100}$/.test(turnstileSiteKey || '') || turnstileSiteKey === CONFIG.turnstileSiteKey || /^.[xX]00000000000000000000/.test(turnstileSiteKey)) {
@@ -32,7 +35,8 @@ export async function prepareStudentStaging({googleClientId, turnstileSiteKey, e
     submissionEndpoint:API_ORIGIN + '/submit', googleClientId, turnstileSiteKey};
   await writeFile(resolve(output, 'js/config.mjs'), `// Isolated staging build. No secrets.\nexport const CONFIG = ${JSON.stringify(config, null, 2)};\n${policies}`);
   let html = await readFile(resolve(output, 'index.html'), 'utf8');
-  html = html.replace('<body>', '<body>\n  <p role="note" class="shell">Synthetic staging acceptance only. Do not upload real academic material or personal information.</p>')
+  const notice = pausedSetup && !googleClientId ? ' Setup in progress: Google sign-in is not configured; submissions remain paused.' : '';
+  html = html.replace('<body>', `<body>\n  <p role="note" class="shell">Synthetic staging acceptance only. Do not upload real academic material or personal information.${notice}</p>`)
     .replaceAll('https://archive.rootamman.com/', STUDENT_ORIGIN + '/');
   await writeFile(resolve(output, 'index.html'), html);
   await writeFile(resolve(output, 'resources.json'), '[]\n');
@@ -61,14 +65,16 @@ export async function prepareStudentStaging({googleClientId, turnstileSiteKey, e
   const pdfPath = resolve(root, 'dist/student-acceptance.pdf');
   await writeFile(pdfPath, pdf);
   await writeFile(resolve(configOutput, 'manifest.json'), JSON.stringify({studentOrigin:STUDENT_ORIGIN,
-    apiOrigin:API_ORIGIN, submissionsEnabled:enabled, config,
+    apiOrigin:API_ORIGIN, submissionsEnabled:enabled, setupPending:!googleClientId, config,
     fixture:{path:pdfPath, bytes:pdf.length, sha256:createHash('sha256').update(pdf).digest('hex')}}, null, 2) + '\n');
   return {output, configOutput, submissionsEnabled:enabled};
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const args = process.argv.slice(2);
-  if (args.some(arg => arg !== '--enable-submissions')) throw new Error('Only --enable-submissions is supported. Default is paused.');
-  console.log(JSON.stringify(await prepareStudentStaging({googleClientId:process.env.STAGING_GOOGLE_CLIENT_ID,
-    turnstileSiteKey:process.env.STAGING_TURNSTILE_SITE_KEY, enabled:args.includes('--enable-submissions')})));
+  if (args.some(arg => !['--enable-submissions','--paused-setup'].includes(arg))) throw new Error('Use --paused-setup or --enable-submissions. Default is paused.');
+  const settings=await jsonc(resolve(root,'staging/student-public-config.json'));
+  console.log(JSON.stringify(await prepareStudentStaging({googleClientId:process.env.STAGING_GOOGLE_CLIENT_ID ?? settings.googleClientId,
+    turnstileSiteKey:process.env.STAGING_TURNSTILE_SITE_KEY ?? settings.turnstileSiteKey,
+    enabled:args.includes('--enable-submissions'),pausedSetup:args.includes('--paused-setup')})));
 }

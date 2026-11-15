@@ -1,9 +1,14 @@
 # Real student staging acceptance
 
-Status: **PREPARED LOCALLY; external setup/deployment/live run await approval.**
+Status: **Staging-only configuration and initially paused deployment APPROVED;
+setup in progress. Live acceptance and submission enablement NOT authorized.**
 Baseline: `6ab4023bc628107dc6e07c5c5937fcbf64a3a1c6`, existing PR [#26](https://github.com/omatek/root-archive/pull/26).
 The owner prioritizes this run over fixture 4 and the 201-record campaign. Those
 campaigns remain deferred, unseeded, and are not prerequisites for this run.
+The latest owner instruction moves fixture 4's deterministic concurrency tests
+and focused pagination to merge/launch acceptance. The artificial 200 ms client
+interruption test is no longer an acceptance gate; preserve its historical code
+and evidence without requiring or running it.
 
 ## Verified missing configuration
 
@@ -44,6 +49,14 @@ before allowlist checks on both `/auth/verify` and `/submit`. No identity enters
 the frontend or Git. This restriction must be deliberately configured/revisited
 for any later production release.
 
+`--paused-setup` explicitly permits an absent Google client **only while paused**.
+The staging notice and sign-in panel explain that setup is incomplete; the UI
+does not call Google with an invented client ID. This flag cannot be combined
+with `--enable-submissions`. Public widget/client values live in
+`staging/student-public-config.json`; environment values can override them.
+Until the owner configures the eligible account, the protected allowlist contains
+the non-email sentinel `staging-account-not-configured`, which authorizes nobody.
+
 The generated **687-byte valid one-page PDF** contains only artificial practice
 text. SHA256 `f225b67a86db912394042bca309b0691727e22ef3bd741b044ec0543906151d1`.
 It is written to `dist/student-acceptance.pdf`, outside the served assets. The
@@ -55,8 +68,11 @@ Approval is required by the owner's current request and AGENTS.md's rule:
 "No deployments, production simulations, live configuration changes, or
 real-data collection without explicit human approval."
 
-Approve the pushed commit and these concrete operations, or approve setup only
-and retain the later live-run gate:
+The owner approved staging configuration and initially paused deployment from
+commit `e9f72a46a589a19a38d1ad4f35bba0ca6428104f`. This authorizes setup in
+items 1–2 and the paused portion of item 3. The active window and all live
+student/moderator actions in items 3–5 remain separately gated. Submissions must
+stay `false` until a later explicit live-acceptance approval.
 
 1. Create a **separate** staging Google Web OAuth client/consent configuration
    and a **separate** managed Turnstile widget for `archive-staging.rootamman.com`.
@@ -115,8 +131,11 @@ Cloudflare (can be performed by the authorized agent after setup approval):
 2. Provision `STAGING_STUDENT_EMAILS` with the exact eligible owner-authorized
    account(s), comma-separated, as a protected backend secret. Do not allow the
    ineligible account. Preserve the existing `ADMIN_EMAILS` secret.
-3. Supply public values in `STAGING_GOOGLE_CLIENT_ID` and
-   `STAGING_TURNSTILE_SITE_KEY`, and build from the approved commit:
+3. Supply public values in `staging/student-public-config.json` or environment
+   variables `STAGING_GOOGLE_CLIENT_ID` and `STAGING_TURNSTILE_SITE_KEY`, and build
+   from the approved commit. While Google setup is pending, use
+   `node scripts/prepare-student-staging.mjs --paused-setup`; after the real client
+   ID is configured, omit that flag. Both modes keep submissions paused.
 
 ```sh
 node scripts/prepare-student-staging.mjs
@@ -210,16 +229,18 @@ public frontend cutover with no stale static catalog fallback; disposition of
 historical public assets/previews and old credentials; unrestricted-admission
 policy replacing this staging account gate; complete hosted auth/session evidence;
 appropriate rate limits/quotas, recurring cleanup/recovery/monitoring, and the
-deferred pagination/race/interruption validation at intended launch scale. Those
+deferred deterministic concurrency and focused pagination validation at intended
+launch scale. The artificial 200 ms interruption attempt is not a gate. Those
 campaigns are not prerequisites for the single student acceptance run.
 
 ## Local validation (synthetic services only)
 
 - `node scripts/catalogs.mjs`: 127 courses, zero resources.
-- `node --test scripts/*.test.mjs`: 66 tests pass (including the denial helper).
+- `node --test scripts/*.test.mjs`: 67 tests pass (including the denial helper).
 - `npm --prefix worker run check`: types, dry-run bundles, 72 tests pass.
 - `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/chromium npm run test:frontend`:
-  38 tests pass, including the generated staging UI with all services mocked.
+  39 tests pass, including the generated staging UI with all services mocked
+  and the paused setup UI making no Google or submission requests.
 - Python `unittest discover` in `scripts/tests` and `analytics/tests`: 3 + 5 pass.
 - Both generated deployment configurations pass Wrangler 4.156.0 dry-run using
   explicitly dummy public keys. `pdfinfo` confirms one page, no JavaScript/forms,

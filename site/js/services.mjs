@@ -96,6 +96,10 @@ export function createStudentAuth() {
   }
   async function init() {
     getToken();
+    if (!CONFIG.googleClientId?.trim()) {
+      message('Google sign-in is not configured yet. Contributions remain unavailable.');
+      paint(); return;
+    }
     if (loading || initialized) { paint(); return; }
     loading = true;
     $('retry-signin').disabled = true;
