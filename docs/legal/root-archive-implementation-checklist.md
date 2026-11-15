@@ -1,0 +1,77 @@
+# root/archive Implementation and Operations Checklist
+
+**Internal use only; not a public policy page.** Reconciled on 15 November 2026 against PR #26 head `cacee8f020eadc2a2779d65815732253104224c4`, the final staging acceptance, the seven supplied Phase 2 files and the owner-approved retention schedule. The earlier missing-file assessment is superseded. The standalone Phase 1 report was not attached; its questions and cited sources recorded in this supplied checklist are preserved without new research. This checklist separates genuine release dependencies from optional or deferred work; it does not authorize deployment or another test campaign.
+
+## Evidence and publication status
+
+| Item | What Phase 1 established |
+| --- | --- |
+| PR #26 source | At `cacee8f0`, signed eligible Google-account checks, private R2 revisions, optional credit, private moderation, D1 publication gating and revocation are implemented. Approval enables anonymous listing/download; the intake switch controls submission only. This integration branch adds affirmative, versioned, file-specific permission evidence. Pending/withdrawn age expiry and general audit purge remain absent. There is no independent publication switch and none is required by this assignment. [PR #26][pr] |
+| Hosted staging | Essential real Google/Turnstile/UI workflow PASS, then authorized exact-artifact cleanup COMPLETE: contributor identity scrubbed, private R2 empty, uploads paused, fresh withdrawn GET/HEAD 404. These are recorded results, not tests rerun for this assignment. Nonessential campaigns are DEFERRED, NOT PASSED. Independent hosted JWT verification remains UNVERIFIED and RA-JWT-01 risk disposition is unresolved. New authorization code/migration is locally tested only. [Final acceptance][acceptance] |
+| Production and legacy | PR #26's intended post-merge private architecture is the policy baseline. Production cutover, its private bindings/routing/configuration, legacy intake retirement and historical artifact handling remain separate deployment work. Their absence today is not a legacy-versus-PR defect. This assignment changes no live infrastructure. |
+
+| Draft | Publication status |
+| --- | --- |
+| [Privacy Notice](root-archive-privacy-notice.md) | **Blocked.** Complete the actual commencement date, data/processor and profiling disclosures, processing bases and overseas arrangements, with professional DPO contact details if applicable. Match the notice to the deployment and put the retention and rights process into operation. |
+| [Contributor Declaration](root-archive-contributor-declaration.md) | **Blocked for live use by substantive legal dependencies.** Technical file-specific recording/retrieval is implemented on this branch: verified account, exact accepted text/version/language, affirmative checkbox, original revision/hash, public-credit choice and server submission event. Legal sufficiency of the electronic method remains unresolved, and the linked Privacy Notice is incomplete. Do not infer a legal conclusion from local tests. |
+| [Terms of Use](root-archive-terms-of-use.md), [Content and Copyright Policy](root-archive-content-and-copyright-policy.md), [Takedown and Dispute Procedure](root-archive-takedown-and-dispute-procedure.md) | Copy ready for the new workflow when the linked pages and described controls are in place. |
+| [Independence and Non-Affiliation Statement](root-archive-independence-statement.md) | Ready to publish. |
+
+## Before accepting real contributors
+
+### Legal requirements and targeted legal questions
+
+- [ ] **Establish and document the lawful processing arrangements.** Cover first-request/security processing, sign-in and private review, case/admin records, and optional self-attribution before it is enabled. Jordan’s PDPL generally requires prior consent unless a defined exception applies. Confirm which activities qualify as contract-necessary, how to record any required purpose-specific consent (including applicable Council forms or a valid electronic equivalent), and how to handle legal capacity for the two pilot contributors. Give the notice at the relevant collection point, including before student sign-in. Avoid collecting identity documents by default. [PDPL arts. 4–10][pdpl] · [Rights Regulation 68/2025, arts. 3, 5–8][rights] · [Council forms][forms]
+- [ ] **Establish the international processing basis.** Identify the actual Cloudflare, Google and mail service flows, recipients/locations and roles, accepted processor terms, protections and transfer records. Resolve Articles 14–15, the current Council position on adequacy or permits, and Article 24’s purpose-based exception as relevant. Prepare a proportionate transfer impact assessment in line with Ministry guidance, and obtain a targeted answer on whether the binding Instructions trigger a DPIA for ordinary-data overseas processing. Staging D1’s `EEUR` region establishes one overseas location. Other services need their own facts. [PDPL arts. 14–15, 24][pdpl] · [2025 Security Instructions][security] · [Ministry FAQ][faq]
+- [ ] **Address DPO and registration duties.** Determine whether direct collection into overseas D1 triggers Article 11(a)(5). Appoint a qualifying DPO if required and add professional contact details to the notice. Establish when processing actually began, including legacy or administrative records, and file promptly if due. The 2025 Registry Instructions set 30 days from actual processing for the initial filing and 15 days for updates after changes. [PDPL art. 11][pdpl] · [Registry Instructions][registry] · [DPO criteria][dpo]
+- [ ] **Resolve the legal sufficiency of electronic permission.** The technical record is implemented, retrievable through the protected administrator detail API, immutable on update and linked atomically to the submitted original and event. It survives content removal and is retained separately after removal; its approved 24-month expiry is not automatically enforced. It stores no raw Google credential. Separate evidence of any third-party rights remains a moderation responsibility; copyright permission does not record purpose-specific privacy consent. The remaining question is legal, not another technical acceptance campaign. [Copyright Law arts. 9, 13][copyright] · [Electronic Transactions Law][electronic] · [2026 amendment][amendment]
+
+### Implementation and operations
+
+- [ ] **Separate release work from optional pilot planning.** A two-person supervised pilot was an earlier operational proposal, not a required community roster or institutional approval process. Keep submissions private until deliberate moderator approval; do not add a second publication switch. Do not approve a real resource for public release until applicable first-file legal dependencies are resolved.
+- [x] **Essential hosted synthetic acceptance completed and cleaned.** Preserve [final acceptance][acceptance]. Do not repeat it. Independent hosted JWT verification remains unverified with unresolved risk disposition; all nonessential campaigns remain deferred. Passing local tests do not close RA-JWT-01.
+- [ ] **Production cutover dependency, outside this PR.** Retire legacy intake and address historical public test artifacts during the separately scoped cutover. No closing PRs, object deletion or live probes are part of this legal integration task. Historical references: [PR #1][legacy1], [#2][legacy2], [#3][legacy3], [#21][legacy21].
+- [ ] **Enforce the approved retention schedule.** Pending submissions have no automatic 30-day expiry; unpublished files have no automatic 7-day terminal removal. Rejected/removed files are queued and retried in bounded cleanup, but no recurring trigger is configured. New permission records are retained separately after removal but have no automatic 24-month purge; audits/tombstones have no general purge, and complaints/logs/provider copies need their own actual lifecycle. The operator and existing contacts are established. Document the precise gaps in the coherence report rather than building a retention-management framework or claiming automatic enforcement. A monitored manual process is an operational option; this PR does not claim it exists. [Private moderation notes][cutover]
+- [ ] **Put the privacy response process into operation.** Both existing addresses are functional; no mailbox verification or new mailbox is needed. The site now links the reporting route. An email is not an automatic takedown or rights-workflow implementation. Keep a minimal record of receipt, due date, action and outcome. Preserve the Phase 1 legal questions/deadlines: 15 working days from the day after receipt for rights requests, one justified extension with notice where applicable; 10 days for privacy complaints; Article 20 serious-harm notices within 24 hours to affected people and 72 hours to the Unit. This PR does not establish that those operational duties are fulfilled. [Rights Regulation arts. 3, 8][rights] · [PDPL art. 20][pdpl] · [Ministry complaint service][complaints]
+
+## Before the first publicly downloadable resource
+
+- [ ] **Resolve the public-release classification.** Obtain a focused Jordanian legal conclusion on whether the free, moderated academic repository falls within Digital Media Regulation 13/2026, especially Articles 2, 4, 6–7 and 12–13, and related publishing/advertising licensing rules. Article 7’s digital-library provision makes this a first-file question. If licensing applies, meet the applicable conditions before distribution. The Phase 1 record did not establish a licence requirement or exemption for the archive. [Official Gazette][media] · [Regulation text used in Phase 1][media-text] · [Press and Publications Law, art. 49][press]
+- [ ] **Clear the exact revision.** Check the contributor’s recorded authority, academic and confidentiality limits, visible content and metadata, and any third-party rights or required attribution. Keep past papers out. Remove data without clearance, including credit/author data embedded in the file if it was not meant to be public. Hold the file if a material concern remains. Check that the personal-study permission and any resource-specific licence agree. [Copyright law][copyright] · [AUM student conduct rules][aum]
+- [ ] **Production delivery is a deployment dependency.** Essential public delivery and fresh withdrawal GET/HEAD denial already passed in staging. Do not repeat staging acceptance here. Production routing/cache/rollback configuration must preserve those invariants at cutover. Use the existing reporting addresses for restriction, correction, disputes and verified orders. [Cybercrime Law arts. 33, 36][cybercrime] · [Private moderation notes][cutover]
+- [x] **Matched policy integration implemented for review.** Six static pages and footer links are generated from the reconciled Markdown; cross-links map to the public routes. The internal checklist is excluded. The exact short notice **“Download for personal study. See the Terms of Use for reuse and sharing.”** sits beside each download link with linked terms. No downloader interaction was added. Privacy/declaration review banners remain because of substantive unresolved issues. Phase 1 left the legal effect of the download notice unverified; no new conclusion is asserted.
+
+## Before broader public launch
+
+- [ ] **Complete the separately scoped production cutover.** Configure production private storage/database, Worker/Access/frontend routing and Google/Turnstile integration, and retire legacy fallback paths. Preserve withdrawals and upload pause on rollback or restore. Independent hosted JWT uncertainty remains unresolved. Focused concurrency/pagination and remaining nonessential campaigns are deferred, not newly imposed gates for this assignment. [Cutover notes][cutover] · [Final acceptance][acceptance]
+- [ ] **Move from supervised to broader intake as soon as the workflow can support it.** Confirm deletion runs reliably without constant supervision, and set basic limits and queue monitoring that match moderation capacity. Check responder coverage and the ability to pause new uploads. Keep intake open to eligible contributors when those controls are in place.
+
+## After launch
+
+- [ ] **Maintain applicable legal and operational duties.** Check deletion backlogs, rights/complaint deadlines, provider retention and authorized moderator access. Reapply withdrawals and deletions before reopening after a restore. Update registry entries on reportable changes. Perform the annual security assessment and update the DPIA annually where required. Review material changes to providers, publication activity or processing purposes before they take effect. [2025 Security Instructions][security] · [Registry Instructions][registry]
+- [ ] **Optional improvements.** Add case or permission automation if the manual process becomes a bottleneck. Add Arabic companion text where useful for students, with particular attention to the language contributors need to understand at sign-in and submission. Accessible, understandable notices and choices are part of the underlying duty. Phase 1 did not establish a universal Arabic-only publication rule.
+
+[pdpl]: https://trc.gov.jo/ebv4.0/root_storage/ar/eb_list_page/personal_data_protection_law.pdf
+[rights]: https://www.jolaws.com/t/lob-3-7196/نظام-تنظيم-حقوق-الشخص-المعني-رقم-68-لسنة-2025
+[forms]: https://www.modee.gov.jo/AR/List/القوانين_والأنظمة_و_التعليمات_الصادرة_بمقتضاه
+[security]: https://www.modee.gov.jo/ebv4.0/root_storage/ar/eb_list_page/technical_and_organizational_security_measures_instructions.pdf
+[faq]: https://www.modee.gov.jo/EN/Pages/FAQs
+[registry]: https://www.jolaws.com/t/lob-5-647/تعليمات-سجل-مسؤولي-ومعالجي-ومراقبي-حماية-البيانات-رقم-0-لسنة-2025
+[dpo]: https://modee.gov.jo/ebv4.0/root_storage/ar/eb_list_page/data_protection_officer_%28dpo%29_accreditation_criteria.pdf
+[complaints]: https://modee.gov.jo/AR/Pages/الخدمات
+[copyright]: https://www.wipo.int/wipolex/en/legislation/details/22010
+[electronic]: https://www.modee.gov.jo/ebv4.0/root_storage/en/eb_list_page/etransaction_law_no_15_of_2015.pdf
+[amendment]: https://pm.gov.jo/Ar/Pages/NewsPaperDetails/6038
+[media]: https://www.pm.gov.jo/Ar/Pages/NewsPaperDetails/6046
+[media-text]: https://www.jolaws.com/t/lob-3-7271/نظام-تنظيم-الاعلام-الرقمي-رقم-13-لسنة-2026
+[press]: https://mc.gov.jo/echobusv3.0/SystemAssets/PDF/Law/129722ac-2d49-4921-b11b-ddc3b9fea03b_Press%20and%20Publication%20Law.pdf
+[aum]: https://aum.edu.jo/student-conduct-code?subject_id=268
+[cybercrime]: https://ncsc.jo/ebv4.0/root_storage/ar/eb_list_page/قانون_الجرائم_الإلكترونية_رقم_%2817%29_لسنة_2023.pdf
+[moderation-source]: https://github.com/omatek/root-archive/blob/cacee8f020eadc2a2779d65815732253104224c4/worker/moderation.ts
+[pr]: https://github.com/omatek/root-archive/pull/26
+[acceptance]: ../student-staging-final-acceptance.md
+[cutover]: ../private-moderation.md
+[legacy1]: https://github.com/omatek/root-archive/pull/1
+[legacy2]: https://github.com/omatek/root-archive/pull/2
+[legacy3]: https://github.com/omatek/root-archive/pull/3
+[legacy21]: https://github.com/omatek/root-archive/pull/21

@@ -1,6 +1,7 @@
 /** Private first-party moderation. This entrypoint has no GitHub publication path. */
 import courses from '../site/courses.json';
 import {TYPES} from '../site/js/config.mjs';
+import {CONTRIBUTOR_AUTHORIZATION} from '../site/js/contributor-authorization.mjs';
 import {
   WorkerHttpError, verifyGoogleStudentToken, parseMultipartWithByteLimit,
   validateAndExtractPayload, verifyTurnstileToken, sanitizeFilename,
@@ -140,11 +141,12 @@ async function detail(env: ModerationEnv, id: string) {
   const revisions = await statement(env, 'SELECT * FROM file_revisions WHERE submission_id=? ORDER BY created_at,id', id).all<Revision>();
   const audit = await statement(env, 'SELECT action,actor,created_at,reason FROM moderation_audit WHERE submission_id=? ORDER BY id DESC LIMIT 100', id).all();
   const published = await statement(env, 'SELECT * FROM resources WHERE id=?', id).first<Resource>();
+  const authorization = await statement(env, 'SELECT * FROM contributor_authorizations WHERE submission_id=?', id).first();
   const {last_operation: _operation, ...submission} = record;
   return {submission, revisions: revisions.results.map(r => ({id:r.id, kind:r.kind, filename:r.filename, mime:r.mime,
     size:r.size, status:r.status, created_at:r.created_at, created_by:r.created_by,
     delete_attempts:r.delete_attempts, last_delete_error:r.last_delete_error})), audit: audit.results,
-    published: published ? {...publicRecord(published, env), revision_id:published.revision_id,
+    authorization, published: published ? {...publicRecord(published, env), revision_id:published.revision_id,
       status:published.status, published_at:published.published_at, updated_at:published.updated_at} : null};
 }
 function auditStatement(env: ModerationEnv, id: string, operation: string, action: string, actor: string, now: string, reason: string | null = null) {
@@ -214,7 +216,16 @@ async function submission(request: Request, env: ModerationEnv) {
   requireSubmissionWindow(env);
   if (!env.TURNSTILE_SECRET?.trim()) throw new WorkerHttpError(503, 'Contributions are temporarily unavailable.');
   const form = await parseMultipartWithByteLimit(request, MAX_BODY);
+  // Require an affirmative action for the exact version shown by the frontend.
+  // Remove these private-only fields before the shared strict legacy parser.
+  if (form.getAll('declaration_accepted').length !== 1 || form.get('declaration_accepted') !== 'true'
+    || form.getAll('declaration_version').length !== 1 || form.get('declaration_version') !== CONTRIBUTOR_AUTHORIZATION.version) {
+    throw new WorkerHttpError(400, 'Accept the current contributor permission before submitting. Reload the page if its wording has changed.');
+  }
+  form.delete('declaration_accepted'); form.delete('declaration_version');
   const payload = await validateAndExtractPayload(form, {optionalSemester:true});
+  const fileHash = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new Uint8Array(payload.fileBytes))),
+    byte => byte.toString(16).padStart(2,'0')).join('');
   await verifyTurnstileToken(env.TURNSTILE_SECRET, payload.turnstileToken, request.headers.get('CF-Connecting-IP'));
   // Parsing/uploading a body or Siteverify may span the cutoff. Recheck before
   // creating any D1 upload intent; no operator process or scheduled task needed.
@@ -239,6 +250,13 @@ async function submission(request: Request, env: ModerationEnv) {
       statement(env, `UPDATE file_revisions SET status='ready',etag=? WHERE id=? AND status='uploading'
         AND EXISTS(SELECT 1 FROM submissions WHERE id=? AND last_operation=? AND status='pending')`,object.etag,revisionId,id,operation),
       auditStatement(env,id,operation,'submission_received','contributor',now),
+      // Receipt, ready revision and submission event commit together. Identity
+      // comes from verified Google claims, never public credit or form fields.
+      statement(env, `INSERT INTO contributor_authorizations(submission_id,original_revision_id,received_operation_id,
+        contributor_sub,contributor_email,declaration_version,declaration_language,declaration_text,acceptance_method,public_credit,file_sha256,accepted_at)
+        SELECT id,?,?,?,?,?,?,?,'affirmative_checkbox',?,?,? FROM submissions WHERE id=? AND last_operation=? AND status='pending'`,
+        revisionId,operation,identity.sub,identity.email,CONTRIBUTOR_AUTHORIZATION.version,CONTRIBUTOR_AUTHORIZATION.language,
+        CONTRIBUTOR_AUTHORIZATION.text,payload.contributor,fileHash,now,id,operation),
     ]);
   } catch {
     await abandonUpload(env,id,revisionId).catch(() => console.error(JSON.stringify({event:'private_upload_recovery_needed',id})));

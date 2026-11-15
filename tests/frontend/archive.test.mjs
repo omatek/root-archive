@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { resolve, extname, sep } from 'node:path';
 import { chromium } from 'playwright';
 import { CONFIG, TYPES } from '../../site/js/config.mjs';
+import { CONTRIBUTOR_AUTHORIZATION } from '../../site/js/contributor-authorization.mjs';
 
 const root = resolve(fileURLToPath(new URL('../../site/', import.meta.url)));
 const realCourses = JSON.parse(await readFile(resolve(root, 'courses.json')));
@@ -130,6 +131,7 @@ async function fillContribution(page) {
   await page.locator('#contribution-semester').fill('Fall 2026');
   await page.locator('#contribution-file').setInputFiles(pdf);
   await page.locator('#selected-file').filter({ hasText: 'synthetic.pdf' }).waitFor();
+  if (await page.locator('#contributor-authorization').isVisible()) await page.locator('#contribution-declaration').check();
 }
 async function signIn(page) {
   await page.getByRole('button', { name: 'Google sign-in (simulated)' }).click();
@@ -439,7 +441,7 @@ test('private submission keeps drafts, opts into credit and confirms only a refe
     await s.goto('/?course=0401212'); await openContribution(p); await fillContribution(p);
     await p.locator('#contribution-semester').fill('');
     assert.match(await p.locator('#contribution-notice').innerText(), /private until approved/);
-    assert.match(await p.locator('#contribution-notice').innerText(), /format, rotate, crop or redact/);
+    assert.match(await p.locator('#contribution-notice').innerText(), /technical formatting and redactions/);
     assert.equal(await p.locator('#contribution-contributor').isDisabled(), true);
     await signIn(p); await p.locator('#submit-resource').click();
     await p.locator('#submission-message').filter({hasText: /verified again/}).waitFor();
@@ -454,6 +456,8 @@ test('private submission keeps drafts, opts into credit and confirms only a refe
     let uploads = s.requests.filter(r => r.type === 'submit');
     assert(uploads.every(r => !r.body.includes('name="contributor"')), 'credit is absent by default');
     assert(uploads.every(r => r.url.endsWith('/submit')));
+    assert(uploads.every(r => r.body.includes('name="declaration_accepted"\r\n\r\ntrue')
+      && r.body.includes(CONTRIBUTOR_AUTHORIZATION.version)));
     await p.locator('#contribute-another').click();
     await noOverflow(p);
     await p.locator('#contribution-course').selectOption('0401212'); await fillContribution(p);
@@ -464,9 +468,74 @@ test('private submission keeps drafts, opts into credit and confirms only a refe
     assert(uploads.at(-1).body.includes('Chosen public name'));
     await p.locator('#contribute-another').click();
     assert.equal(await p.locator('#contribution-credit').isChecked(), false);
+    assert.equal(await p.locator('#contribution-declaration').isChecked(), false);
     assert.equal(await p.locator('#contribution-contributor').isDisabled(), true);
     await accessible(p);
   } finally { await s.close(); }
+});
+
+test('private contributor permission needs an explicit choice for each selected file (mocked services)', async () => {
+  const s = await setup({privateModeration: true}); const p = s.page;
+  try {
+    await s.goto('/?course=0401212'); await openContribution(p); await fillContribution(p); await signIn(p);
+    assert.equal(await p.locator('#contributor-authorization a').getAttribute('href'), './policies/contributor-declaration.html');
+    await p.locator('#contribution-declaration').uncheck();
+    await p.locator('#submit-resource').click();
+    assert.equal(await p.evaluate(() => document.activeElement.id), 'contribution-declaration');
+    assert.equal(s.requests.filter(r => r.type === 'submit').length, 0);
+    await p.locator('#contribution-declaration').check();
+    await p.locator('#contribution-file').setInputFiles({...pdf, name:'another.pdf'});
+    await p.locator('#selected-file').filter({hasText:'another.pdf'}).waitFor();
+    assert.equal(await p.locator('#contribution-declaration').isChecked(), false);
+    await p.locator('#submit-resource').click();
+    assert.equal(s.requests.filter(r => r.type === 'submit').length, 0);
+    await p.setViewportSize({width:320,height:800}); await noOverflow(p); await accessible(p);
+    await p.locator('#contribution-declaration').check();
+    await p.locator('#submit-resource').click(); await p.locator('#contribution-success').waitFor();
+    assert.equal(s.requests.filter(r => r.type === 'submit').length, 1);
+  } finally { await s.close(); }
+});
+
+test('all six policy pages are readable, cross-linked and usable without JavaScript on mobile (local files)',async () => {
+  const s=await setup(); const p=s.page;
+  try {
+    await s.goto();
+    const links=await p.locator('.footer-links a[href^="./policies/"]').evaluateAll(nodes=>nodes.map(a=>a.getAttribute('href')));
+    assert.equal(links.length,6);
+    await p.setViewportSize({width:320,height:800});
+    for (const href of links) {
+      await p.goto(origin+href.slice(1));
+      assert.equal(await p.locator('h1').count(),1);
+      assert.equal(await p.locator('nav[aria-label="Policies"] a').count(),6);
+      assert.equal(await p.locator('script').count(),0);
+      assert.equal(await p.locator('a[href*="implementation-checklist"]').count(),0);
+      await noOverflow(p); await accessible(p);
+      if (/privacy-notice|contributor-declaration/.test(href)) {
+        assert.match(await p.locator('blockquote').innerText(),/BLOCKED/);
+      }
+    }
+    if (process.env.SCREENSHOT_DIR) {
+      await mkdir(process.env.SCREENSHOT_DIR,{recursive:true});
+      await p.goto(origin+'/policies/terms-of-use.html');
+      await p.screenshot({path:resolve(process.env.SCREENSHOT_DIR,'policy-mobile.png'),fullPage:true});
+    }
+  } finally {await s.close();}
+});
+
+test('download notice links the complete terms beside every direct anonymous download without another interaction',async () => {
+  const s=await setup({resources:[fixture]}); const p=s.page;
+  try {
+    await s.goto('/?course=0401212');
+    assert.equal(await p.locator('.download-notice').innerText(),'Download for personal study. See the Terms of Use for reuse and sharing.');
+    assert.equal(await p.locator('.resource-actions .download-notice a').getAttribute('href'),'./policies/terms-of-use.html');
+    assert.equal(await p.locator('.resource-actions .resource-open').getAttribute('href'),fixture.asset_url);
+    assert.equal(await p.locator('.resource-actions input, .resource-actions button').count(),0);
+    assert.equal(s.requests.length,0,'browsing does not authenticate');
+    await p.setViewportSize({width:320,height:800}); await noOverflow(p); await accessible(p);
+    const popup=await Promise.all([p.waitForEvent('popup'),p.locator('.resource-open').click()]);
+    await popup[0].waitForLoadState();
+    assert.equal(popup[0].url(),fixture.asset_url); await popup[0].close();
+  } finally {await s.close();}
 });
 
 test('private security-check and malformed-reference failures keep drafts and reveal no private links (mocked Worker)', async () => {
@@ -642,7 +711,10 @@ test('About introduces root and initial academic coverage while preserving ident
     'workshops', 'experimentation', 'competitions', 'A little less starting from scratch.',
     'root/archive is our first public project', 'Computer Science, Artificial Intelligence, and Cybersecurity at AUM',
     'Anyone can browse and download', 'eligible student account', 'every submission is reviewed',
-    'Practice questions, summaries, notes, test banks', 'not official university services']) assert(text.includes(phrase), phrase);
+    'Original student-authored notes, summaries, explanations', 'Past examination papers are excluded',
+    'not operated, sponsored, or officially affiliated with AUM', 'Omar Khaldoon Jaber Tahrawi',
+    'privacy@rootamman.com', 'omar@rootamman.com']) assert(text.includes(phrase), phrase);
+  assert.equal(await p.locator('.footer-links a[href="mailto:privacy@rootamman.com"]').count(),1);
   assert(!/past paper|AUM’s archive|AUM's archive/i.test(text));
   assert.equal(await p.locator('.parent-mark').getAttribute('src'), './assets/brand/root.svg');
   for (const width of [320, 768, 1440]) { await p.setViewportSize({width, height: 900}); await noOverflow(p); }
