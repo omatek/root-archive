@@ -1,5 +1,27 @@
 # Staging execution results
 
+## Streamlined acceptance and final bounded window — 15 November 2026 UTC
+
+The owner defers manual hosted missing/invalid Turnstile negatives subject to
+passing automated coverage. Both are recorded **DEFERRED, NOT PASSED**. Two
+existing named regressions pass; direct verification of the existing shared
+validator rejects absent and blank fields with 400. Rejected Siteverify returns
+403 and creates no D1/R2 writes in the existing private moderation test. No new
+feature, security relaxation or additional hosted campaign was introduced.
+
+The original window expired at 18:28:39.447Z. The minimum reopen action was the
+same staging Worker with new server-enforced timestamps. The remaining 10 minutes
+of the original 60-minute allowance are deployed as version
+`58dea236-d615-4e14-8688-3e4fca5a85e0`: 18:31:15.692Z–18:41:15.692Z UTC. Google,
+Turnstile, private allowlist and administrator controls remain enabled. Fresh
+postflight still shows only the three historical terminal records, four deleted
+revisions, 13 audits, no unresolved operations and empty R2. No normal PDF has
+been received yet. [Current evidence](student-staging-streamlined-window.json).
+Next is one normal UI upload, immediate pause, private pending verification,
+then coordinated approval/download/withdrawal/404. Cleanup requires confirmation
+of the new exact identifiers. Independent hosted JWT checks remain unverified,
+with a separate unresolved pre-onboarding risk-acceptance decision.
+
 ## Paused/ineligible checks and original window resume — 15 November 2026 UTC
 
 The owner reports the expected paused-submit uncertainty message and exact

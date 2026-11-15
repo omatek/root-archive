@@ -29,7 +29,7 @@
   queues deletion. Do not restore public access using old catalogs or buckets.
 - Isolated private moderation staging is deployed through Wrangler; production
   integration remains disabled. Current window-enabled backend version is
-  `d56561f7-20a2-48db-a280-8ca2721abe41`; student frontend version is
+  `58dea236-d615-4e14-8688-3e4fca5a85e0`; student frontend version is
   `30f908f3-9faa-4799-b566-c46b3cc8da41`, on archive-staging.rootamman.com.
   The backend serves approved admin/API-staging domains with staging D1/R2 only.
   The separate Turnstile widget/secret and owner-provided Google Web client are
@@ -41,15 +41,21 @@
   widget completion in the real frontend. This closes the eligible-account/
   allowlist check. Owner reports the paused-submit and ineligible denials; fresh
   reads show zero storage changes. Server Siteverify awaits upload testing. The
-  original 50-minute window was deployed before a usage-limit interruption:
-  2026-11-15T17:38:39.447Z through 18:28:39.447Z. DO NOT restart or extend it.
+  original 50-minute window expired at 2026-11-15T18:28:39.447Z. The owner's
+  streamlined instruction defers BOTH manual hosted Turnstile denials, contingent
+  on passing local coverage; two relevant regressions plus absent/blank field
+  validation now pass. Hosted cases are DEFERRED, NOT PASSED. A final 10-minute
+  window uses the remaining original 60-minute budget: 18:31:15.692Z through
+  18:41:15.692Z. NO remaining budget; further reopening needs new authorization.
   Submissions flag is currently true but the Worker automatically denies new
   intents at cutoff; explicitly re-pause immediately after one accepted upload,
   any safety issue or on resume after expiry. Cron remains off. See
   docs/student-staging-window-open.json and docs/student-staging-eligible-auth.json and
   docs/student-staging-live-manifest.json and docs/student-staging-live-preflight.json.
-  Live run is authorized; next are missing/invalid Turnstile UI denials and the
-  single PDF. No new submission exists at the 18:08:25Z reconciliation. Do not
+  Live run is authorized; next is ONE NORMAL approved PDF UI submission with
+  all Google/Turnstile/authorization controls enabled. Do not run denial helpers.
+  See docs/student-staging-streamlined-window.json. No new submission exists
+  at the fresh-window postflight. Do not
   replay submissions or ask for live approval again. Cleanup still needs exact-ID confirmation.
   The original synthetic acceptance below used version bb9e96b3.
   Access app/policy/PIN/AUD were independently verified through the connector;

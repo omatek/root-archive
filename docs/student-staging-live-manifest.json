@@ -1,5 +1,8 @@
 {
-  "phase": "WINDOW_OPEN_AWAITING_TURNSTILE_DENIALS_AND_SINGLE_UI_UPLOAD",
+  "phase": "STREAMLINED_WINDOW_OPEN_AWAITING_SINGLE_NORMAL_UI_UPLOAD",
+  "streamlined_window_evidence": "student-staging-streamlined-window.json",
+  "enablement_budget_used_minutes": 60,
+  "remaining_enablement_budget_minutes": 0,
   "workflow_complete": false,
   "window_evidence": "student-staging-window-open.json",
   "eligible_auth_evidence": "student-staging-eligible-auth.json",
@@ -13,7 +16,7 @@
     "merge": false
   },
   "source_commit": "802d5814b35f70f0a45e62a2723f5b6e2c97ffed",
-  "backend_version": "d56561f7-20a2-48db-a280-8ca2721abe41",
+  "backend_version": "58dea236-d615-4e14-8688-3e4fca5a85e0",
   "allowlist_update_evidence": "student-staging-allowlist-update.json",
   "allowlist": {
     "configured_by": "agent, on explicit owner request",
@@ -34,16 +37,16 @@
     "security_widget": "OWNER_OBSERVED_COMPLETE",
     "turnstile_server_verification": "NOT_RUN",
     "ineligible_denial": "OWNER_OBSERVED_PASS",
-    "missing_turnstile_denial": "NOT_RUN",
-    "invalid_turnstile_denial": "NOT_RUN",
+    "missing_turnstile_denial": "DEFERRED_HOSTED_NOT_PASSED_LOCAL_COVERAGE_PASS",
+    "invalid_turnstile_denial": "DEFERRED_HOSTED_NOT_PASSED_LOCAL_COVERAGE_PASS",
     "paused_submit": "OWNER_OBSERVED_DENIAL_AND_ZERO_STORAGE_CHANGES"
   },
   "submission_window": {
-    "opens_at": "2026-11-15T17:38:39.447Z",
-    "closes_at": "2026-11-15T18:28:39.447Z",
-    "minutes": 50,
+    "opens_at": "2026-11-15T18:31:15.692Z",
+    "closes_at": "2026-11-15T18:41:15.692Z",
+    "minutes": 10,
     "automatic_cutoff_enforced_by_worker": true,
-    "restart_or_extension": false
+    "restart_or_extension": "Remaining 10 minutes after original 50-minute interval expired; cumulative budget 60 minutes."
   },
   "enablement_executed": true,
   "new_submission": null,
@@ -59,10 +62,10 @@
     "executed": false
   },
   "last_observed_state": {
-    "observed_at": "2026-11-15T18:08:25Z",
+    "observed_at": "2026-11-15T18:31:15.692Z",
     "submissions_enabled": true,
-    "window_opens_at": "2026-11-15T17:38:39.447Z",
-    "window_closes_at": "2026-11-15T18:28:39.447Z",
+    "window_opens_at": "2026-11-15T18:31:15.692Z",
+    "window_closes_at": "2026-11-15T18:41:15.692Z",
     "r2_objects": 0,
     "submissions": 3,
     "revision_statuses": {

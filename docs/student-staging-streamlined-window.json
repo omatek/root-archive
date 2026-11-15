@@ -1,0 +1,176 @@
+{
+  "recorded_at": "2026-11-15T18:31:15.692Z",
+  "owner_priority": "Proceed with one normal authorized PDF; defer hosted missing/invalid Turnstile denials when local coverage passes; no new features/campaigns.",
+  "hosted_negative_tests": {
+    "missing_token": "DEFERRED_NOT_PASSED",
+    "invalid_token": "DEFERRED_NOT_PASSED"
+  },
+  "local_verification": {
+    "existing_named_regressions": {
+      "tests": 2,
+      "passed": 2,
+      "cases": [
+        "student submission requires signed eligible Google identity, exact origin and successful Turnstile",
+        "both frontend origins can verify and submit on the API domain using the existing Siteverify flow"
+      ]
+    },
+    "shared_validator_absent_field": "PASS: HTTP 400",
+    "shared_validator_blank_field": "PASS: HTTP 400",
+    "invalid_siteverify": "PASS: HTTP 403 with zero D1/R2 writes in existing moderation regression",
+    "code_changes": false
+  },
+  "previous_window": {
+    "closes_at": "2026-11-15T18:28:39.447Z",
+    "minutes": 50,
+    "status": "EXPIRED; observed UTC exceeded cutoff before reopening; no upload existed."
+  },
+  "current_window": {
+    "opens_at": "2026-11-15T18:31:15.692Z",
+    "closes_at": "2026-11-15T18:41:15.692Z",
+    "minutes": 10,
+    "cumulative_authorized_intervals_minutes": 60,
+    "automatic_cutoff_enforced": true,
+    "no_remaining_budget_for_further_windows": true
+  },
+  "deployment": {
+    "id": "79d8021d-af1e-40e5-84a0-68752e113e03",
+    "versions": [
+      {
+        "version_id": "58dea236-d615-4e14-8688-3e4fca5a85e0",
+        "percentage": 100
+      }
+    ]
+  },
+  "controls": {
+    "google_verification": true,
+    "turnstile_siteverify": true,
+    "exact_student_domain": true,
+    "private_account_allowlist": true,
+    "admin_access_and_authorization": true,
+    "security_secrets_present": [
+      "ADMIN_EMAILS",
+      "STAGING_STUDENT_EMAILS",
+      "TURNSTILE_SECRET"
+    ]
+  },
+  "storage": {
+    "db": [
+      {
+        "results": [
+          {
+            "id": "726f6f74-6172-4368-8000-000000000001",
+            "status": "removed",
+            "version": 6
+          },
+          {
+            "id": "726f6f74-6172-4368-8000-000000000002",
+            "status": "rejected",
+            "version": 3
+          },
+          {
+            "id": "726f6f74-6172-4368-8000-000000000003",
+            "status": "removed",
+            "version": 7
+          }
+        ],
+        "success": true,
+        "meta": {
+          "served_by": "v3-prod",
+          "served_by_region": "EEUR",
+          "served_by_colo": "FRA",
+          "served_by_primary": true,
+          "timings": {
+            "sql_duration_ms": 0.6988
+          },
+          "duration": 0.6988,
+          "changes": 0,
+          "last_row_id": 0,
+          "changed_db": false,
+          "size_after": 102400,
+          "rows_read": 3,
+          "rows_written": 0,
+          "total_attempts": 1
+        }
+      },
+      {
+        "results": [
+          {
+            "status": "deleted",
+            "count": 4
+          }
+        ],
+        "success": true,
+        "meta": {
+          "served_by": "v3-prod",
+          "served_by_region": "EEUR",
+          "served_by_colo": "FRA",
+          "served_by_primary": true,
+          "timings": {
+            "sql_duration_ms": 0.3098
+          },
+          "duration": 0.3098,
+          "changes": 0,
+          "last_row_id": 0,
+          "changed_db": false,
+          "size_after": 102400,
+          "rows_read": 4,
+          "rows_written": 0,
+          "total_attempts": 1
+        }
+      },
+      {
+        "results": [
+          {
+            "count": 13
+          }
+        ],
+        "success": true,
+        "meta": {
+          "served_by": "v3-prod",
+          "served_by_region": "EEUR",
+          "served_by_colo": "FRA",
+          "served_by_primary": true,
+          "timings": {
+            "sql_duration_ms": 0.2563
+          },
+          "duration": 0.2563,
+          "changes": 0,
+          "last_row_id": 0,
+          "changed_db": false,
+          "size_after": 102400,
+          "rows_read": 13,
+          "rows_written": 0,
+          "total_attempts": 1
+        }
+      },
+      {
+        "results": [
+          {
+            "count": 0
+          }
+        ],
+        "success": true,
+        "meta": {
+          "served_by": "v3-prod",
+          "served_by_region": "EEUR",
+          "served_by_colo": "FRA",
+          "served_by_primary": true,
+          "timings": {
+            "sql_duration_ms": 0.107
+          },
+          "duration": 0.107,
+          "changes": 0,
+          "last_row_id": 0,
+          "changed_db": false,
+          "size_after": 102400,
+          "rows_read": 2,
+          "rows_written": 0,
+          "total_attempts": 1
+        }
+      }
+    ],
+    "objects": []
+  },
+  "next": "One normal approved PDF via fresh staging browser tab; report UUID; immediately re-pause and inspect pending state. No approval/deletion without coordinating the exact step.",
+  "jwt_risk": "INDEPENDENT_HOSTED_TESTS_UNVERIFIED; separate risk decision unresolved; no onboarding authorized."
+}

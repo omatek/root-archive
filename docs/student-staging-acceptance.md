@@ -1,7 +1,20 @@
 # Real student staging acceptance
 
-Status: **Eligible, paused-submit and ineligible-account UI checks reported.
-Original bounded window OPEN until 18:28:39.447Z; no accepted PDF yet.**
+Status: **Streamlined acceptance: one normal PDF next. Hosted missing/invalid
+Turnstile negatives DEFERRED, NOT PASSED; local coverage passes.**
+
+The owner's revised instruction supersedes the manual denial steps below. Two
+existing relevant regressions pass, including rejected Siteverify/zero writes;
+the existing shared validator also verifies absent and blank challenges return
+400. No application code/security setting was weakened. The original window
+expired, so reopening required only updated timestamps on the same Worker. The
+remaining 10 minutes of the original 60-minute budget are now deployed:
+18:31:15.692Z–18:41:15.692Z UTC, backend
+`58dea236-d615-4e14-8688-3e4fca5a85e0`. [Evidence](student-staging-streamlined-window.json).
+There is no budget for another window without renewed authorization. Next is a
+fresh student tab, real Google/Turnstile, and one normal approved PDF upload.
+Immediately re-pause on receipt, then inspect private pending storage. Coordinate
+approval with the owner; retain exact-identifier confirmation before deletion.
 
 [Window/evidence](student-staging-window-open.json): the original 50-minute
 interval is 17:38:39.447Z–18:28:39.447Z on 15 November 2026 UTC, backend version
