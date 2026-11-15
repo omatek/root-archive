@@ -1,0 +1,65 @@
+{
+  "phase": "AWAITING_ELIGIBLE_ACCOUNT_BROWSER_CONFIRMATION",
+  "authorization": {
+    "supervised_run": true,
+    "max_enablement_minutes": 60,
+    "exact_identifier_confirmation_before_cleanup": true,
+    "production": false,
+    "legacy": false,
+    "onboarding": false,
+    "merge": false
+  },
+  "source_commit": "802d5814b35f70f0a45e62a2723f5b6e2c97ffed",
+  "backend_version": "922fe37d-b9ab-44b5-ad94-b69aeeec1ac9",
+  "frontend_version": "30f908f3-9faa-4799-b566-c46b3cc8da41",
+  "preflight": "student-staging-live-preflight.json",
+  "approved_document": {
+    "path": "dist/student-acceptance.pdf",
+    "mime": "application/pdf",
+    "bytes": 687,
+    "sha256": "f225b67a86db912394042bca309b0691727e22ef3bd741b044ec0543906151d1"
+  },
+  "student_browser": {
+    "eligible_auth": "AWAITING_OWNER_RESULT",
+    "security_widget": "AWAITING_OWNER_RESULT",
+    "ineligible_denial": "NOT_RUN",
+    "missing_turnstile_denial": "NOT_RUN",
+    "invalid_turnstile_denial": "NOT_RUN",
+    "paused_submit": "NOT_RUN"
+  },
+  "submission_window": null,
+  "enablement_executed": false,
+  "new_submission": null,
+  "new_revisions": [],
+  "accepted_uploads": 0,
+  "moderator_discovery": "NOT_RUN",
+  "approval_public_download": "NOT_RUN",
+  "withdrawal_download_denial": "NOT_RUN",
+  "administrator_session_recovery": "NOT_RUN",
+  "cleanup": {
+    "identifiers_presented": false,
+    "confirmation_received": false,
+    "executed": false
+  },
+  "final_state": {
+    "submissions_enabled": false,
+    "window_opens_at": "",
+    "window_closes_at": "",
+    "r2_objects": 0,
+    "submissions": 3,
+    "revision_statuses": {
+      "deleted": 4
+    },
+    "audits": 13,
+    "unresolved_upload_or_delete_operations": 0
+  },
+  "jwt_risk": {
+    "independent_hosted_checks": "UNVERIFIED_NOT_PASSED",
+    "pilot_risk_acceptance": "UNRESOLVED_DECISION_NOT_SILENTLY_ACCEPTED"
+  },
+  "deferred": {
+    "fixture4": "MERGE_LAUNCH",
+    "focused_pagination": "MERGE_LAUNCH",
+    "artificial_200ms_interruption": "NOT_AN_ACCEPTANCE_GATE"
+  }
+}

@@ -1,7 +1,7 @@
 # Real student staging acceptance
 
-Status: **Single-PDF supervised live staging acceptance APPROVED. Preflight and
-server cutoff preparation in progress; uploads remain paused pending gates.**
+Status: **Single-PDF supervised live staging acceptance APPROVED. Server cutoff
+deployed paused; waiting for actual eligible-account browser verification.**
 
 Current owner authorization supersedes the older setup-only checkpoint below:
 one synthetic UI PDF, representative Google/Turnstile denials, private pending
@@ -21,6 +21,18 @@ submission UUID, revision UUID and R2 key.** The broader live approval does not
 satisfy that confirmation. Preserve all previous fixtures, records and audits.
 Independent hosted JWT checks remain unverified; trusted-contributor risk
 acceptance will be a separate documented decision, not inferred from this run.
+
+The cutoff-capable backend is version `922fe37d-b9ab-44b5-ad94-b69aeeec1ac9`,
+source `802d5814b35f70f0a45e62a2723f5b6e2c97ffed`. Uploads remain explicitly
+paused, both window timestamps empty, cleanup/Cron off. [Live preflight](student-staging-live-preflight.json)
+confirms exact private bindings, active staging certificate, no unresolved
+storage work, unchanged historical terminal records/audits, empty R2 and unchanged
+production deployments. [The separate student-run manifest](student-staging-live-manifest.json)
+currently has zero accepted uploads and no owned identifiers. Before enablement,
+the owner must confirm real eligible Google authorization in the actual frontend;
+this verifies the protected allowlist without exposing its contents. Do not
+infer it from secret existence. No new live-run approval is needed after this
+required factual check. Present actual identifiers before destructive cleanup.
 Baseline: `6ab4023bc628107dc6e07c5c5937fcbf64a3a1c6`, existing PR [#26](https://github.com/omatek/root-archive/pull/26).
 The owner prioritizes this run over fixture 4 and the 201-record campaign. Those
 campaigns remain deferred, unseeded, and are not prerequisites for this run.

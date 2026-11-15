@@ -1,5 +1,28 @@
 # Staging execution results
 
+## Supervised run authorized; automatic cutoff deployed paused — 15 November 2026 UTC
+
+The owner approves one synthetic UI PDF, denials, moderation/download/withdrawal
+and practical administrator recovery, with at most 60 minutes temporary upload
+enablement. Exact new identifiers must be presented and confirmed separately
+before destructive cleanup. Source `802d5814b35f70f0a45e62a2723f5b6e2c97ffed`
+deploys backend `922fe37d-b9ab-44b5-ad94-b69aeeec1ac9` **paused**, with empty
+window timestamps. The server now independently refuses missing/invalid/future/
+expired/overlong windows even when the boolean is true, and rechecks the cutoff
+after Siteverify before creating an upload intent. It needs no active Codex
+session or Cron. Local boundary/mid-Siteverify checks create zero D1/R2 records;
+73 Worker tests, 68 repository tests and five final focused staging checks pass.
+
+Postflight confirms submissions/cleanup false, no unresolved receiving/uploading/
+delete_pending operations, empty R2, unchanged three historical terminal records,
+four deleted revisions and 13 audits. Production deployments are unchanged.
+Public catalog GET and exact-origin CORS OPTIONS return 200. Actual eligible
+Google/allowlist verification is pending owner browser confirmation; no upload
+window or accepted upload exists yet. [Preflight](student-staging-live-preflight.json)
+and [separate student-run manifest](student-staging-live-manifest.json) preserve
+the checkpoint. No cleanup confirmation exists and no destructive cleanup ran.
+Independent hosted JWT negatives remain unverified with no pilot risk acceptance.
+
 ## Google-configured paused checkpoint — 15 November 2026 UTC
 
 The owner supplied a distinct Google Web client ID, reports updating the student

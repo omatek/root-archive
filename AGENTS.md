@@ -29,14 +29,16 @@
   queues deletion. Do not restore public access using old catalogs or buckets.
 - Isolated private moderation staging is deployed through Wrangler; production
   integration remains disabled. Current paused backend version is
-  `2bf35f0b-8c6f-4c0f-9fbb-11740b646d3c`; student frontend version is
+  `922fe37d-b9ab-44b5-ad94-b69aeeec1ac9` (automatic cutoff, still paused); student frontend version is
   `30f908f3-9faa-4799-b566-c46b3cc8da41`, on archive-staging.rootamman.com.
   The backend serves approved admin/API-staging domains with staging D1/R2 only.
   The separate Turnstile widget/secret and owner-provided Google Web client are
   configured. The owner reports replacing the allowlist secret and confirms
   HTTPS/top notice; secret values and actual Google/Turnstile authorization have
   not been inspected/tested. Both submissions and Cron remain off. See
-  docs/student-staging-google-ready.json; live acceptance is the next approval gate.
+  docs/student-staging-live-manifest.json and docs/student-staging-live-preflight.json.
+  Live run is authorized; actual eligible browser/allowlist verification is the
+  pending factual gate. No upload window has been started or time consumed.
   The original synthetic acceptance below used version bb9e96b3.
   Access app/policy/PIN/AUD were independently verified through the connector;
   the deployment token's Access read restriction is not a security failure.
