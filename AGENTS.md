@@ -28,23 +28,29 @@
   Unpublish retains a private file for review; permanent removal revokes and
   queues deletion. Do not restore public access using old catalogs or buckets.
 - Isolated private moderation staging is deployed through Wrangler; production
-  integration remains disabled. Current paused backend version is
-  `f178ada8-e738-4aa9-a550-a9cb0a16c9a8` (automatic cutoff, still paused); student frontend version is
+  integration remains disabled. Current window-enabled backend version is
+  `d56561f7-20a2-48db-a280-8ca2721abe41`; student frontend version is
   `30f908f3-9faa-4799-b566-c46b3cc8da41`, on archive-staging.rootamman.com.
   The backend serves approved admin/API-staging domains with staging D1/R2 only.
   The separate Turnstile widget/secret and owner-provided Google Web client are
   configured. The owner clarified that no student had actually been added to the
   earlier secret and explicitly authorized the agent to set one test account.
   That single account is now set as a protected secret; its address is excluded
-  from Git/evidence. Owner HTTPS/top notice confirmation stands. Actual Google/
+  from Git/evidence. Owner HTTPS/top notice confirmation stands.
   The owner has now confirmed actual student account verification and security
   widget completion in the real frontend. This closes the eligible-account/
-  allowlist check, but server Siteverify awaits upload testing. Both submissions
-  and Cron remain off. See docs/student-staging-eligible-auth.json and
+  allowlist check. Owner reports the paused-submit and ineligible denials; fresh
+  reads show zero storage changes. Server Siteverify awaits upload testing. The
+  original 50-minute window was deployed before a usage-limit interruption:
+  2026-11-15T17:38:39.447Z through 18:28:39.447Z. DO NOT restart or extend it.
+  Submissions flag is currently true but the Worker automatically denies new
+  intents at cutoff; explicitly re-pause immediately after one accepted upload,
+  any safety issue or on resume after expiry. Cron remains off. See
+  docs/student-staging-window-open.json and docs/student-staging-eligible-auth.json and
   docs/student-staging-live-manifest.json and docs/student-staging-live-preflight.json.
-  Live run is authorized; next are paused-submit and ineligible-account UI
-  denials, then a bounded window for Turnstile denials and the single PDF. No
-  upload window has been started or time consumed. Do not ask for live approval again.
+  Live run is authorized; next are missing/invalid Turnstile UI denials and the
+  single PDF. No new submission exists at the 18:08:25Z reconciliation. Do not
+  replay submissions or ask for live approval again. Cleanup still needs exact-ID confirmation.
   The original synthetic acceptance below used version bb9e96b3.
   Access app/policy/PIN/AUD were independently verified through the connector;
   the deployment token's Access read restriction is not a security failure.

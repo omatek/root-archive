@@ -1,5 +1,7 @@
 {
-  "phase": "ELIGIBLE_VERIFIED_AWAITING_PAUSED_AND_INELIGIBLE_UI_CHECKS",
+  "phase": "WINDOW_OPEN_AWAITING_TURNSTILE_DENIALS_AND_SINGLE_UI_UPLOAD",
+  "workflow_complete": false,
+  "window_evidence": "student-staging-window-open.json",
   "eligible_auth_evidence": "student-staging-eligible-auth.json",
   "authorization": {
     "supervised_run": true,
@@ -11,7 +13,7 @@
     "merge": false
   },
   "source_commit": "802d5814b35f70f0a45e62a2723f5b6e2c97ffed",
-  "backend_version": "f178ada8-e738-4aa9-a550-a9cb0a16c9a8",
+  "backend_version": "d56561f7-20a2-48db-a280-8ca2721abe41",
   "allowlist_update_evidence": "student-staging-allowlist-update.json",
   "allowlist": {
     "configured_by": "agent, on explicit owner request",
@@ -31,13 +33,19 @@
     "eligible_auth": "OWNER_OBSERVED_PASS",
     "security_widget": "OWNER_OBSERVED_COMPLETE",
     "turnstile_server_verification": "NOT_RUN",
-    "ineligible_denial": "NOT_RUN",
+    "ineligible_denial": "OWNER_OBSERVED_PASS",
     "missing_turnstile_denial": "NOT_RUN",
     "invalid_turnstile_denial": "NOT_RUN",
-    "paused_submit": "NOT_RUN"
+    "paused_submit": "OWNER_OBSERVED_DENIAL_AND_ZERO_STORAGE_CHANGES"
   },
-  "submission_window": null,
-  "enablement_executed": false,
+  "submission_window": {
+    "opens_at": "2026-11-15T17:38:39.447Z",
+    "closes_at": "2026-11-15T18:28:39.447Z",
+    "minutes": 50,
+    "automatic_cutoff_enforced_by_worker": true,
+    "restart_or_extension": false
+  },
+  "enablement_executed": true,
   "new_submission": null,
   "new_revisions": [],
   "accepted_uploads": 0,
@@ -50,10 +58,11 @@
     "confirmation_received": false,
     "executed": false
   },
-  "final_state": {
-    "submissions_enabled": false,
-    "window_opens_at": "",
-    "window_closes_at": "",
+  "last_observed_state": {
+    "observed_at": "2026-11-15T18:08:25Z",
+    "submissions_enabled": true,
+    "window_opens_at": "2026-11-15T17:38:39.447Z",
+    "window_closes_at": "2026-11-15T18:28:39.447Z",
     "r2_objects": 0,
     "submissions": 3,
     "revision_statuses": {

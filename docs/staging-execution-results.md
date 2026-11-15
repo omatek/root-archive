@@ -1,5 +1,25 @@
 # Staging execution results
 
+## Paused/ineligible checks and original window resume — 15 November 2026 UTC
+
+The owner reports the expected paused-submit uncertainty message and exact
+ineligible-account explanation. Fresh read-only preflight confirms that neither
+created any upload: three historical terminal submissions, four deleted revisions,
+13 audits, no unresolved operations and empty private R2. Raw HTTP statuses were
+not captured from the owner browser; owner-observed messages and the verified
+server/storage state are retained as the evidence basis.
+
+The approved 50-minute window deployed as backend
+`d56561f7-20a2-48db-a280-8ca2721abe41`, interval
+`2026-11-15T17:38:39.447Z`–`2026-11-15T18:28:39.447Z`. A usage-limit interruption
+occurred immediately afterwards. Read-only reconciliation at 18:08:25Z confirms
+the original deployment/cutoff and zero new records/objects; the window was not
+restarted, extended, or replayed. The Worker automatically rejects new intents
+after cutoff. [Sanitized preflight/resume evidence](student-staging-window-open.json).
+Next are missing/invalid challenge denials and the one actual PDF UI upload,
+followed immediately by an explicit pause. Cleanup remains unconfirmed and held.
+Independent hosted JWT checks remain unverified with no pilot risk acceptance.
+
 ## Actual eligible Google verification confirmed — 15 November 2026 UTC
 
 The owner reports "account verified, security check complete" in the actual

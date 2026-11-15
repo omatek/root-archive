@@ -1,7 +1,17 @@
 # Real student staging acceptance
 
-Status: **Eligible-account verification and security widget completion confirmed
-by owner. Uploads remain paused; paused/ineligible UI checks are next.**
+Status: **Eligible, paused-submit and ineligible-account UI checks reported.
+Original bounded window OPEN until 18:28:39.447Z; no accepted PDF yet.**
+
+[Window/evidence](student-staging-window-open.json): the original 50-minute
+interval is 17:38:39.447Z–18:28:39.447Z on 15 November 2026 UTC, backend version
+`d56561f7-20a2-48db-a280-8ca2721abe41`. A usage-limit interruption occurred after
+deployment. Read-only reconciliation at 18:08:25Z confirms the original window
+and unchanged empty/terminal storage; it was not restarted or extended. The
+Worker will refuse new intents at cutoff even without a Codex session. Next:
+missing/invalid Turnstile UI denials, then exactly one normal approved PDF
+submission. Re-pause immediately on its receipt before moderator work. No cleanup
+without the required exact-ID confirmation.
 
 [Eligible auth checkpoint](student-staging-eligible-auth.json): the owner reports
 "account verified, security check complete" from the actual staging frontend.
