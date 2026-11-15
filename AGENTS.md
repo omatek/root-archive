@@ -37,11 +37,14 @@
   earlier secret and explicitly authorized the agent to set one test account.
   That single account is now set as a protected secret; its address is excluded
   from Git/evidence. Owner HTTPS/top notice confirmation stands. Actual Google/
-  Turnstile authorization is still pending browser verification. Both submissions
-  and Cron remain off. See docs/student-staging-allowlist-update.json and
+  The owner has now confirmed actual student account verification and security
+  widget completion in the real frontend. This closes the eligible-account/
+  allowlist check, but server Siteverify awaits upload testing. Both submissions
+  and Cron remain off. See docs/student-staging-eligible-auth.json and
   docs/student-staging-live-manifest.json and docs/student-staging-live-preflight.json.
-  Live run is authorized; actual eligible browser/allowlist verification is the
-  pending factual gate. No upload window has been started or time consumed.
+  Live run is authorized; next are paused-submit and ineligible-account UI
+  denials, then a bounded window for Turnstile denials and the single PDF. No
+  upload window has been started or time consumed. Do not ask for live approval again.
   The original synthetic acceptance below used version bb9e96b3.
   Access app/policy/PIN/AUD were independently verified through the connector;
   the deployment token's Access read restriction is not a security failure.

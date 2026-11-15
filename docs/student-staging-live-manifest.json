@@ -1,5 +1,6 @@
 {
-  "phase": "AWAITING_ELIGIBLE_ACCOUNT_BROWSER_CONFIRMATION",
+  "phase": "ELIGIBLE_VERIFIED_AWAITING_PAUSED_AND_INELIGIBLE_UI_CHECKS",
+  "eligible_auth_evidence": "student-staging-eligible-auth.json",
   "authorization": {
     "supervised_run": true,
     "max_enablement_minutes": 60,
@@ -16,7 +17,7 @@
     "configured_by": "agent, on explicit owner request",
     "approved_accounts": 1,
     "private_address_retained": false,
-    "actual_google_authorization": "AWAITING_OWNER_RESULT"
+    "actual_google_authorization": "OWNER_OBSERVED_PASS"
   },
   "frontend_version": "30f908f3-9faa-4799-b566-c46b3cc8da41",
   "preflight": "student-staging-live-preflight.json",
@@ -27,8 +28,9 @@
     "sha256": "f225b67a86db912394042bca309b0691727e22ef3bd741b044ec0543906151d1"
   },
   "student_browser": {
-    "eligible_auth": "AWAITING_OWNER_RESULT",
-    "security_widget": "AWAITING_OWNER_RESULT",
+    "eligible_auth": "OWNER_OBSERVED_PASS",
+    "security_widget": "OWNER_OBSERVED_COMPLETE",
+    "turnstile_server_verification": "NOT_RUN",
     "ineligible_denial": "NOT_RUN",
     "missing_turnstile_denial": "NOT_RUN",
     "invalid_turnstile_denial": "NOT_RUN",

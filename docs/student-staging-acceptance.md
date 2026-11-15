@@ -1,7 +1,17 @@
 # Real student staging acceptance
 
-Status: **Single-PDF supervised live staging acceptance APPROVED. Server cutoff
-deployed paused; waiting for actual eligible-account browser verification.**
+Status: **Eligible-account verification and security widget completion confirmed
+by owner. Uploads remain paused; paused/ineligible UI checks are next.**
+
+[Eligible auth checkpoint](student-staging-eligible-auth.json): the owner reports
+"account verified, security check complete" from the actual staging frontend.
+This closes the real Google/allowlist verification gate without collecting
+credentials. Widget completion is client evidence; server-side Siteverify remains
+untested until upload checks. Fresh read-only preflight confirms the expected
+secret-updated backend, paused/empty window, three historical terminal records,
+four deleted revisions, 13 audits, empty R2 and no unresolved operations. No
+upload window has started. Complete paused-submit and representative ineligible
+verification, then proceed under existing approval with the bounded live window.
 
 Current owner authorization supersedes the older setup-only checkpoint below:
 one synthetic UI PDF, representative Google/Turnstile denials, private pending

@@ -1,5 +1,20 @@
 # Staging execution results
 
+## Actual eligible Google verification confirmed — 15 November 2026 UTC
+
+The owner reports "account verified, security check complete" in the actual
+staging student UI after the protected allowlist update. Eligible Google/allowlist
+verification is an **owner-observed PASS**; Turnstile widget completion is
+confirmed, while server Siteverify remains untested. No credentials, account
+address or raw authentication material were collected. Fresh API reads confirm
+backend `f178ada8-e738-4aa9-a550-a9cb0a16c9a8`, submissions false, empty window,
+unchanged three terminal records/four deleted revisions/13 audits, no unresolved
+storage operations and empty R2. No upload window has started or accepted PDF
+been created. [Actual auth evidence](student-staging-eligible-auth.json).
+Next UI checks are server pause and ineligible-account denial, then the already
+approved bounded window for Turnstile denials and the single accepted PDF.
+Independent hosted JWT negatives remain unverified, with no pilot risk acceptance.
+
 ## Single approved account configured; uploads still paused — 15 November 2026 UTC
 
 The owner clarified that the previous secret entry had not added a student and

@@ -1,0 +1,87 @@
+{
+  "recorded_at": "2026-11-15T17:28:06Z",
+  "owner_report": "account verified, security check complete",
+  "eligible_google_and_allowlist": {
+    "result": "OWNER_OBSERVED_PASS",
+    "basis": "Actual staging frontend shows Student account verified after server authorization; no account address/credential retained.",
+    "raw_http_status_captured": false
+  },
+  "turnstile_widget": {
+    "result": "OWNER_OBSERVED_COMPLETE",
+    "server_siteverify_result": "NOT_YET_EXERCISED"
+  },
+  "staging": {
+    "backend_version": "f178ada8-e738-4aa9-a550-a9cb0a16c9a8",
+    "submissions_enabled": false,
+    "window": null,
+    "enablement_time_consumed_minutes": 0,
+    "bindings": [
+      {
+        "database_id": "f4aa2a8b-4b27-4ed3-b7a2-4e6e100a94c6",
+        "id": "f4aa2a8b-4b27-4ed3-b7a2-4e6e100a94c6",
+        "name": "DB",
+        "type": "d1"
+      },
+      {
+        "bucket_name": "root-archive-private-staging",
+        "name": "PRIVATE_FILES",
+        "type": "r2_bucket"
+      },
+      {
+        "name": "STAGING_STUDENT_EMAILS",
+        "type": "secret_text"
+      },
+      {
+        "name": "TURNSTILE_SECRET",
+        "type": "secret_text"
+      }
+    ],
+    "submissions": [
+      {
+        "id": "726f6f74-6172-4368-8000-000000000001",
+        "status": "removed",
+        "version": 6
+      },
+      {
+        "id": "726f6f74-6172-4368-8000-000000000002",
+        "status": "rejected",
+        "version": 3
+      },
+      {
+        "id": "726f6f74-6172-4368-8000-000000000003",
+        "status": "removed",
+        "version": 7
+      }
+    ],
+    "revision_statuses": [
+      {
+        "status": "deleted",
+        "count": 4
+      }
+    ],
+    "audits": [
+      {
+        "count": 13
+      }
+    ],
+    "unresolved_operations": [
+      {
+        "count": 0
+      }
+    ],
+    "r2_objects": [],
+    "inspection_rows_written": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "next_ui_checks": [
+    "Paused UI submission with the approved synthetic PDF",
+    "Representative ineligible Google account verification",
+    "Return to eligible account; then enable the already-approved bounded window for Turnstile denials and one accepted upload"
+  ],
+  "independent_hosted_worker_jwt": "UNVERIFIED_NOT_PASSED; no pilot risk acceptance made."
+}
