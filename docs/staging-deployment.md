@@ -1,5 +1,12 @@
 # Isolated moderation staging — approval required
 
+Current scope (15 November): staging student configuration and initially paused
+deployment are approved and deployed. See [current evidence and owner steps](student-staging-acceptance.md).
+Keep submissions paused until separate live-acceptance authorization. Historical
+campaign approval groups below do not authorize execution now. Fixture 4's
+deterministic concurrency and focused pagination are deferred to merge/launch;
+the artificial 200 ms interruption test is no longer an acceptance gate.
+
 ## Current owner authorization — synthetic functional acceptance
 
 The owner explicitly accepts deferring the unverified hosted independent JWT

@@ -1,0 +1,335 @@
+{
+  "observed_at": "2026-11-15T16:38:08Z",
+  "authorization": "Owner approved staging-only configuration and initially paused deployment; no submission enablement or live acceptance.",
+  "source_commit": "6a22c29f43f8a5fb088e64348a1cec1042b441da",
+  "backend": {
+    "settings": {
+      "compatibility_date": "2026-10-30",
+      "bindings": [
+        {
+          "name": "ACCESS_AUD",
+          "text": "0003d8d8ba905005bfed05fc441631de07c91985c3e2baab528bdb4bbb7ac5be",
+          "type": "plain_text"
+        },
+        {
+          "name": "ACCESS_ISSUER",
+          "text": "https://rootamman.cloudflareaccess.com",
+          "type": "plain_text"
+        },
+        {
+          "name": "ADMIN_EMAILS",
+          "type": "secret_text"
+        },
+        {
+          "name": "ADMIN_ORIGIN",
+          "text": "https://admin.archive.rootamman.com",
+          "type": "plain_text"
+        },
+        {
+          "name": "ALLOWED_ORIGIN",
+          "text": "https://archive-staging.rootamman.com",
+          "type": "plain_text"
+        },
+        {
+          "name": "ASSETS",
+          "type": "assets"
+        },
+        {
+          "name": "CLEANUP_ENABLED",
+          "text": "false",
+          "type": "plain_text"
+        },
+        {
+          "database_id": "f4aa2a8b-4b27-4ed3-b7a2-4e6e100a94c6",
+          "id": "f4aa2a8b-4b27-4ed3-b7a2-4e6e100a94c6",
+          "name": "DB",
+          "type": "d1"
+        },
+        {
+          "name": "GOOGLE_CLIENT_ID",
+          "text": "",
+          "type": "plain_text"
+        },
+        {
+          "bucket_name": "root-archive-private-staging",
+          "name": "PRIVATE_FILES",
+          "type": "r2_bucket"
+        },
+        {
+          "name": "PUBLIC_API_ORIGIN",
+          "text": "https://api-staging.rootamman.com",
+          "type": "plain_text"
+        },
+        {
+          "name": "STAGING_STUDENT_EMAILS",
+          "type": "secret_text"
+        },
+        {
+          "name": "SUBMISSIONS_ENABLED",
+          "text": "false",
+          "type": "plain_text"
+        },
+        {
+          "name": "TURNSTILE_SECRET",
+          "type": "secret_text"
+        }
+      ],
+      "observability": {
+        "enabled": true,
+        "head_sampling_rate": 1,
+        "redact_query_string": false,
+        "logs": {
+          "enabled": true,
+          "head_sampling_rate": 1,
+          "persist": true,
+          "invocation_logs": false
+        },
+        "traces": {
+          "enabled": true,
+          "persist": true,
+          "head_sampling_rate": 0.1
+        }
+      }
+    },
+    "deployment": [
+      {
+        "id": "be7ce137-5f28-42fe-84d0-a06ac650dbe7",
+        "versions": [
+          {
+            "version_id": "6d658a5a-4f5b-4848-b32a-7d63d5bd6986",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-11-15T16:35:37.932602Z"
+      }
+    ],
+    "subdomain": {
+      "enabled": false,
+      "previews_enabled": false
+    },
+    "schedules": {
+      "schedules": []
+    }
+  },
+  "frontend": {
+    "settings": {
+      "compatibility_date": "2026-11-15",
+      "bindings": []
+    },
+    "deployment": [
+      {
+        "id": "73dbb7bf-6a98-4db2-8871-84a834554a31",
+        "versions": [
+          {
+            "version_id": "53a70251-f36b-4e97-a592-8fec66ad2c5b",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-11-15T16:36:05.169938Z"
+      }
+    ],
+    "subdomain": {
+      "enabled": false,
+      "previews_enabled": false
+    },
+    "schedules": {
+      "schedules": []
+    }
+  },
+  "student_domain": {
+    "id": "f55010c2886934403cb42ff620944ee02c10c76c",
+    "zone_id": "fc80d6a45a703d0fe4d1876f1380870f",
+    "zone_name": "rootamman.com",
+    "hostname": "archive-staging.rootamman.com",
+    "service": "root-archive-student-staging",
+    "environment": "production",
+    "cert_id": "16822825-90e4-4a9f-980d-b1d2775a1512",
+    "previews_enabled": false,
+    "enabled": true
+  },
+  "student_dns": [
+    {
+      "id": "22edf51fabd78cad7b0b77280caecc1b",
+      "name": "archive-staging.rootamman.com",
+      "type": "AAAA",
+      "content": "100::",
+      "proxiable": true,
+      "proxied": true,
+      "ttl": 1,
+      "settings": {},
+      "meta": {
+        "origin_worker_id": "f55010c2886934403cb42ff620944ee02c10c76c",
+        "read_only": true
+      },
+      "comment": null,
+      "tags": [],
+      "created_on": "2026-11-15T16:36:09.105194Z",
+      "modified_on": "2026-11-15T16:36:09.105194Z"
+    }
+  ],
+  "student_certificate": {
+    "id": "16822825-90e4-4a9f-980d-b1d2775a1512",
+    "type": "advanced",
+    "status": "pending_validation",
+    "hosts": [
+      "rootamman.com",
+      "archive-staging.rootamman.com",
+      "*.archive-staging.rootamman.com"
+    ]
+  },
+  "turnstile_widgets": [
+    {
+      "sitekey": "0x4AAAAAAFtYsxdbI-Zx8mjy",
+      "name": "root-archive",
+      "domains": [
+        "archive.rootamman.com",
+        "root-archive.pages.dev"
+      ],
+      "mode": "managed"
+    },
+    {
+      "sitekey": "0x4AAAAAAGCJAasfjeVYO_Ia",
+      "name": "root-archive-student-staging",
+      "domains": [
+        "archive-staging.rootamman.com"
+      ],
+      "mode": "managed"
+    }
+  ],
+  "public_google_client_id": "",
+  "student_allowlist": "Protected secret contains non-email sentinel; zero accounts authorized. Owner must replace it privately.",
+  "temporary_secret_file": "Mode 0600 inside mode 0700 directory; removed after verified deployment. No credentials retained in evidence.",
+  "storage": {
+    "before": [
+      [
+        {
+          "id": "726f6f74-6172-4368-8000-000000000001",
+          "status": "removed",
+          "version": 6
+        },
+        {
+          "id": "726f6f74-6172-4368-8000-000000000002",
+          "status": "rejected",
+          "version": 3
+        },
+        {
+          "id": "726f6f74-6172-4368-8000-000000000003",
+          "status": "removed",
+          "version": 7
+        }
+      ],
+      [
+        {
+          "status": "deleted",
+          "count": 4
+        }
+      ],
+      [
+        {
+          "count": 13
+        }
+      ],
+      []
+    ],
+    "after": [
+      [
+        {
+          "id": "726f6f74-6172-4368-8000-000000000001",
+          "status": "removed",
+          "version": 6
+        },
+        {
+          "id": "726f6f74-6172-4368-8000-000000000002",
+          "status": "rejected",
+          "version": 3
+        },
+        {
+          "id": "726f6f74-6172-4368-8000-000000000003",
+          "status": "removed",
+          "version": 7
+        }
+      ],
+      [
+        {
+          "status": "deleted",
+          "count": 4
+        }
+      ],
+      [
+        {
+          "count": 13
+        }
+      ],
+      []
+    ],
+    "queries_wrote_zero_rows": true,
+    "r2_objects": []
+  },
+  "production": {
+    "legacy_before": {
+      "id": "88fef60a-22b0-434a-bbc2-89ac0d569629",
+      "versions": [
+        {
+          "version_id": "e8895ac0-b95b-409e-aff1-af3f549be94f",
+          "percentage": 100
+        }
+      ],
+      "created_on": "2026-11-12T19:55:22.85177Z"
+    },
+    "legacy_after": {
+      "id": "88fef60a-22b0-434a-bbc2-89ac0d569629",
+      "versions": [
+        {
+          "version_id": "e8895ac0-b95b-409e-aff1-af3f549be94f",
+          "percentage": 100
+        }
+      ],
+      "created_on": "2026-11-12T19:55:22.85177Z"
+    },
+    "pages": {
+      "id": "60b32faf-7934-4e5b-8a34-c07c1cb0983d",
+      "sha": "4bb136b9a39423737be4ee30ba1239d735e221c9"
+    },
+    "domain": {
+      "id": "18ff115e80d1e21d3b74e146d72bf141227e6f23",
+      "zone_id": "fc80d6a45a703d0fe4d1876f1380870f",
+      "zone_name": "rootamman.com",
+      "hostname": "api.rootamman.com",
+      "service": "root-archive-worker",
+      "environment": "production",
+      "cert_id": "ddec1cda-d044-4ac4-9b49-f02c3534b6b4",
+      "previews_enabled": false,
+      "enabled": true
+    },
+    "production_turnstile_unchanged": true
+  },
+  "readiness": {
+    "catalog_get": 200,
+    "catalog_empty": true,
+    "cors_options": 200,
+    "allowed_origin": "https://archive-staging.rootamman.com",
+    "submissions_enabled": false,
+    "scheduled_cleanup_enabled": false,
+    "no_cron_schedules": true,
+    "frontend_host_probe": "Blocked by this environment's proxy destination allowlist; not a TLS/application pass or failure.",
+    "initial_default_python_user_agent": "API probe received Cloudflare 1010; documented root-archive probe User-Agent received 200.",
+    "new_host_presented_tls": "Unverified; dedicated certificate pending_validation; existing active universal *.rootamman.com certificate includes this hostname."
+  },
+  "live_acceptance": "NOT_STARTED_NOT_AUTHORIZED",
+  "jwt_risk": {
+    "id": "RA-JWT-01",
+    "status": "UNRESOLVED_RISK_ACCEPTANCE_DECISION",
+    "independent_hosted_worker_jwt_tests": "NOT_EXECUTED_NOT_PASSED"
+  },
+  "deferred": {
+    "fixture4": "Deterministic concurrency deferred to merge/launch acceptance; unseeded.",
+    "pagination": "Focused pagination deferred to merge/launch acceptance; unseeded.",
+    "artificial_200ms_interruption": "No longer an acceptance gate; not executed."
+  },
+  "validation": {
+    "repository_tests": 67,
+    "browser_tests": 39,
+    "frontend_dry_run": "PASS",
+    "backend_dry_run": "PASS"
+  }
+}

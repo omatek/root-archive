@@ -1,5 +1,35 @@
 # Staging execution results
 
+## Approved paused student setup deployed — 15 November 2026 UTC
+
+The owner approved only staging configuration and initially paused deployment.
+Source `6a22c29f43f8a5fb088e64348a1cec1042b441da` is deployed: backend version
+`6d658a5a-4f5b-4848-b32a-7d63d5bd6986`, student frontend version
+`53a70251-f36b-4e97-a592-8fec66ad2c5b`. The new frontend domain/DNS and isolated
+managed Turnstile widget exist; the matching secret is installed. Google client
+and the privately configured eligible-account allowlist remain owner steps;
+until then no account is admitted and the UI explicitly reports setup pending.
+Submissions and scheduled cleanup remain false, with no Cron or alternate URLs.
+
+Read-only postflight: public catalog 200/empty, CORS OPTIONS 200/exact student
+origin; D1 retains the same three terminal records/four deleted revisions/13
+audits, R2 remains empty. Production Pages/legacy Worker versions and production
+widget are unchanged. No migrations, Access changes, student authentication,
+submission POST, moderation action or deletion occurred. The temporary secret
+file was removed. New-host HTTP is blocked by the Cloud environment's allowlist;
+its dedicated certificate is pending validation, so presented TLS is unverified.
+[Sanitized deployment/state evidence](student-staging-paused-deployment.json)
+and [remaining owner steps](student-staging-acceptance.md#exact-owner-assisted-setup).
+
+Local verification: 67 repository and 39 browser tests pass; both prepared
+deployment configurations pass dry-run. A setup-only missing-client guard keeps
+the UI from calling Google with a dummy client. The artificial 200 ms client
+interruption test is no longer an acceptance gate. Fixture 4 deterministic
+concurrency and focused pagination remain deferred to merge/launch acceptance,
+unseeded. Independent hosted Worker JWT negatives remain **not executed** with
+an unresolved risk-acceptance decision. No live acceptance or enablement is
+authorized by this checkpoint.
+
 ## Student integration preparation — 15 November 2026 UTC
 
 The owner's revised priority supersedes the earlier "next owner action" below:

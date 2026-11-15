@@ -1,7 +1,7 @@
 # Real student staging acceptance
 
-Status: **Staging-only configuration and initially paused deployment APPROVED;
-setup in progress. Live acceptance and submission enablement NOT authorized.**
+Status: **Staging frontend/backend DEPLOYED PAUSED; Google client and eligible
+account configuration pending. Live acceptance and enablement NOT authorized.**
 Baseline: `6ab4023bc628107dc6e07c5c5937fcbf64a3a1c6`, existing PR [#26](https://github.com/omatek/root-archive/pull/26).
 The owner prioritizes this run over fixture 4 and the 201-record campaign. Those
 campaigns remain deferred, unseeded, and are not prerequisites for this run.
@@ -11,6 +11,22 @@ interruption test is no longer an acceptance gate; preserve its historical code
 and evidence without requiring or running it.
 
 ## Verified missing configuration
+
+The list below is the retained pre-setup baseline. Current deployed state is in
+[the paused-deployment evidence](student-staging-paused-deployment.json).
+Backend version `6d658a5a-4f5b-4848-b32a-7d63d5bd6986`, frontend version
+`53a70251-f36b-4e97-a592-8fec66ad2c5b`, deployed source
+`6a22c29f43f8a5fb088e64348a1cec1042b441da`. Turnstile site key
+`0x4AAAAAAGCJAasfjeVYO_Ia` belongs only to the new staging widget. Its secret is
+installed, and the temporary protected file has been removed. The allowlist
+secret deliberately authorizes nobody until the owner supplies an eligible
+account. Both Workers disable workers.dev and previews; neither has a Cron.
+`/resources` GET and `/submit` CORS OPTIONS return 200, exact staging origin
+permitted; no student sign-in or submission POST was made. D1/R2 and production
+deployment IDs match the baseline. Presented TLS/page content on the new host
+cannot yet be checked from this environment's destination allowlist. The new
+dedicated certificate was `pending_validation` at 16:38:08Z; existing active
+Universal SSL covers `*.rootamman.com`. Neither observation is a presented-TLS pass.
 
 [Read-only preflight](student-staging-preflight.json), 15 November 2026 UTC:
 
@@ -105,6 +121,23 @@ resolved against the prepared configuration before deployment. Rebuild with real
 public staging keys; the local dummy-key build is **not deployable acceptance**.
 
 ## Exact owner-assisted setup
+
+Next owner actions (no live sign-in or submission yet):
+
+1. Create the Google Web client below and send **only its public client ID**.
+   The agent can then update both staging configurations and redeploy paused
+   under the existing setup approval; no new infrastructure approval is needed.
+2. In Cloudflare Dashboard → Workers & Pages →
+   `root-archive-moderation-staging` → Settings → Variables and Secrets → edit
+   `STAGING_STUDENT_EMAILS` as a **Secret**. Replace the disabled sentinel with
+   the exact eligible `@std.aum.edu.jo` test-account address, then Save/Deploy.
+   Preserve `SUBMISSIONS_ENABLED=false`, `CLEANUP_ENABLED=false` and every other
+   setting. Do not send the address or secret through chat. This authorizes the
+   account only for the later separately approved acceptance window; it does
+   not open submissions or authorize onboarding.
+3. Open `https://archive-staging.rootamman.com/` in your browser and report
+   whether it has valid HTTPS and the synthetic/setup-pending notice. Do not
+   click Google sign-in or submit until live acceptance is explicitly approved.
 
 Google Cloud (owner authentication required; do not share credentials):
 

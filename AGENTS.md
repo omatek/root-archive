@@ -5,7 +5,7 @@
 - Current acceptance priority (15 November): real contributor integration first.
   Read `docs/student-staging-acceptance.md`. The separate student frontend and
   staging configuration and initially paused deployment are approved from
-  e9f72a4; setup is in progress. Keep SUBMISSIONS_ENABLED=false: the bounded hosted
+  e9f72a4; paused setup is deployed from 6a22c29. Keep SUBMISSIONS_ENABLED=false: the bounded hosted
   PDF run and enablement still need explicit owner approval. Do not run
   fixture 4 or n=5..205 pagination as prerequisites. Preserve all older evidence.
   The new staging account allowlist is fail-closed when empty/missing; provision
@@ -23,8 +23,15 @@
   Unpublish retains a private file for review; permanent removal revokes and
   queues deletion. Do not restore public access using old catalogs or buckets.
 - Isolated private moderation staging is deployed through Wrangler; production
-  integration remains disabled. Version `bb9e96b3-e789-47b0-aa92-16168fe80db4`
-  serves the approved admin/API-staging custom domains with staging D1/R2 only.
+  integration remains disabled. Current paused backend version is
+  `6d658a5a-4f5b-4848-b32a-7d63d5bd6986`; student frontend version is
+  `53a70251-f36b-4e97-a592-8fec66ad2c5b`, on archive-staging.rootamman.com.
+  The backend serves approved admin/API-staging domains with staging D1/R2 only.
+  The separate Turnstile widget/secret are installed. Google client remains
+  empty; the allowlist secret contains a non-email sentinel that authorizes
+  nobody, pending private owner configuration. Both submissions and Cron remain
+  off. See docs/student-staging-paused-deployment.json and current owner steps.
+  The original synthetic acceptance below used version bb9e96b3.
   Access app/policy/PIN/AUD were independently verified through the connector;
   the deployment token's Access read restriction is not a security failure.
   Both D1 migrations were already applied; do not reapply them. Group B now has
