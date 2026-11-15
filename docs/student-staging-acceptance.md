@@ -22,7 +22,7 @@ satisfy that confirmation. Preserve all previous fixtures, records and audits.
 Independent hosted JWT checks remain unverified; trusted-contributor risk
 acceptance will be a separate documented decision, not inferred from this run.
 
-The cutoff-capable backend is version `922fe37d-b9ab-44b5-ad94-b69aeeec1ac9`,
+The cutoff-capable backend is now version `f178ada8-e738-4aa9-a550-a9cb0a16c9a8`,
 source `802d5814b35f70f0a45e62a2723f5b6e2c97ffed`. Uploads remain explicitly
 paused, both window timestamps empty, cleanup/Cron off. [Live preflight](student-staging-live-preflight.json)
 confirms exact private bindings, active staging certificate, no unresolved
@@ -33,6 +33,14 @@ the owner must confirm real eligible Google authorization in the actual frontend
 this verifies the protected allowlist without exposing its contents. Do not
 infer it from secret existence. No new live-run approval is needed after this
 required factual check. Present actual identifiers before destructive cleanup.
+
+The owner clarified that the earlier secret entry had not added a student.
+At the owner's explicit request, the agent set exactly one supplied account
+directly in the protected staging secret; no address is stored in this repository
+or evidence. [The secret-update receipt](student-staging-allowlist-update.json)
+confirms the new secret-only deployment retains paused uploads, empty window
+timestamps and unchanged storage/production. Google verification in the real UI
+remains the next factual step; no upload window has started.
 Baseline: `6ab4023bc628107dc6e07c5c5937fcbf64a3a1c6`, existing PR [#26](https://github.com/omatek/root-archive/pull/26).
 The owner prioritizes this run over fixture 4 and the 201-record campaign. Those
 campaigns remain deferred, unseeded, and are not prerequisites for this run.

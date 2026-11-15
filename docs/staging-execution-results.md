@@ -1,5 +1,19 @@
 # Staging execution results
 
+## Single approved account configured; uploads still paused — 15 November 2026 UTC
+
+The owner clarified that the previous secret entry had not added a student and
+authorized the agent to set one supplied test account. The agent wrote only
+`STAGING_STUDENT_EMAILS` as a protected secret on the staging moderation Worker;
+the actual address is excluded from repository/evidence. The secret-only update
+deploys version `f178ada8-e738-4aa9-a550-a9cb0a16c9a8`, retaining the tested
+automatic-cutoff code. Uploads/cleanup remain false and both window timestamps
+empty. D1 retains three terminal submissions/four deleted revisions/13 audits,
+with zero unresolved storage operations, empty R2 and unchanged production
+deployment IDs. Actual eligible Google sign-in remains pending owner browser
+verification; no upload window, new submission or cleanup has occurred.
+[Sanitized secret update receipt](student-staging-allowlist-update.json).
+
 ## Supervised run authorized; automatic cutoff deployed paused — 15 November 2026 UTC
 
 The owner approves one synthetic UI PDF, denials, moderation/download/withdrawal
