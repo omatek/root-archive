@@ -1,5 +1,7 @@
 # Legal–technical coherence report
 
+**Completion update:** The findings below record PR #28. Current publication status, resolved disclosures and the precise remaining dependencies are in [the final completion report](legal-publication-completion.md). That report supersedes the publication-status and missing-procedure statements below; the implementation and test history remain evidence.
+
 Reviewed baseline: PR #26, `feat/private-moderation`, head
 `cacee8f020eadc2a2779d65815732253104224c4` (also the supplied staging acceptance
 commit). The remote head was checked before editing. This branch targets that

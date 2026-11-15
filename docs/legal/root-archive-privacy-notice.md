@@ -1,12 +1,12 @@
 # root/archive Privacy Notice
 
-> **BLOCKED FOR PUBLICATION — REVIEW DRAFT.** Complete the bracketed legal and provider details and put the approved retention and rights procedures into operation before using this notice for real contributors. The retention table states approved requirements, not confirmation that every deadline is automatically enforced.
+> **BLOCKED FOR PUBLICATION — INCOMPLETE NOTICE.** The remaining bracketed processing, provider and conditional DPO disclosures must be completed before this notice is used for real contributors. The retention schedule requires operator action; automatic expiry is not implemented.
 
-**Effective date** [DATE THIS NOTICE TAKES EFFECT]
+**Effective date** The date this notice is first published as the operative notice for the production release of root/archive. This review copy is not yet in effect.
 
 ## Who is responsible
 
-Omar Khaldoon Jaber Tahrawi operates root/archive as an individual through root, an independent, unincorporated student-led community based in Jordan, and is responsible for how it uses personal data. This notice covers the archive at archive.rootamman.com and the services that support it. The separate root community website at rootamman.com is outside this notice’s scope.
+Omar Khaldoon Jaber Tahrawi operates root/archive as an individual through root, an independent, unincorporated student-led technology community based in Jordan, and is responsible for how it uses personal data. This notice covers the archive at archive.rootamman.com and the services that support it. The separate root community website at rootamman.com is outside this notice’s scope.
 
 For privacy questions, requests or complaints, email [privacy@rootamman.com](mailto:privacy@rootamman.com). The backup address is [omar@rootamman.com](mailto:omar@rootamman.com). [IF APPLICABLE, INSERT DATA PROTECTION OFFICER’S PROFESSIONAL CONTACT DETAILS.]
 
@@ -21,15 +21,17 @@ For privacy questions, requests or complaints, email [privacy@rootamman.com](mai
 | When you contact us | We use your contact details, correspondence and any necessary supporting information to respond to a request, report or dispute or to meet a legal duty. |
 | When a moderator signs in or acts on a submission | We use administrator identity, session information and a record of decisions, reasons and timestamps to control access and account for changes. |
 
-[INSERT THE CONFIRMED LEGAL BASIS FOR EACH PURPOSE ABOVE, INCLUDING FIRST-REQUEST SECURITY PROCESSING AND OPTIONAL PUBLIC CREDIT. DESCRIBE ANY PROFILING IN THE ACTUAL CONFIGURATION OR CONFIRM ITS ABSENCE.]
+The archive does not build advertising profiles or rank contributors by behaviour. Eligibility and abuse checks are automated, including Google account checks and Cloudflare Turnstile security signals; publication decisions are made by a moderator. These statements describe the archive application, not every independent use of information by its providers.
+
+[CONFIRM THE LAWFUL BASIS FOR EACH PURPOSE ABOVE: REQUEST DELIVERY AND SECURITY, STUDENT SIGN-IN, PRIVATE SUBMISSION REVIEW AND PERMISSION EVIDENCE, OPTIONAL PUBLIC CREDIT, CORRESPONDENCE AND ADMINISTRATOR RECORDS. CONTRIBUTOR COPYRIGHT PERMISSION IS NOT SEPARATE PRIVACY CONSENT.]
 
 ## Who can receive the information
 
-Access to private submissions and case records is limited to people authorized to handle them. Cloudflare provides hosting, security, database and file storage, and administrator access controls. Google provides student sign-in and also processes information for its account services. [IDENTIFY THE EMAIL SERVICE THAT HANDLES ARCHIVE CORRESPONDENCE AND ANY OTHER PROCESSOR NEEDED TO MAKE THIS NOTICE ACCURATE.]
+Access to private submissions and case records is limited to people authorized to handle them. Cloudflare provides hosting and Workers, D1 database storage, R2 file storage, Turnstile abuse checks and Access administrator sign-in controls. Google provides student sign-in and also processes information for its account services. Incoming email to our contact domain is routed through Lark Suite mail servers. [IDENTIFY ANY ADDITIONAL FORWARDING, MAILBOX OR OUTGOING-MAIL PROVIDER USED FOR ARCHIVE CORRESPONDENCE.]
 
 We may share limited information when needed to resolve a claim or meet a legal obligation. A contributor may receive the parts of a report needed to respond. We limit identifying details to what the situation requires.
 
-Some processing takes place outside Jordan. [IDENTIFY THE RELEVANT SERVICES, RECIPIENTS, VERIFIED LOCATIONS OR LOCATION LIMITS, AND APPLICABLE TRANSFER ARRANGEMENTS. PHASE 1 CONFIRMED THAT THE STAGING DATABASE WAS IN CLOUDFLARE’S EEUR REGION.]
+The archive uses Cloudflare, Google and Lark Suite services, and some processing takes place outside Jordan. [STATE THE VERIFIED PRODUCTION LOCATION OR LOCATION LIMITS FOR EACH RELEVANT SERVICE, RECIPIENT ROLES AND APPLICABLE INTERNATIONAL PROCESSING ARRANGEMENTS.]
 
 ## How long we keep information
 
@@ -43,7 +45,9 @@ Some processing takes place outside Jordan. [IDENTIFY THE RELEVANT SERVICES, REC
 | Moderation audit records | 24 months after the final moderation action. |
 | Complaints and disputes | 12 months after resolution. |
 | Application and security logs | Up to 30 days where we can configure retention. |
-| Backups | Cloudflare D1 Time Travel retains database history for 7 days on Workers Free or 30 days on Workers Paid. It can retain metadata after active records are scrubbed. [CONFIRM THE PRODUCTION PLAN AND ANY OTHER BACKUP OR EXPORT LIFECYCLES.] Deleting an active file or record does not promise immediate deletion from provider backups. |
+| Backups | Cloudflare D1 Time Travel retains database history for 7 days on Workers Free or 30 days on Workers Paid. It can retain metadata after active records are scrubbed. [DESCRIBE ANY ADDITIONAL DATABASE EXPORT, FILE BACKUP OR MAIL BACKUP LIFECYCLES, OR CONFIRM THAT NONE ARE USED.] Deleting an active file or record does not promise immediate deletion from provider backups. |
+
+The operator applies these deadlines through moderation, cleanup and periodic record deletion. The application does not automatically expire pending submissions, withdrawn files, permission records or moderation history.
 
 An unresolved dispute, legal hold or mandatory retention can require a limited exception. We keep only what is needed for that purpose, restrict access and end the exception when the justification ends. We keep necessary evidence separately from files scheduled for deletion. We can stop future downloads through the archive. Copies already saved elsewhere may remain available.
 
