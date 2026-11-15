@@ -1,0 +1,40 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Template only. Generate concrete configs with scripts/prepare-production.mjs.
+  "name": "root-archive-moderation-production",
+  "account_id": "1b409400fea16e7142f62ac19ecd361d",
+  "main": "moderation.ts",
+  "compatibility_date": "2026-10-30",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [],
+  "assets": {"directory": "../admin", "binding": "ASSETS", "run_worker_first": true},
+  "vars": {
+    "CONTRIBUTOR_MODE": "production",
+    "ADMIN_ORIGIN": "https://moderation.rootamman.com",
+    "PUBLIC_API_ORIGIN": "https://api.rootamman.com",
+    "ALLOWED_ORIGIN": "https://archive.rootamman.com,https://root-archive.pages.dev",
+    "ACCESS_ISSUER": "https://rootamman.cloudflareaccess.com",
+    "ACCESS_AUD": "REQUIRED_NEW_PRODUCTION_ACCESS_AUD",
+    "GOOGLE_CLIENT_ID": "451085424306-tll56iseq0qd9lcofeb1nkiqiaq0opvh.apps.googleusercontent.com",
+    "SUBMISSIONS_ENABLED": "false",
+    "STAGING_STUDENT_EMAILS": "",
+    "STAGING_SUBMISSIONS_OPENS_AT": "",
+    "STAGING_SUBMISSIONS_CLOSES_AT": "",
+    "CLEANUP_ENABLED": "true"
+  },
+  "secrets": {"required": ["ADMIN_EMAILS", "TURNSTILE_SECRET"]},
+  "d1_databases": [{
+    "binding": "DB",
+    "database_name": "root-archive-moderation-production",
+    "database_id": "REQUIRED_NEW_PRODUCTION_D1_UUID",
+    "migrations_dir": "migrations"
+  }],
+  "r2_buckets": [{"binding": "PRIVATE_FILES", "bucket_name": "root-archive-private-production"}],
+  "triggers": {"crons": ["*/5 * * * *"]},
+  "observability": {
+    "enabled": true,
+    "logs": {"enabled": true, "invocation_logs": false},
+    "traces": {"enabled": true, "head_sampling_rate": 0.1}
+  }
+}

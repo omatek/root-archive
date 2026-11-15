@@ -14,6 +14,7 @@
     "run_worker_first": true
   },
   "vars": {
+    "CONTRIBUTOR_MODE": "staging",
     // Reserved for isolated staging until a separately approved production cutover.
     "ADMIN_ORIGIN": "https://admin.archive.rootamman.com",
     "PUBLIC_API_ORIGIN": "https://api-staging.rootamman.com",

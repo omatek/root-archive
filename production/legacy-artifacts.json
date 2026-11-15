@@ -1,0 +1,45 @@
+{
+  "observedOn": "2026-11-15",
+  "source": "Read-only Cloudflare object/deployment metadata and GitHub open PR metadata; no object bytes fetched",
+  "bucket": "root-archive-assets",
+  "publicHosts": ["pub-7a7ae5ec96bb46c7829a25b4b06407eb.r2.dev", "assets.rootamman.com"],
+  "disposition": "HOLD: exclude from production import; separate exact-object/public-host/preview disposition authorization required",
+  "artifacts": [
+    {
+      "pr": 1,
+      "key": "assets/0401111/1793405836568-bc1ea503-IMG-20260425-WA0008.jpg",
+      "size": 19699,
+      "etag": "73606ba0b12b64e85eeff560e910acfa",
+      "branch": "submission-1793405836568-dbeb97558d74",
+      "previewDeploymentIds": ["bb40e906-5d49-4733-9644-44713bb4128a", "9b92653b-a8f9-400e-86c4-4e259361299b"],
+      "previewAlias": "submission-1793405836568-dbe.root-archive.pages.dev"
+    },
+    {
+      "pr": 2,
+      "key": "assets/0401111/1793689270718-1a452a8b-Screenshot_20261031_194759_com_einnovation_temu_ContainerMaskActivity.jpg",
+      "size": 471252,
+      "etag": "6b14d2e7b69bdf112889e5f59787fb16",
+      "branch": "submission-1793689270718-65300fdb3241",
+      "previewDeploymentIds": ["649bda35-2944-4723-88a9-cb7118602ca8", "04f6afec-85c9-4454-8596-3944b37463a0"],
+      "previewAlias": "submission-1793689270718-653.root-archive.pages.dev"
+    },
+    {
+      "pr": 3,
+      "key": "assets/0401231/1793859638514-ec0df505-Project_Proposal.pdf",
+      "size": 56315,
+      "etag": "25b49bc8b2f1c6ae94e581a6c00c3309",
+      "branch": "submission-1793859638514-693394549f25",
+      "previewDeploymentIds": ["c604ae7f-8e95-4668-9968-2169a0fda23f", "59b737f3-b170-4fc5-9f23-a73d34c38431"],
+      "previewAlias": "submission-1793859638514-693.root-archive.pages.dev"
+    },
+    {
+      "pr": 21,
+      "key": "assets/0401111/1794285980720-2fffbe35-root_archive_Final_Work_Plan.pdf",
+      "size": 58541,
+      "etag": "df6904445fb3e8324eb85a4c0d8eef30",
+      "branch": "submission-1794285980720-bdfff549ea75",
+      "previewDeploymentIds": ["a3d6552f-ed21-424e-9167-6478211f327c", "4a5d1e16-620f-4015-8be5-79533d571f04"],
+      "previewAlias": "submission-1794285980720-bdf.root-archive.pages.dev"
+    }
+  ]
+}

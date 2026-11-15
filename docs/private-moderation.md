@@ -337,6 +337,12 @@ wording. Do not export or retain removed content in untracked backups.
 
 ## Production cutover — approval required
 
+The current, narrower [production preparation plan](production-cutover.md)
+supersedes the historical campaign/review prerequisites below. Essential staging
+acceptance is complete; do not restart it or commission another general review.
+Production must apply 0001, 0002 **and 0003** to its verified fresh database and
+keep the Privacy Notice/Contributor Declaration publication blockers in place.
+
 The following is a release checklist, **not actions performed by this PR**:
 
 1. Review this draft, pass the required checks and independently inspect auth,
