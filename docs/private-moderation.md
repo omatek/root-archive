@@ -4,13 +4,15 @@ Work is on `feat/private-moderation`. This is a staged replacement, not an
 approved production cutover. The legacy Worker/configuration, publication App,
 required checks and static public catalog remain operational until release.
 
-Current hosted state supersedes the historical checkpoints below: isolated
-staging is deployed and both migrations are already applied. Read
-[execution results](staging-execution-results.md) before acting. Three owned
-synthetic lifecycles have completed and their files are deleted. Group B remains
-partial; the [browser client](staging-browser-client.md) is prepared only, awaiting
-independent review and execution approval. Do not seed further fixtures yet.
-Production integration and real contributor onboarding remain inactive.
+Current hosted state supersedes the historical checkpoints below: the essential
+real Google/Turnstile/contributor UI staging workflow passed and its authorized
+synthetic file was removed, identity scrubbed and private R2 verified empty.
+Uploads are paused. See [final acceptance](student-staging-final-acceptance.md).
+Remaining nonessential campaigns are deferred, not passed; independent hosted
+Worker JWT verification and its risk disposition remain unresolved. Production
+integration and real contributor onboarding remain inactive. Migrations 0001
+and 0002 are applied to staging. This branch adds 0003 for contributor permission
+evidence; it is tested locally only and has not been applied remotely.
 
 ## Checkpoint verification — 13 November 2026
 
@@ -298,12 +300,20 @@ superseded edited drafts are queued after replacement. Re-review retains the
 current private file and stable resource ID until a new decision.
 
 Rejection/permanent removal immediately revoke publication, clear contributor
-identity/credit and content-bearing metadata, and queue all files for deletion.
+identity/credit and content-bearing metadata from submission/resource rows, and
+queue all files for deletion. New submissions additionally retain a separate
+private contributor authorization receipt (migration 0003); content removal does
+not erase that permission evidence. Its approved 24-month post-removal retention
+is not yet enforced by an automatic purge.
 Keep concise reasons free of unnecessary personal data. A minimal private record
 retains UUID/course/type, decision times, moderator/action/reason and deletion
 bookkeeping. Current published resources retain only the chosen file. Pending
-and withdrawn records are retained for review; the owner should review these
-queues monthly and explicitly reject/remove abandoned material.
+and withdrawn records currently have no age-based expiry. The approved policy
+requires pending submissions to receive moderation within 30 days and withdrawn
+files to be deleted within 7 days; monthly queue review alone does not enforce
+either deadline. Moderation audits also have no 24-month expiry. See the
+[legal–technical coherence report](legal-technical-coherence.md) for the approved
+schedule, implementation gaps and missing canonical policy sources.
 
 `CLEANUP_ENABLED=false` disables only the scheduled handler. Replacement,
 approval, rejection, removal, failed-upload recovery and the authorized manual

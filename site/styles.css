@@ -136,6 +136,18 @@ main{flex:1;padding-block:38px 64px}
 .footer-signature img{width:47px;height:34px}
 .footer-signature strong{color:var(--ink);font-weight:600}
 .footer-links{display:flex;flex-wrap:wrap;gap:12px 24px}
+.site-footer .footer-links{max-width:760px}
+.policy-content{max-width:74ch;margin:40px auto 64px;overflow-wrap:anywhere;line-height:1.65}
+.policy-content h1{font-size:clamp(2rem,6vw,3rem);line-height:1.1;margin-block:28px}
+.policy-content h2{margin:32px 0 14px}
+.policy-content>p{margin-block:14px}
+.policy-content li{margin-block:12px}
+.policy-content blockquote{margin:24px 0;padding:12px 20px;border-left:3px solid var(--oxide);background:var(--paper)}
+.policy-content table{width:100%;border-collapse:collapse;font-size:0.95rem}
+.policy-content th,.policy-content td{padding:12px 8px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
+.policy-content th:first-child,.policy-content td:first-child{width:30%}
+.resource-actions{max-width:240px}
+.download-notice{font-size:0.8rem;line-height:1.5;color:var(--muted);margin:8px 0 0}
 
 /* Native modal keeps the background inert, including for screen readers. */
 dialog{color:var(--ink);background:var(--paper);border:1px solid var(--muted);border-top:4px solid var(--oxide);padding:0;width:min(650px,calc(100% - 32px));max-height:calc(100dvh - 40px);overflow-y:auto;overscroll-behavior:contain}

@@ -2,6 +2,7 @@ import { CONFIG, TYPES } from './config.mjs';
 import { cleanText, CONTROL_CHARS, httpsUrl, validateFile } from './catalog.mjs';
 import { $, externalLink, focusHeading } from './dom.mjs';
 import { createStudentAuth, createSecurityCheck } from './services.mjs';
+import { CONTRIBUTOR_AUTHORIZATION } from './contributor-authorization.mjs';
 
 export function createContribution(getCourses) {
   const dialog = $('contribution-dialog');
@@ -22,8 +23,10 @@ export function createContribution(getCourses) {
     $('credit-choice').hidden = false;
     $('semester-optional').hidden = false;
     $('contribution-semester').required = false;
-    $('contributor-help').textContent = 'Choose whether to show a name publicly. Your sign-in identity stays private either way.';
-    $('contribution-notice').textContent = 'Submissions stay private until approved. Share only material you are allowed to share, and remove personal details first. By submitting, you allow root moderators to format, rotate, crop or redact personal details and prepare a permitted resource for publication. This permission does not establish ownership of someone else’s copyrighted material.';
+    $('contributor-help').textContent = 'Choose whether to show a name or pseudonym publicly. Your sign-in identity is not automatically published.';
+    $('contribution-notice').textContent = 'Submissions stay private until approved. Share only material you have the right to share and remove personal details first. The Contributor Declaration covers private review, technical formatting and redactions, and public distribution of the approved version. You retain ownership of your original work.';
+    $('contributor-authorization').hidden = false;
+    $('contribution-declaration').required = true;
     updateCreditChoice();
   }
 
@@ -46,7 +49,7 @@ export function createContribution(getCourses) {
     $(`contribution-${field}`)?.setAttribute('aria-invalid', String(!!text));
   }
   function clearErrors() {
-    for (const field of ['course', 'title', 'type', 'semester', 'contributor', 'file', 'turnstile']) error(field, '');
+    for (const field of ['course', 'title', 'type', 'semester', 'contributor', 'file', 'turnstile', 'declaration']) error(field, '');
   }
   function populateCourses() {
     const select = $('contribution-course');
@@ -80,6 +83,7 @@ export function createContribution(getCourses) {
   }
   async function selectFile(file) {
     const revision = ++fileRevision;
+    $('contribution-declaration').checked = false;
     selectedFile = null; markDirty(); error('file', '');
     $('selected-file').textContent = 'Checking your file…';
     $('remove-file').hidden = false;
@@ -111,6 +115,7 @@ export function createContribution(getCourses) {
     if (CONFIG.privateModeration && wantsCredit && !contributor) invalid('contributor', 'Enter the name you want shown, or turn off public credit.');
     if (contributor === null) invalid('contributor', 'Use up to 40 characters, without angle brackets or hidden control characters.');
     if (!selectedFile) invalid('file', 'Choose a valid file and wait for it to finish checking.');
+    if (CONFIG.privateModeration && !$('contribution-declaration').checked) invalid('declaration', 'Accept the contributor permission for this file before submitting.');
     if (issues.length) {
       status('Please check the highlighted fields. Your draft has been kept.');
       form.querySelector('[aria-invalid="true"]').focus(); return;
@@ -132,6 +137,10 @@ export function createContribution(getCourses) {
     data.set('semester', semester);
     if (contributor) data.set('contributor', contributor);
     data.set('file', file, file.name); data.set('turnstile_token', challenge);
+    if (CONFIG.privateModeration) {
+      data.set('declaration_accepted', 'true');
+      data.set('declaration_version', CONTRIBUTOR_AUTHORIZATION.version);
+    }
     status('Submitting your resource for review… Please keep this tab open.', true, true);
     try {
       const endpoint = CONFIG.privateModeration ? new URL('/submit', CONFIG.resourcesEndpoint).href : CONFIG.submissionEndpoint;
@@ -196,6 +205,7 @@ export function createContribution(getCourses) {
     if (event.target.files[0]) selectFile(event.target.files[0]);
   });
   $('remove-file').addEventListener('click', () => {
+    $('contribution-declaration').checked = false;
     fileRevision++; selectedFile = null; $('contribution-file').value = '';
     $('selected-file').textContent = ''; $('remove-file').hidden = true; error('file', ''); markDirty();
   });

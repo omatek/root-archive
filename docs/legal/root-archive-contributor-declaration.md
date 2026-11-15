@@ -1,0 +1,16 @@
+# root/archive Contributor Declaration
+
+> **BLOCKED FOR LIVE USE — REVIEW DRAFT.** File-specific electronic acceptance is implemented, with the exact wording, authenticated identity, file hash, revision and submission event recorded privately. Its legal sufficiency remains unresolved, and the linked Privacy Notice still has material placeholders. These technical records do not resolve those legal questions.
+
+**Declaration version** 1.0-reconciled-2026-11-15
+
+This declaration applies to the specific file and version identified in my submission. By affirmatively accepting it, I confirm the following.
+
+- I wrote the material or have authority from everyone whose permission is needed to share the parts I am submitting. I have identified any third-party material and its terms. I have the necessary clearance for the intended sharing.
+- I have followed the assessment, confidentiality and academic rules that apply to this material. The file contains no past examination papers, copied or confidential examination questions, or improperly included personal information. I have checked the visible content and file properties.
+- I give Omar Khaldoon Jaber Tahrawi, as operator of root/archive, nonexclusive permission to receive, copy and store this version privately for review through the services described in the [Privacy Notice](root-archive-privacy-notice.md). I allow technical formatting and redactions needed for publication, provided they preserve the work’s meaning, respect my rights and follow any applicable licence. Changes beyond that scope require appropriate permission before release.
+- If this version is approved for public release, I authorize root/archive to host, reproduce and make the approved version available online worldwide and allow users to download and use it for personal study. This permission lasts while the resource is published and authorized. Providers may handle copies as necessary to deliver the archive. I retain ownership of my original work and any permissions under a separate licence continue to apply according to that licence.
+- Public contributor credit is optional. I can supply a name or pseudonym. The archive does not automatically include my sign-in identity in public catalog or download responses. Identifying details embedded in the approved file may become public. Required author or licence attribution still applies to material that carries those conditions.
+- I can withdraw this permission by contacting [privacy@rootamman.com](mailto:privacy@rootamman.com), with [omar@rootamman.com](mailto:omar@rootamman.com) as a backup. When the withdrawal is applied, the archive immediately revokes public access under its control and handles files and limited permission records under the [Privacy Notice](root-archive-privacy-notice.md). Email requests require action by the operator; they do not automatically change publication state. Withdrawal stops future archive distribution. Copies that users already saved and independently applicable licences may remain.
+
+The [Content and Copyright Policy](root-archive-content-and-copyright-policy.md) explains what can be submitted. The Privacy Notice describes how the archive processes personal data.
