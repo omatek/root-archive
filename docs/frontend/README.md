@@ -1,5 +1,8 @@
 # Frontend overhaul
 
+Current directory pagination, mobile tracks and contributor wording are documented
+in [post-launch UX refinements](post-launch-ux.md).
+
 The current authentication, resource taxonomy and materials filter are documented
 in [frontend polish](polish.md). Historical verification below records PR #23.
 

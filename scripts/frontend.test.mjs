@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { parseCatalog, filterCourses, readRoute, routeUrl, validateFile, cleanText, loadCatalog, loadPublishedResources } from '../site/js/catalog.mjs';
+import { parseCatalog, filterCourses, paginateCourses, readRoute, routeUrl, validateFile, cleanText, loadCatalog, loadPublishedResources } from '../site/js/catalog.mjs';
 import { CONFIG, TYPES } from '../site/js/config.mjs';
 import { validateCatalogs } from './catalog-policy.mjs';
 
@@ -25,7 +25,7 @@ test('name, exact code, resource search and track intersection', () => {
   assert.equal(filterCourses(catalog.courses, 'nonexistent-course', 'All').length, 0);
 });
 test('URLs round-trip leading zeros, unicode, filters and reserved characters', () => {
-  const route = { course: '0401212', about: false, query: 'data & بحث + structures', track: 'CS', hasMaterials: true };
+  const route = { course: '0401212', about: false, query: 'data & بحث + structures', track: 'CS', hasMaterials: true, page: 3 };
   assert.deepEqual(readRoute('https://archive.example' + routeUrl(route)), route);
   assert.equal(readRoute('https://archive.example/?track=unknown').track, 'All');
   assert.equal(routeUrl({ query: 'data' }, '/preview/index.html'), '/preview/index.html?q=data');
@@ -159,4 +159,32 @@ test('standalone identity marks and favicon preserve the supplied SVG geometry',
     assert(svg.includes('x="50" y="61" width="46" height="3.5"'));
     assert(!/<text|<use|font-family/.test(svg));
   }
+});
+
+
+test('directory pagination bounds and filters cover the complete catalog exactly once', () => {
+  const catalog = parseCatalog(courses, [sample]);
+  const all = catalog.courses;
+  assert.equal(all.length, 127);
+  assert.deepEqual(paginateCourses(all).courses, all.slice(0, 20));
+  const last = paginateCourses(all, 7);
+  assert.deepEqual([last.start, last.end, last.pages], [121, 127, 7]);
+  assert.deepEqual(paginateCourses(all, 999), last);
+  assert.deepEqual(Array.from({length: 7}, (_, i) => paginateCourses(all, i + 1).courses).flat(), all);
+  for (const query of ['', 'a', 'data', 'nonexistent-course']) {
+    for (const track of ['All', 'CS', 'AI', 'Cybersecurity']) {
+      for (const materials of [false, true]) {
+        const filtered = filterCourses(all, query, track, materials);
+        const first = paginateCourses(filtered);
+        assert.equal(first.total, filtered.length);
+        assert.deepEqual(Array.from({length:first.pages}, (_,i) => paginateCourses(filtered,i+1).courses).flat(), filtered);
+      }
+    }
+  }
+  assert.deepEqual(paginateCourses([], 7), {courses:[],page:1,pages:1,total:0,start:0,end:0});
+  for (const value of ['0','-1','1.5','Infinity','2e1','9007199254740992','bad']) {
+    assert.equal(readRoute(`https://archive.example/?page=${value}`).page, 1);
+  }
+  assert.equal(readRoute('https://archive.example/?page=3&page=4').page, 3);
+  assert.equal(routeUrl({page:1}), '/');
 });

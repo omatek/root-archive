@@ -71,7 +71,12 @@ main{flex:1;padding-block:38px 64px}
 .search-box input:focus{outline:none}
 .search-box button{font-size:15px;color:var(--oxide);padding:12px;min-height:44px}
 .filter-bar{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;border-bottom:1px solid var(--ink)}
-.track-filters{display:flex;flex-wrap:wrap;gap:0 26px}
+.track-filters{display:flex;flex-wrap:nowrap;gap:0 26px;min-width:0;overflow-x:auto;padding:3px;scroll-padding:3px}
+.track-filters button{flex:none;white-space:nowrap}
+.directory-pagination{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:24px 0}
+.page-control{min-width:44px;min-height:44px;padding:8px 12px;border:1px solid var(--ink)}
+.page-control[aria-current='page']{border-color:var(--oxide);color:var(--oxide);font-weight:650}
+.page-control:disabled{opacity:.45;cursor:default}
 .track-filters button{border-bottom:3px solid transparent;padding:9px 0 12px;min-height:46px}
 .track-filters button[aria-pressed='true']{border-color:var(--oxide);font-weight:650}
 .track-filters button:hover{color:var(--oxide)}

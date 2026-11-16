@@ -28,3 +28,13 @@ test('six public policies and the accepted declaration snapshot match the reconc
   assert.ok(notice.includes(`**Consent version** ${CONTRIBUTOR_PRIVACY_CONSENT.version}\n\n${CONTRIBUTOR_PRIVACY_CONSENT.text}`));
   assert.ok(!CONTRIBUTOR_AUTHORIZATION.text.includes(CONTRIBUTOR_PRIVACY_CONSENT.text));
 });
+
+
+test('concise privacy consent retains the original processing and transfer disclosures', async () => {
+  const old = JSON.parse(await readFile(new URL('../worker/tests/fixtures/privacy-consent-v1.json',import.meta.url),'utf8'));
+  const notice = await readFile(new URL('../docs/legal/root-archive-privacy-notice.md',import.meta.url),'utf8');
+  assert.equal(CONTRIBUTOR_PRIVACY_CONSENT.version, '1.1-2026-11-16');
+  assert.equal(CONTRIBUTOR_PRIVACY_CONSENT.text, 'I consent to root/archive processing my submission data and transferring it to Cloudflare outside Jordan, as described in the Privacy Notice.');
+  assert.ok(notice.includes(old.text), 'full original disclosures remain in the linked notice');
+  assert.notEqual(CONTRIBUTOR_PRIVACY_CONSENT.version,old.version);
+});

@@ -26,7 +26,7 @@
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
   <link rel="preload" href="./assets/fonts/barlow-semi-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="./assets/fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="./styles.css?v=legal-1">
+  <link rel="stylesheet" href="./styles.css?v=ux-2">
   <script type="module" src="./js/app.mjs"></script>
 </head>
 <body>
@@ -73,7 +73,9 @@
         <p id="catalog-availability"></p>
         <button type="button" data-contribute>Help build the collection <svg class="arrow-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h12m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.5"/></svg></button>
       </div>
+      <h2 id="directory-results-heading" class="sr-only">Course results</h2>
       <div id="directory-results"></div>
+      <nav id="directory-pagination" class="directory-pagination" aria-label="Course directory pages" hidden></nav>
     </section>
     <section id="course-view" hidden></section>
     <section id="about-view" class="reading-column" hidden aria-labelledby="about-heading">
@@ -90,8 +92,8 @@
         <p>Anyone can browse and download. Contributions currently require an eligible student account, and every submission is reviewed before it appears in the archive.</p>
         <h2>Built by a community.</h2>
         <p>Original student-authored notes, summaries, explanations, and original practice questions and test banks can make a difference. Share only material you have the right to share. Past examination papers are excluded.</p>
-        <p>root is an independent, unincorporated student-led community based in Jordan. root and root/archive are not operated, sponsored, or officially affiliated with AUM or another educational institution.</p>
-        <p>root/archive is operated by Omar Khaldoon Jaber Tahrawi as an individual through root. For privacy, content, copyright or removal requests, contact <a href="mailto:privacy@rootamman.com">privacy@rootamman.com</a>. Backup contact: <a href="mailto:omar@rootamman.com">omar@rootamman.com</a>.</p>
+        <p>root is an independent, student-led technology community based in Jordan. Neither root nor root/archive is operated, sponsored, or officially affiliated with AUM or another educational institution.</p>
+        <p>For privacy, content, copyright, or removal requests, contact <a href="mailto:privacy@rootamman.com">privacy@rootamman.com</a>. Backup: <a href="mailto:omar@rootamman.com">omar@rootamman.com</a>.</p>
         <button class="button" type="button" data-contribute>Contribute a resource <svg class="arrow-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h12m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.5"/></svg></button>
       </div>
     </section>
@@ -183,14 +185,11 @@
               <button id="retry-security" class="text-button" type="button" hidden>Retry security check</button>
             </div>
             <div id="contributor-privacy-consent" class="field" hidden>
-              <p id="contribution-privacy-consent-text" class="field-help"></p>
-              <label class="credit-choice" for="contribution-privacy-consent"><input id="contribution-privacy-consent" type="checkbox" aria-describedby="contribution-privacy-consent-text privacy-consent-error">I agree to this processing and transfer.</label>
-              <p class="field-help"><a href="./policies/privacy-notice.html" target="_blank" rel="noopener">Read the Privacy Notice</a></p>
+              <label class="credit-choice" for="contribution-privacy-consent"><input id="contribution-privacy-consent" type="checkbox" aria-describedby="privacy-consent-error"><span id="contribution-privacy-consent-text"></span></label>
               <p id="privacy-consent-error" class="field-error" hidden></p>
             </div>
             <div id="contributor-authorization" class="field" hidden>
-              <label class="credit-choice" for="contribution-declaration"><input id="contribution-declaration" type="checkbox" aria-describedby="contribution-notice declaration-error">I have read and accept the Contributor Declaration for this file.</label>
-              <p class="field-help"><a href="./policies/contributor-declaration.html" target="_blank" rel="noopener">Read the full Contributor Declaration</a></p>
+              <label class="credit-choice" for="contribution-declaration"><input id="contribution-declaration" type="checkbox" aria-describedby="contribution-notice declaration-error"> <span>I have read and accept the <a href="./policies/contributor-declaration.html" target="_blank" rel="noopener">Contributor Declaration</a> for this file.</span></label>
               <p id="declaration-error" class="field-error" hidden></p>
             </div>
           </fieldset>

@@ -1,4 +1,4 @@
-import { loadCatalog, filterCourses, readRoute, routeUrl } from './catalog.mjs';
+import { loadCatalog, filterCourses, paginateCourses, readRoute, routeUrl } from './catalog.mjs';
 import { TRACKS, TRACK_LABELS, TYPES, TYPE_HEADINGS } from './config.mjs';
 import { $, el, link, externalLink, focusHeading, arrowIcon } from './dom.mjs';
 import { createContribution } from './contribution.mjs';
@@ -49,7 +49,9 @@ function navigate(href, focus = '') {
   restoring = true;
   const fromDirectory = !route.course && !route.about;
   entryId = crypto.randomUUID();
-  history.pushState({ entryId, fromDirectory, scroll: 0, focus }, '', href);
+  const scroll = focus === 'directory-results-heading'
+    ? $('directory-results-heading').getBoundingClientRect().top + scrollY : 0;
+  history.pushState({ entryId, fromDirectory, scroll, focus }, '', href);
   route = readRoute(location.href);
   render();
   restorePosition();
@@ -59,6 +61,7 @@ function returnToResults() {
   else navigate(urlFor({ course: '', about: false }));
 }
 function updateResults() {
+  route.page = 1;
   history.replaceState({ ...history.state, scroll: 0 }, '', urlFor({ course: '', about: false }));
   renderDirectory();
   updateNavigationLinks();
@@ -73,7 +76,13 @@ function renderDirectory() {
   });
   if (!catalog) return;
   const matches = filterCourses(catalog.courses, route.query, route.track, route.hasMaterials);
-  $('result-count').textContent = `${matches.length} ${matches.length === 1 ? 'course' : 'courses'}${matches.length === catalog.courses.length ? '' : ` of ${catalog.courses.length}`}`;
+  const page = paginateCourses(matches, route.page);
+  if (route.page !== page.page) {
+    route.page = page.page;
+    history.replaceState(history.state, '', urlFor({}));
+  }
+  $('result-count').textContent = `Showing ${page.start}–${page.end} of ${page.total} ${page.total === 1 ? 'course' : 'courses'}.`;
+  renderPagination(page);
   $('catalog-note').hidden = false;
   $('catalog-availability').textContent = catalog.resourceCount
     ? `${catalog.resourceCount} published ${catalog.resourceCount === 1 ? 'resource' : 'resources'}. All materials are free to open.`
@@ -101,7 +110,7 @@ function renderDirectory() {
   });
   head.append(header);
   const body = el('tbody');
-  for (const course of matches) {
+  for (const course of page.courses) {
     const row = el('tr');
     row.append(el('td', 'course-code', course.id));
     const name = el('td', 'course-name');
@@ -116,6 +125,26 @@ function renderDirectory() {
     count.append(amount); row.append(count); body.append(row);
   }
   table.append(caption, head, body); container.append(table);
+}
+
+function renderPagination({ page, pages }) {
+  const nav = $('directory-pagination');
+  nav.replaceChildren(); nav.hidden = pages <= 1;
+  if (nav.hidden) return;
+  function control(text, target, disabled = false) {
+    const node = el('button', 'page-control', text);
+    node.type = 'button'; node.disabled = disabled;
+    node.setAttribute('aria-label', /^\d+$/.test(text) ? `Page ${target}` : `${text} page`);
+    if (target === page && /^\d+$/.test(text)) node.setAttribute('aria-current', 'page');
+    node.addEventListener('click', () => {
+      if (target === route.page) return;
+      navigate(urlFor({ page: target }), 'directory-results-heading');
+    });
+    nav.append(node);
+  }
+  control('Previous', page - 1, page === 1);
+  for (let number = 1; number <= pages; number++) control(String(number), number);
+  control('Next', page + 1, page === pages);
 }
 
 function contributeButton(courseId, text = 'Contribute a resource', className = 'button') {
@@ -237,9 +266,10 @@ async function start() {
 $('course-search').addEventListener('input', event => { route.query = event.target.value; updateResults(); });
 $('has-materials').addEventListener('change', event => { route.hasMaterials = event.target.checked; updateResults(); });
 $('clear-search').addEventListener('click', () => { route.query = ''; updateResults(); $('course-search').focus(); });
-document.querySelectorAll('[data-track]').forEach(button => button.addEventListener('click', () => {
-  route.track = button.dataset.track; updateResults();
-}));
+document.querySelectorAll('[data-track]').forEach(button => {
+  button.addEventListener('click', () => { route.track = button.dataset.track; updateResults(); });
+  button.addEventListener('focus', () => button.scrollIntoView({ block: 'nearest', inline: 'nearest' }));
+});
 $('retry-load').addEventListener('click', start);
 document.addEventListener('click', event => {
   const contribute = event.target.closest('[data-contribute]');

@@ -617,7 +617,7 @@ test('private submissions reject absent, false, stale or duplicate contributor a
   for (const patch of [{declaration_accepted:undefined},{declaration_accepted:'false'},
     {declaration_accepted:'on'},{declaration_version:undefined},{declaration_version:'old-version'},
     {privacy_consent_accepted:undefined},{privacy_consent_accepted:'false'},{privacy_consent_accepted:'on'},
-    {privacy_consent_version:undefined},{privacy_consent_version:'old-version'}]) {
+    {privacy_consent_version:undefined},{privacy_consent_version:'old-version'},{privacy_consent_version:'1.0-2026-11-16'}]) {
     assert.equal((await submit(patch)).status,400);
   }
   for (const field of ['declaration_accepted','declaration_version','privacy_consent_accepted','privacy_consent_version']) {
@@ -666,4 +666,23 @@ test('failure to persist authorization rolls back submission receipt and ready r
     assert.equal((await db.prepare("SELECT COUNT(*) n FROM submissions WHERE status='pending'").first()).n,0);
     assert.equal((await bucket.list()).objects.length,0);
   } finally {await db.prepare('DROP TRIGGER fixture_fail_authorization').run();}
+});
+
+
+test('historical and pre-privacy receipts keep their exact evidence across new consent and removal', async () => {
+  const original = JSON.parse(readFileSync(new URL('./fixtures/privacy-consent-v1.json', import.meta.url), 'utf8'));
+  for (const historical of [original, {version:null,text:null}]) {
+    let record = await create();
+    const id = record.submission.id;
+    const receipt = {...record.authorization, privacy_consent_version:historical.version, privacy_consent_text:historical.text};
+    // Seed a synthetic historical receipt in local D1; production records are never touched.
+    await db.prepare('DELETE FROM contributor_authorizations WHERE submission_id=?').bind(id).run();
+    const keys = Object.keys(receipt);
+    await db.prepare(`INSERT INTO contributor_authorizations (${keys.join(',')}) VALUES (${keys.map(()=>'?').join(',')})`).bind(...Object.values(receipt)).run();
+    await create();
+    assert.deepEqual((await read(await admin(`/admin/api/submissions/${id}`))).authorization, receipt);
+    await assert.rejects(db.prepare('UPDATE contributor_authorizations SET privacy_consent_version=? WHERE submission_id=?').bind(CONTRIBUTOR_PRIVACY_CONSENT.version,id).run(), /immutable/);
+    record = await read(await action(record,'remove',{reason:'Synthetic historical withdrawal'}));
+    assert.deepEqual((await read(await admin(`/admin/api/submissions/${id}`))).authorization, receipt);
+  }
 });

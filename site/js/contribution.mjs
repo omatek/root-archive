@@ -1,6 +1,6 @@
 import { CONFIG, TYPES } from './config.mjs';
 import { cleanText, CONTROL_CHARS, httpsUrl, validateFile } from './catalog.mjs';
-import { $, externalLink, focusHeading } from './dom.mjs';
+import { $, link, externalLink, focusHeading } from './dom.mjs';
 import { createStudentAuth, createSecurityCheck } from './services.mjs';
 import { CONTRIBUTOR_AUTHORIZATION } from './contributor-authorization.mjs';
 import { CONTRIBUTOR_PRIVACY_CONSENT } from './contributor-privacy-consent.mjs';
@@ -30,7 +30,10 @@ export function createContribution(getCourses) {
     $('contribution-declaration').required = true;
     $('contributor-privacy-consent').hidden = false;
     $('contribution-privacy-consent').required = true;
-    $('contribution-privacy-consent-text').textContent = CONTRIBUTOR_PRIVACY_CONSENT.text;
+    const [beforeNotice, afterNotice] = CONTRIBUTOR_PRIVACY_CONSENT.text.split('Privacy Notice');
+    const notice = link('Privacy Notice', './policies/privacy-notice.html');
+    notice.target = '_blank'; notice.rel = 'noopener';
+    $('contribution-privacy-consent-text').replaceChildren(beforeNotice, notice, afterNotice);
     updateCreditChoice();
   }
 
