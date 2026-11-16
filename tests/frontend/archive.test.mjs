@@ -303,7 +303,7 @@ test('both hosted frontends keep shareable course URLs and construct the expecte
 
  test('directory query/filter/scroll/focus survive course navigation, Back and Forward', async () => {
   const s = await setup(); const p = s.page; await s.goto();
-  assert.equal(await p.locator('.course-table tbody tr').count(), realCourses.length);
+  assert.equal(await p.locator('.course-table tbody tr').count(), Math.min(20, realCourses.length));
   await p.locator('#course-search').fill('a'); await p.locator('[data-track=CS]').click();
   const target = p.locator('.course-name a').nth(14);
   const id = await target.getAttribute('id'); await target.scrollIntoViewIfNeeded();
@@ -321,7 +321,7 @@ test('both hosted frontends keep shareable course URLs and construct the expecte
   await p.locator('#course-search').fill('no course matches this');
   await p.getByRole('heading', { name: 'No matching courses.' }).waitFor();
   await p.getByRole('button', { name: 'Clear search and filters' }).click();
-  assert.equal(await p.locator('.course-table tbody tr').count(), realCourses.length);
+  assert.equal(await p.locator('.course-table tbody tr').count(), Math.min(20, realCourses.length));
   await s.close();
 });
 
@@ -483,7 +483,13 @@ test('private submission keeps drafts, opts into credit and confirms only a refe
 test('private contributor authorization and privacy consent need separate choices for each file (mocked services)', async () => {
   const s = await setup({privateModeration: true}); const p = s.page;
   try {
-    await s.goto('/?course=0401212'); await openContribution(p); await fillContribution(p); await signIn(p);
+    await s.goto('/?course=0401212'); await openContribution(p);
+    for (const id of ['contribution-declaration','contribution-privacy-consent']) {
+      assert.equal(await p.locator('#'+id).isChecked(), false);
+      assert.equal(await p.locator('#'+id).getAttribute('required'), '');
+    }
+    assert.equal(await p.locator('#contribution-privacy-consent-text a').getAttribute('href'), './policies/privacy-notice.html');
+    await fillContribution(p); await signIn(p);
     assert.equal(await p.locator('#contributor-authorization a').getAttribute('href'), './policies/contributor-declaration.html');
     await p.locator('#contribution-declaration').uncheck();
     await p.locator('#submit-resource').click();
@@ -667,7 +673,7 @@ test('materials-only empty catalog and duplicate/invalid URLs stay usable and ne
     ['0&hasMaterials=1', false], ['bad&hasMaterials=1', false], ['1&hasMaterials=1', true]]) {
     await s.goto('/?hasMaterials=' + query);
     assert.equal(await p.locator('#has-materials').isChecked(), checked);
-    assert.equal(await p.locator('.course-name a').count(), checked ? 0 : realCourses.length);
+    assert.equal(await p.locator('.course-name a').count(), checked ? 0 : Math.min(20, realCourses.length));
     await p.locator('#course-search').fill('data');
     await settledNavigation(p);
     assert.deepEqual(new URL(p.url()).searchParams.getAll('hasMaterials'), checked ? ['1'] : []);
@@ -675,7 +681,7 @@ test('materials-only empty catalog and duplicate/invalid URLs stay usable and ne
   await accessible(p);
   await p.getByRole('button', {name: 'Clear search and filters'}).click();
   assert.equal(await p.locator('#has-materials').isChecked(), false);
-  assert.equal(await p.locator('.course-name a').count(), realCourses.length);
+  assert.equal(await p.locator('.course-name a').count(), Math.min(20, realCourses.length));
   await s.goto('/?course=0401212&hasMaterials=1');
   await openContribution(p); await fillContribution(p); await signIn(p);
   await p.locator('#submit-resource').click(); await p.locator('#contribution-success').waitFor();
@@ -727,10 +733,11 @@ test('About introduces root and initial academic coverage while preserving ident
     'root/archive is our first public project', 'Computer Science, Artificial Intelligence, and Cybersecurity at AUM',
     'Anyone can browse and download', 'eligible student account', 'every submission is reviewed',
     'Original student-authored notes, summaries, explanations', 'Past examination papers are excluded',
-    'not operated, sponsored, or officially affiliated with AUM', 'Omar Khaldoon Jaber Tahrawi',
+    'Neither root nor root/archive is operated, sponsored, or officially affiliated with AUM',
     'privacy@rootamman.com', 'omar@rootamman.com']) assert(text.includes(phrase), phrase);
   assert.equal(await p.locator('.footer-links a[href="mailto:privacy@rootamman.com"]').count(),1);
-  assert(!/past paper|AUM’s archive|AUM's archive/i.test(text));
+  assert(!/past paper|AUM’s archive|AUM's archive|unincorporated|Omar Khaldoon Jaber Tahrawi/i.test(text));
+  for (const address of ['privacy@rootamman.com','omar@rootamman.com']) assert.equal(await p.locator(`#about-view a[href="mailto:${address}"]`).count(),1);
   assert.equal(await p.locator('.parent-mark').getAttribute('src'), './assets/brand/root.svg');
   for (const width of [320, 768, 1440]) { await p.setViewportSize({width, height: 900}); await noOverflow(p); }
   await accessible(p); await s.close();
@@ -976,4 +983,74 @@ test('capture review screenshots with the real empty catalog and supplied SVG va
   await p.screenshot({ path: resolve(dir,'about-desktop.png'), fullPage: true });
   await p.goto(origin + '/assets/brand/source.svg'); await p.screenshot({ path: resolve(dir,'brand-source.png') });
   await s.close();
+});
+
+
+test('directory pages restore through details, reload and Back/Forward; filters reset without scrolling', async () => {
+  const s = await setup(); const p = s.page;
+  try {
+    await s.goto();
+    const nav = p.getByRole('navigation', {name:'Course directory pages'});
+    assert.equal(await p.locator('#result-count').innerText(), 'Showing 1–20 of 127 courses.');
+    assert.equal(await nav.getByRole('button', {name:'Previous page'}).isDisabled(), true);
+    await nav.getByRole('button', {name:'Page 3', exact:true}).click(); await settledNavigation(p);
+    assert.match(p.url(), /page=3/);
+    assert.equal(await p.locator('#result-count').innerText(), 'Showing 41–60 of 127 courses.');
+    assert.equal(await p.evaluate(() => document.activeElement.id), 'directory-results-heading');
+    assert(Math.abs(await p.locator('#directory-results-heading').evaluate(node=>node.getBoundingClientRect().top)) < 3);
+    const target = p.locator('.course-name a').first();
+    const id = await target.getAttribute('id');
+    await target.click(); await p.locator('#course-heading').waitFor();
+    await p.locator('[data-return]').first().click(); await settledNavigation(p);
+    assert.match(p.url(), /page=3/);
+    assert.equal(await p.evaluate(() => document.activeElement.id), id);
+    await p.goBack(); await settledNavigation(p);
+    assert.equal(await p.locator('#result-count').innerText(), 'Showing 1–20 of 127 courses.');
+    await p.goForward(); await settledNavigation(p);
+    assert.equal(await nav.locator('[aria-current=page]').innerText(), '3');
+    await p.reload(); await p.locator('.course-table').waitFor();
+    assert.equal(await nav.locator('[aria-current=page]').innerText(), '3');
+    await nav.getByRole('button', {name:'Page 7', exact:true}).click(); await settledNavigation(p);
+    assert.equal(await p.locator('.course-table tbody tr').count(), 7);
+    assert.equal(await nav.getByRole('button', {name:'Next page'}).isDisabled(), true);
+    await nav.getByRole('button', {name:'Previous page'}).click(); await settledNavigation(p);
+    assert.equal(await nav.locator('[aria-current=page]').innerText(), '6');
+    await p.locator('#course-search').fill('data structures'); await settledNavigation(p);
+    assert.equal(new URL(p.url()).searchParams.has('page'), false);
+    assert.equal(await nav.isVisible(), false);
+    assert.equal(await p.evaluate(() => document.activeElement.id), 'course-search');
+    await p.locator('#course-search').fill('no course matches this');
+    assert.equal(await p.locator('#result-count').innerText(), 'Showing 0–0 of 0 courses.');
+    assert.equal(await nav.isVisible(), false);
+    await s.goto('/?page=999');
+    assert.equal(await nav.locator('[aria-current=page]').innerText(), '7');
+    assert.equal(new URL(p.url()).searchParams.get('page'), '7');
+    await s.goto('/?q=a&track=CS&page=2');
+    await p.locator('.course-name a').first().click(); await p.locator('#course-heading').waitFor();
+    await p.locator('[data-return]').first().click(); await settledNavigation(p);
+    assert.equal(await p.locator('#course-search').inputValue(), 'a');
+    assert.equal(await p.locator('[data-track=CS]').getAttribute('aria-pressed'), 'true');
+    assert.equal(await nav.locator('[aria-current=page]').innerText(), '2');
+    await p.locator('#has-materials').check();
+    assert.equal(new URL(p.url()).searchParams.has('page'), false);
+  } finally { await s.close(); }
+});
+
+test('mobile track buttons stay on one scrollable row and work with keyboard focus', async () => {
+  const s = await setup(); const p = s.page;
+  try {
+    await p.setViewportSize({width:320,height:800}); await s.goto();
+    const tabs = p.locator('.track-filters');
+    const geometry = await tabs.evaluate(node => ({width:node.clientWidth, scroll:node.scrollWidth,
+      tops:[...node.children].map(button=>button.getBoundingClientRect().top)}));
+    assert(geometry.scroll > geometry.width);
+    assert.equal(new Set(geometry.tops).size, 1);
+    await p.locator('[data-track=AI]').focus(); await p.keyboard.press('Tab');
+    assert.equal(await p.evaluate(()=>document.activeElement.dataset.track),'Cybersecurity');
+    assert(await tabs.evaluate(node=>node.scrollLeft > 0));
+    await p.keyboard.press('Enter');
+    assert.equal(await p.locator('[data-track=Cybersecurity]').getAttribute('aria-pressed'),'true');
+    assert.equal(await p.locator('.course-name a').count(),20);
+    await noOverflow(p); await accessible(p);
+  } finally { await s.close(); }
 });
