@@ -119,7 +119,7 @@ test.before(async () => {
   }
 });
 test.beforeEach(async () => {
-  await db.batch(['DELETE FROM contributor_authorizations','DELETE FROM moderation_audit','DELETE FROM resources','DELETE FROM file_revisions','DELETE FROM submissions'].map(sql=>db.prepare(sql)));
+  await db.batch(['DELETE FROM operator_imports','DELETE FROM contributor_authorizations','DELETE FROM moderation_audit','DELETE FROM resources','DELETE FROM file_revisions','DELETE FROM submissions'].map(sql=>db.prepare(sql)));
   await db.prepare('UPDATE cleanup_state SET cursor=NULL,version=1 WHERE singleton=1').run();
   const listed=await bucket.list();
   if(listed.objects.length) await bucket.delete(listed.objects.map(o=>o.key));
@@ -685,4 +685,203 @@ test('historical and pre-privacy receipts keep their exact evidence across new c
     record = await read(await action(record,'remove',{reason:'Synthetic historical withdrawal'}));
     assert.deepEqual((await read(await admin(`/admin/api/submissions/${id}`))).authorization, receipt);
   }
+});
+
+const importForm=(patch={})=>{
+  const body=new FormData();
+  for(const [key,value] of Object.entries({operation_id:crypto.randomUUID(),file_sha256:createHash('sha256').update('%PDF-operator-fixture').digest('hex'),
+    course_id:course.id,type:'Notes',title:'Operator fixture notes',academic_term:JSON.stringify({academic_year:'2024-2025',semester:'Fall'}),
+    permission_attested:'true',attestation_version:'operator-permission-v1',file:new File(['%PDF-operator-fixture'],'operator.pdf',{type:'application/pdf'}),...patch})) {
+    if(value!==undefined)body.set(key,value);
+  }
+  return body;
+};
+const importPost=body=>admin('/admin/api/import',{method:'POST',body});
+async function acceptedImport(patch={}) {
+  const body=importForm(patch),response=await importPost(body);
+  assert.equal(response.status,201,await response.clone().text());
+  return {body,receipt:await response.json()};
+}
+async function importNode(body,overrides={}) {
+  return invokeNode(new Request(`${adminOrigin}/admin/api/import`,{method:'POST',body,
+    headers:{Origin:adminOrigin,'X-Requested-With':'root-admin','Cf-Access-Jwt-Assertion':await adminToken()}}),overrides);
+}
+
+test('operator import rejects anonymous/student/invalid JWT, alternate hosts and browser origin violations before writes',async()=>{
+  for(const jwt of [undefined,await studentToken(),await adminToken({},wrongKey),await adminToken({exp:Math.floor(Date.now()/1000)-60}),await adminToken({email:studentEmail})]) {
+    const response=await dispatch(new Request(`${adminOrigin}/admin/api/import`,{method:'POST',body:importForm(),headers:{Origin:adminOrigin,'X-Requested-With':'root-admin',...(jwt?{'Cf-Access-Jwt-Assertion':jwt}:{})}}));
+    assert.ok([401,403].includes(response.status));
+  }
+  for(const host of [publicOrigin,'https://alternate.workers.dev']) assert.equal((await dispatch(new Request(host+'/admin/api/import',{method:'POST',body:importForm(),headers:{'Cf-Access-Jwt-Assertion':await adminToken()}}))).status,404);
+  for(const headers of [{},{Origin:'https://evil.invalid','X-Requested-With':'root-admin'},{Origin:adminOrigin,'X-Requested-With':'root-admin','Sec-Fetch-Site':'cross-site'}]) {
+    assert.equal((await dispatch(new Request(`${adminOrigin}/admin/api/import`,{method:'POST',body:importForm(),headers:{'Cf-Access-Jwt-Assertion':await adminToken(),...headers}}))).status,403);
+  }
+  assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM submissions').first()).n,0);assert.equal((await bucket.list()).objects.length,0);
+});
+test('operator input strictly validates attestation, metadata, hash, file types, bounds and repeated/private identity fields',async()=>{
+  for(const patch of [{permission_attested:'false'},{permission_attested:undefined},{attestation_version:'invented'},
+    {course_id:'9999999'},{type:'Past Paper'},{title:'<script>bad</script>'},{file_sha256:'a'.repeat(64)},
+    {academic_term:'{"academic_year":"2024-2026","semester":"Fall"}'},{academic_term:'{"academic_year":null,"semester":"Winter"}'},
+    {file:new File(['%PDF-fake'],'fake.exe',{type:'application/pdf'})},{file:new File(['bad'],'bad.pdf',{type:'application/pdf'})},
+    {contributor:'Invented'},{contributor_email:actor},{declaration_accepted:'true'}]) {
+    const response=await importPost(importForm(patch));assert.equal(response.status,400,await response.clone().text());
+  }
+  const repeated=importForm();repeated.append('course_id',course.id);assert.equal((await importPost(repeated)).status,400);
+  const huge=importForm({file:new File(['%PDF-',new Uint8Array(24*1024*1024)],'huge.pdf',{type:'application/pdf'})});
+  assert.equal((await importNode(huge)).status,400);
+  const body=importForm();body.set('academic_term',JSON.stringify({academic_year:null,semester:null}));
+  const result=await importPost(body);assert.equal(result.status,201,await result.clone().text());
+  assert.equal((await db.prepare('SELECT semester FROM submissions').first()).semester,'');
+});
+test('valid administrator import stays private/pending with truthful provenance and no student authorization or external calls',async()=>{
+  const {body,receipt}=await acceptedImport();
+  const record=await read(await admin(`/admin/api/submissions/${receipt.submission_id}`));
+  assert.equal(record.submission.status,'pending');assert.equal(record.submission.contributor,null);assert.equal(record.submission.contributor_sub,null);assert.equal(record.submission.contributor_email,null);
+  assert.equal(record.submission.semester,'Fall 2024-2025');assert.equal(record.authorization,null);assert.equal(record.operator_import.operator_email,actor);
+  assert.equal(record.operator_import.file_sha256,body.get('file_sha256'));assert.equal(record.operator_import.operation_id,body.get('operation_id'));
+  assert.match(record.operator_import.attestation_text,/not claiming authorship/);assert.equal(record.audit[0].actor,actor);
+  assert.equal(record.revisions[0].status,'ready');assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM resources').first()).n,0);
+  assert.equal((await publicDownload(receipt.submission_id)).status,404);assert.deepEqual((await publicCatalog()).resources,[]);
+  assert.ok(outbound.every(url=>url===`${issuer}/cdn-cgi/access/certs`),'imports never call Google, Turnstile, GitHub or an AI service');
+  assert.equal((await read(await admin('/admin/api/submissions'))).submissions.length,1);
+  // Imports work while student submissions are paused, without changing that flag.
+  const different=importForm({file:new File(['%PDF-paused-fixture'],'paused.pdf',{type:'application/pdf'}),file_sha256:createHash('sha256').update('%PDF-paused-fixture').digest('hex')});
+  assert.equal((await importNode(different,{SUBMISSIONS_ENABLED:'false',TURNSTILE_SECRET:''})).status,201);
+});
+test('durable same-operation receipts survive response loss, moderation changes and removal; duplicate content never reserves another submission',async()=>{
+  const {body,receipt}=await acceptedImport();
+  assert.deepEqual(await read(await importPost(body)),receipt);
+  const changed=importForm(Object.fromEntries(body));changed.set('title','Changed payload');
+  const conflict=await importPost(changed);assert.equal(conflict.status,409);assert.equal((await conflict.json()).code,'operation_conflict');
+  const duplicate=await importPost(importForm());assert.equal(duplicate.status,409);assert.equal((await duplicate.json()).code,'duplicate_content');
+  const preflight=await admin(`/admin/api/import/${crypto.randomUUID()}?file_sha256=${body.get('file_sha256')}`);assert.equal(preflight.status,409);
+  let record=await read(await admin(`/admin/api/submissions/${receipt.submission_id}`));
+  record=await read(await action(record,'remove',{reason:'Synthetic removal'}));assert.equal(record.submission.status,'removed');
+  const replay=await read(await importPost(body));assert.equal(replay.submission_id,receipt.submission_id);assert.equal(replay.moderation_status,'removed');
+  assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM submissions').first()).n,1);assert.equal((await bucket.list()).objects.length,0);
+  assert.equal((await importPost(importForm())).status,409);
+  const lookup=await read(await admin(`/admin/api/import/${body.get('operation_id')}`));assert.equal(lookup.accepted_at,receipt.accepted_at);
+});
+test('concurrent same-operation and same-content imports reserve one submission and one ready revision',async()=>{
+  const body=importForm();
+  const results=await Promise.all([importPost(body),importPost(body),importPost(importForm())]);
+  assert.equal(results.filter(r=>r.status===201).length,1);
+  assert.ok(results.every(r=>[200,201,409].includes(r.status)));
+  assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM submissions').first()).n,1);
+  assert.equal((await db.prepare("SELECT COUNT(*) AS n FROM file_revisions WHERE status='ready'").first()).n,1);
+  assert.equal((await bucket.list()).objects.length,1);
+});
+test('operator imports use all existing moderation actions and enforce no public credit at metadata and D1 boundaries',async()=>{
+  const {receipt}=await acceptedImport();let record=await read(await admin(`/admin/api/submissions/${receipt.submission_id}`));
+  assert.equal((await action(record,'metadata',{...record.submission,contributor:'Operator'})).status,400);
+  await assert.rejects(db.prepare('UPDATE submissions SET contributor=? WHERE id=?').bind('Operator',receipt.submission_id).run(),/credit|identity/);
+  record=await read(await action(record,'review'));
+  record=await read(await action(record,'metadata',{...record.submission,title:'Reviewed fixture',contributor:null}));
+  record=await read(await replacement(record,'%PDF-cleaned-operator'));
+  record=await read(await action(record,'approve',{revision_id:record.submission.candidate_revision_id}));
+  assert.equal(record.published.contributor,null);assert.equal(await (await publicDownload(receipt.submission_id)).text(),'%PDF-cleaned-operator');
+  record=await read(await action(record,'unpublish',{reason:'Synthetic review'}));assert.equal((await publicDownload(receipt.submission_id)).status,404);
+  record=await read(await action(record,'review'));record=await read(await action(record,'approve',{revision_id:record.submission.candidate_revision_id}));
+  record=await read(await action(record,'remove',{reason:'Synthetic cleanup'}));await cleanup();assert.equal((await bucket.list()).objects.length,0);
+  assert.equal(record.authorization,null);assert.equal(record.operator_import.operation_id,receipt.operation_id);
+});
+test('known student original content is flagged as duplicate without changing genuine contributor evidence',async()=>{
+  const student=await create();const authorization=student.authorization;
+  const response=await importPost(importForm({file:new File(['%PDF-original'],'student.pdf',{type:'application/pdf'}),file_sha256:createHash('sha256').update('%PDF-original').digest('hex')}));
+  assert.equal(response.status,409);assert.equal((await response.json()).code,'duplicate_content');
+  assert.deepEqual((await read(await admin(`/admin/api/submissions/${student.submission.id}`))).authorization,authorization);
+  assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM operator_imports').first()).n,0);
+});
+test('failed R2 imports clean up durably and retry the same operation/submission with a fresh immutable revision',async()=>{
+  const body=importForm();const failing=new Proxy(bucket,{get(target,key){if(key==='put')return async()=>{throw new Error('synthetic_put_failure');};const value=target[key];return typeof value==='function'?value.bind(target):value;}});
+  const response=await importNode(body,{PRIVATE_FILES:failing});assert.equal(response.status,502,await response.clone().text());
+  const before=await db.prepare('SELECT * FROM operator_imports').first();assert.equal(before.accepted_at,null);
+  assert.equal((await db.prepare('SELECT status FROM file_revisions').first()).status,'deleted');
+  const retry=await importPost(body);assert.equal(retry.status,201,await retry.clone().text());const receipt=await retry.json();assert.equal(receipt.submission_id,before.submission_id);
+  assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM submissions').first()).n,1);
+  assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM file_revisions').first()).n,2);
+});
+test('post-PUT D1 rollback, cleanup failure and committed-but-unacknowledged finalize are safe to retry',async()=>{
+  const body=importForm();
+  await db.prepare("CREATE TRIGGER fixture_fail_import BEFORE UPDATE OF accepted_at ON operator_imports WHEN NEW.accepted_at IS NOT NULL BEGIN SELECT RAISE(ABORT, 'synthetic_receipt_failure'); END").run();
+  try {
+    const failed=await importNode(body);assert.equal(failed.status,502,await failed.clone().text());
+    assert.equal((await db.prepare('SELECT accepted_at FROM operator_imports').first()).accepted_at,null);
+    assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM moderation_audit').first()).n,0);
+    assert.equal((await bucket.list()).objects.length,0);
+  } finally {await db.prepare('DROP TRIGGER fixture_fail_import').run();}
+  let committed=false;
+  const ambiguousDB=new Proxy(db,{get(target,key){if(key==='batch')return async statements=>{
+    const result=await target.batch(statements);
+    if(!committed && (await db.prepare('SELECT accepted_at FROM operator_imports').first())?.accepted_at){committed=true;throw new Error('lost commit acknowledgement');}
+    return result;
+  };const value=target[key];return typeof value==='function'?value.bind(target):value;}});
+  const retried=await importNode(body,{DB:ambiguousDB});assert.equal(retried.status,200,await retried.clone().text());
+  const receipt=await retried.json();assert.ok(receipt.accepted_at);assert.equal((await db.prepare("SELECT COUNT(*) AS n FROM file_revisions WHERE status='ready'").first()).n,1);
+});
+test('unconfirmed in-flight import blocks replay until deadline cleanup and never revives a late prior revision',async()=>{
+  const body=importForm();let release,started;
+  const waitStarted=new Promise(resolve=>{started=resolve;});const waitRelease=new Promise(resolve=>{release=resolve;});
+  const delayed=new Proxy(bucket,{get(target,key){if(key==='put')return async(...args)=>{started();await waitRelease;return target.put(...args);};const value=target[key];return typeof value==='function'?value.bind(target):value;}});
+  const first=importNode(body,{PRIVATE_FILES:delayed});await waitStarted;
+  const blocked=await importPost(body);assert.equal(blocked.status,409);assert.equal((await blocked.json()).code,'import_in_progress');
+  await db.prepare("UPDATE submissions SET created_at='2020-01-01T00:00:00.000Z'").run();
+  await db.prepare("UPDATE file_revisions SET upload_deadline='2020-01-01T00:00:00.000Z'").run();await cleanup();
+  const retried=await importPost(body);assert.equal(retried.status,201,await retried.clone().text());
+  release();const late=await first;assert.ok([200,502].includes(late.status));await cleanup();
+  assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM submissions').first()).n,1);
+  assert.equal((await db.prepare("SELECT COUNT(*) AS n FROM file_revisions WHERE status='ready'").first()).n,1);
+  assert.equal((await bucket.list()).objects.length,1);assert.equal((await publicCatalog()).resources.length,0);
+});
+
+test('initial D1 reservation failure never writes R2; failed deletion blocks retry until cleanup succeeds',async()=>{
+  const body=importForm();
+  const failIntent=new Proxy(db,{get(target,key){if(key==='batch')return async()=>{throw new Error('synthetic_intent_failure');};const value=target[key];return typeof value==='function'?value.bind(target):value;}});
+  assert.equal((await importNode(body,{DB:failIntent})).status,503);
+  assert.equal((await bucket.list()).objects.length,0);assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM submissions').first()).n,0);
+  const failStorage=new Proxy(bucket,{get(target,key){if(['put','delete'].includes(key))return async()=>{throw new Error('synthetic_storage_failure');};const value=target[key];return typeof value==='function'?value.bind(target):value;}});
+  assert.equal((await importNode(body,{PRIVATE_FILES:failStorage})).status,502);
+  const revision=await db.prepare('SELECT * FROM file_revisions').first();assert.equal(revision.status,'delete_pending');assert.equal(revision.last_delete_error,'storage_delete_failed');
+  const blocked=await importPost(body);assert.equal(blocked.status,409);assert.equal((await blocked.json()).code,'cleanup_pending');
+  await db.prepare("UPDATE file_revisions SET delete_after='2020-01-01T00:00:00.000Z'").run();await cleanup();
+  const response=await importPost(body);assert.equal(response.status,201,await response.clone().text());
+  assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM submissions').first()).n,1);
+});
+
+test('fresh operator retry retains its new upload window even when the original reservation is old',async()=>{
+  const body=importForm();
+  const failStorage=new Proxy(bucket,{get(target,key){if(key==='put')return async()=>{throw new Error('synthetic_failure');};const value=target[key];return typeof value==='function'?value.bind(target):value;}});
+  assert.equal((await importNode(body,{PRIVATE_FILES:failStorage})).status,502);
+  await db.prepare("UPDATE submissions SET created_at='2020-01-01T00:00:00.000Z'").run();
+  let release,started;const waitStarted=new Promise(resolve=>{started=resolve;});const waitRelease=new Promise(resolve=>{release=resolve;});
+  const delayed=new Proxy(bucket,{get(target,key){if(key==='put')return async(...args)=>{started();await waitRelease;return target.put(...args);};const value=target[key];return typeof value==='function'?value.bind(target):value;}});
+  const retry=importNode(body,{PRIVATE_FILES:delayed});await waitStarted;
+  try {await cleanup();assert.equal((await db.prepare('SELECT status FROM submissions').first()).status,'receiving');}finally{release();}
+  const response=await retry;assert.equal(response.status,201,await response.clone().text());
+});
+
+test('local CLI and protected Worker cooperate through synthetic Access forwarding and recover a lost POST response',async()=>{
+  const {mkdtemp,writeFile,rm}=await import('node:fs/promises');const {tmpdir}=await import('node:os');const {join}=await import('node:path');
+  const {scanDirectory}=await import('../../scripts/bulk-import-manifest.mjs');const {uploadManifest}=await import('../../scripts/bulk-import.mjs');
+  const directory=await mkdtemp(join(tmpdir(),'operator-worker-integration-'));
+  try {
+    await writeFile(join(directory,'synthetic.pdf'),'%PDF-cli-worker-integration');
+    const manifest=await scanDirectory(directory),entry=manifest.entries[0];
+    Object.assign(entry,{course_id:course.id,title:'CLI integration fixture',type:'Notes',review_status:'ready',permission_attested:true});
+    let posts=0;
+    const fetcher=async(url,options)=>{
+      assert.equal(options.headers['Cf-Access-Token'],'synthetic-application-token');
+      // Emulate only Access's validated-token-to-assertion forwarding. No network
+      // reaches Access or production; the Worker still verifies the signed JWT.
+      const headers=new Headers(options.headers);headers.set('Cf-Access-Jwt-Assertion',await adminToken());
+      const response=await dispatch(new Request(url,{...options,headers}));
+      if(options.method==='POST'){posts++;assert.equal(response.status,201,await response.clone().text());throw new Error('synthetic lost response');}
+      return response;
+    };
+    const options={origin:adminOrigin,token:'synthetic-application-token',execute:true,attest:true,fetcher};
+    await uploadManifest(manifest,options);assert.equal(entry.import_status,'unknown');
+    await uploadManifest(manifest,options);assert.equal(entry.import_status,'imported');assert.equal(posts,1);
+    assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM submissions').first()).n,1);
+    assert.equal((await publicDownload(entry.receipt.submission_id)).status,404);
+  } finally {await rm(directory,{recursive:true,force:true});}
 });

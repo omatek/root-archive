@@ -8,6 +8,7 @@ import {
   validateAndExtractPayload, verifyTurnstileToken, sanitizeFilename,
 } from './worker';
 import {authorizeAdmin, exactOrigin} from './moderation-auth';
+import {IMPORT_ATTESTATION, MAX_IMPORT_FILE, SHA256, normalizeTerm, importRequestMaterial} from '../shared/operator-import.mjs';
 
 type RuntimeBindings = {[K in keyof ModerationBindings]: ModerationBindings[K] extends string ? string : ModerationBindings[K]};
 export interface ModerationEnv extends RuntimeBindings {
@@ -156,7 +157,7 @@ async function detail(env: ModerationEnv, id: string) {
   return {submission, revisions: revisions.results.map(r => ({id:r.id, kind:r.kind, filename:r.filename, mime:r.mime,
     size:r.size, status:r.status, created_at:r.created_at, created_by:r.created_by,
     delete_attempts:r.delete_attempts, last_delete_error:r.last_delete_error})), audit: audit.results,
-    authorization, published: published ? {...publicRecord(published, env), revision_id:published.revision_id,
+    authorization, operator_import: await statement(env, 'SELECT operation_id,file_sha256,operator_email,attestation_version,attestation_text,attested_at,accepted_at FROM operator_imports WHERE submission_id=?', id).first(), published: published ? {...publicRecord(published, env), revision_id:published.revision_id,
       status:published.status, published_at:published.published_at, updated_at:published.updated_at} : null};
 }
 function auditStatement(env: ModerationEnv, id: string, operation: string, action: string, actor: string, now: string, reason: string | null = null) {
@@ -290,6 +291,123 @@ async function abandonUpload(env: ModerationEnv, id: string, revisionId: string)
   await runPrivateCleanup(env,1);
 }
 
+interface OperatorImportRecord {
+  operation_id: string; submission_id: string; file_sha256: string; request_sha256: string;
+  accepted_at: string | null; status: Status;
+}
+const digest = async (bytes: Uint8Array) => Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new Uint8Array(bytes))),
+  byte => byte.toString(16).padStart(2,'0')).join('');
+async function findImport(env: ModerationEnv, operation: string) {
+  return statement(env, `SELECT i.*,s.status FROM operator_imports i JOIN submissions s ON s.id=i.submission_id
+    WHERE i.operation_id=?`,operation).first<OperatorImportRecord>();
+}
+function importReceipt(record: OperatorImportRecord, status=200) {
+  return json({success:!!record.accepted_at,operation_id:record.operation_id,submission_id:record.submission_id,
+    file_sha256:record.file_sha256,request_sha256:record.request_sha256,accepted_at:record.accepted_at,
+    import_status:record.accepted_at?'imported':record.status==='receiving'?'receiving':'retryable',
+    moderation_status:record.status},status);
+}
+async function operatorImport(request: Request, env: ModerationEnv, actor: string) {
+  const form=await parseMultipartWithByteLimit(request,MAX_BODY);
+  const fields=['operation_id','file_sha256','course_id','type','title','academic_term','permission_attested','attestation_version','file'];
+  for(const [key] of form) if(!fields.includes(key) || form.getAll(key).length!==1) throw new WorkerHttpError(400,'Unexpected or repeated import field.');
+  if(fields.some(key=>!form.has(key))) throw new WorkerHttpError(400,'Missing import field.');
+  const operationId=form.get('operation_id'),expectedHash=form.get('file_sha256');
+  if(typeof operationId!=='string' || !UUID.test(operationId) || typeof expectedHash!=='string' || !SHA256.test(expectedHash)) {
+    throw new WorkerHttpError(400,'Invalid import operation or SHA-256.');
+  }
+  if(form.get('permission_attested')!=='true' || form.get('attestation_version')!==IMPORT_ATTESTATION.version) {
+    throw new WorkerHttpError(400,'Explicit current operator publication-permission attestation is required.');
+  }
+  let semester: string;
+  try {semester=normalizeTerm(JSON.parse(String(form.get('academic_term'))));}
+  catch {throw new WorkerHttpError(400,'Invalid academic term.');}
+  const m=metadata({course_id:form.get('course_id'),type:form.get('type'),title:form.get('title'),semester});
+  const file=form.get('file');
+  if(!(file instanceof File) || file.size>MAX_IMPORT_FILE) throw new WorkerHttpError(400,'An import file of at most 24 MiB is required.');
+  const validation=new FormData();
+  for(const [key,value] of Object.entries({course_id:m.course_id,type:m.type,title:m.title,semester:m.semester,turnstile_token:'operator-file-validation'})) validation.set(key,value);
+  // Reuse format/MIME/signature validation only. No student identity, challenge,
+  // declaration, or privacy receipt is invented or submitted to an identity service.
+  validation.set('file',file,file.name);
+  const payload=await validateAndExtractPayload(validation,{optionalSemester:true});
+  const hash=await digest(payload.fileBytes);
+  if(hash!==expectedHash) throw new WorkerHttpError(400,'The uploaded file does not match its reviewed SHA-256.');
+  const fingerprint=await digest(new TextEncoder().encode(importRequestMaterial({file_sha256:hash,...m,filename:payload.fileName})));
+  const resolvePrior=async () => {
+    const prior=await findImport(env,operationId);
+    if(prior && prior.request_sha256!==fingerprint) return json({success:false,code:'operation_conflict',error:'This operation belongs to a different reviewed payload. Restore the manifest or review the existing record.'},409);
+    if(prior?.accepted_at) return importReceipt(prior);
+    if(prior?.status==='receiving') return json({success:false,code:'import_in_progress',error:'The upload outcome is not yet confirmed. Retry this operation after cleanup.',submission_id:prior.submission_id},409);
+    return null;
+  };
+  const resolved=await resolvePrior();if(resolved) return resolved;
+  const duplicate=await statement(env,`SELECT submission_id FROM operator_imports WHERE file_sha256=? AND operation_id<>?
+    UNION ALL SELECT submission_id FROM contributor_authorizations WHERE file_sha256=? LIMIT 1`,hash,operationId,hash).first<{submission_id:string}>();
+  if(duplicate) return json({success:false,code:'duplicate_content',error:'Content already recorded. Review the existing submission.',submission_id:duplicate.submission_id},409);
+  const prior=await findImport(env,operationId);
+  const id=prior?.submission_id??crypto.randomUUID(),revisionId=crypto.randomUUID(),intent=crypto.randomUUID(),event=crypto.randomUUID(),now=iso();
+  const deadline=new Date(Date.now()+HOUR).toISOString(),key=`private/v1/${id}/${revisionId}${payload.fileExtension}`;
+  const revisionStatement=statement(env,`INSERT INTO file_revisions(id,submission_id,object_key,kind,filename,mime,size,status,created_at,created_by,upload_deadline)
+    SELECT ?,id,?,'original',?,?,?,'uploading',?,?,? FROM submissions WHERE id=? AND status='receiving' AND last_operation=?`,
+    revisionId,key,sanitizeFilename(payload.fileName),payload.fileMimeType,payload.fileBytes.byteLength,now,actor,deadline,id,intent);
+  try {
+    if(prior) {
+      // Never revive an accepted/rejected-by-moderator record. A fresh immutable
+      // revision is allowed only after all earlier failed attempts are tombstoned.
+      await mutation(env,[
+        statement(env,`UPDATE submissions SET status='receiving',original_revision_id=?,candidate_revision_id=NULL,reason=NULL,updated_at=?,last_operation=?
+          WHERE id=? AND status='rejected' AND EXISTS(SELECT 1 FROM operator_imports WHERE submission_id=? AND accepted_at IS NULL)
+          AND NOT EXISTS(SELECT 1 FROM file_revisions WHERE submission_id=? AND status<>'deleted')`,revisionId,now,intent,id,id,id),
+        revisionStatement,
+      ]);
+    } else {
+      await env.DB.batch([
+        statement(env,`INSERT INTO submissions(id,course_id,type,title,semester,status,original_revision_id,created_at,updated_at,last_operation)
+          VALUES(?,?,?,?,?,'receiving',?,?,?,?)`,id,m.course_id,m.type,m.title,m.semester,revisionId,now,now,intent),
+        statement(env,`INSERT INTO operator_imports(operation_id,submission_id,file_sha256,request_sha256,operator_email,
+          attestation_version,attestation_text,attested_at) VALUES(?,?,?,?,?,?,?,?)`,operationId,id,hash,fingerprint,actor,IMPORT_ATTESTATION.version,IMPORT_ATTESTATION.text,now),
+        revisionStatement,
+      ]);
+    }
+  } catch(error) {
+    const raced=await resolvePrior();if(raced) return raced;
+    const sameHash=await statement(env,'SELECT submission_id FROM operator_imports WHERE file_sha256=? AND operation_id<>?',hash,operationId).first();
+    if(sameHash) return json({success:false,code:'duplicate_content',error:'Content already recorded. Review the existing submission.',...sameHash},409);
+    if(prior) return json({success:false,code:'cleanup_pending',error:'Previous attempt requires cleanup before retry. Keep the same operation ID.'},409);
+    throw error;
+  }
+  try {
+    const object=await env.PRIVATE_FILES.put(key,payload.fileBytes,{onlyIf:{etagDoesNotMatch:'*'},httpMetadata:{contentType:payload.fileMimeType}});
+    if(!object || object.size!==payload.fileBytes.byteLength) throw new Error('incomplete_upload');
+    await mutation(env,[
+      statement(env,`UPDATE submissions SET status='pending',title=?,semester=?,candidate_revision_id=?,updated_at=?,last_operation=?
+        WHERE id=? AND status='receiving' AND last_operation=? AND original_revision_id=?
+        AND EXISTS(SELECT 1 FROM file_revisions WHERE id=? AND status='uploading' AND upload_deadline>?)`,
+        m.title,m.semester,revisionId,now,event,id,intent,revisionId,revisionId,iso()),
+      statement(env,`UPDATE file_revisions SET status='ready',etag=? WHERE id=? AND status='uploading'
+        AND EXISTS(SELECT 1 FROM submissions WHERE id=? AND last_operation=?)`,object.etag,revisionId,id,event),
+      statement(env,`UPDATE operator_imports SET accepted_at=?,received_operation_id=? WHERE operation_id=? AND accepted_at IS NULL
+        AND EXISTS(SELECT 1 FROM submissions WHERE id=? AND last_operation=?)`,now,event,operationId,id,event),
+      auditStatement(env,id,event,'submission_received',actor,now,'Operator-attested permission-based import; no public credit.'),
+    ]);
+  } catch {
+    // A DB acknowledgement may be lost after commit. Never undo a ready record.
+    const confirmed=await findImport(env,operationId);
+    if(confirmed?.accepted_at) return importReceipt(confirmed);
+    await env.DB.batch([
+      statement(env,`UPDATE submissions SET status='rejected',title='Upload not completed',semester='',reason='Upload not completed',updated_at=?
+        WHERE id=? AND status='receiving' AND last_operation=?`,iso(),id,intent),
+      statement(env,"UPDATE file_revisions SET status='delete_pending',delete_after=? WHERE id=? AND status='uploading'",iso(),revisionId),
+    ]).catch(()=>console.error(JSON.stringify({event:'operator_import_recovery_needed',id})));
+    await runPrivateCleanup(env,1).catch(()=>console.error(JSON.stringify({event:'private_cleanup_deferred'})));
+    return json({success:false,code:'import_unconfirmed',error:'Upload not confirmed. Keep the manifest and retry the same operation ID.',submission_id:id},502);
+  }
+  const accepted=await findImport(env,operationId);
+  if(!accepted) throw new WorkerHttpError(503,'Import receipt unavailable. Retry the same operation.');
+  return importReceipt(accepted,201);
+}
+
 async function listAdmin(url: URL, env: ModerationEnv) {
   const view = url.searchParams.get('view') ?? 'pending';
   const conditions: Record<string,string> = {pending:"status IN ('pending','under_review','unpublished')",published:"status='published'",history:"status IN ('rejected','removed')"};
@@ -371,6 +489,9 @@ async function adminAction(request: Request, env: ModerationEnv, actor: string, 
   const operation=crypto.randomUUID(),now=iso();
   if(action==='metadata') {
     const m=metadata(body);
+    if (m.contributor && await statement(env,'SELECT operation_id FROM operator_imports WHERE submission_id=?',id).first()) {
+      throw new WorkerHttpError(400,'Operator imports cannot have public contributor credit.');
+    }
     await mutation(env,[
       statement(env,`UPDATE submissions SET course_id=?,type=?,title=?,semester=?,contributor=?,version=version+1,updated_at=?,last_operation=?
         WHERE id=? AND version=? AND status IN ${EDITABLE}`,m.course_id,m.type,m.title,m.semester,m.contributor,now,operation,id,version),
@@ -435,7 +556,8 @@ export async function runPrivateCleanup(env: ModerationEnv, limit=5) {
   // An interrupted original upload never became a submission accepted for review.
   await env.DB.batch([
     statement(env,`UPDATE submissions SET status='rejected',title='Upload not completed',semester='',contributor=NULL,contributor_sub=NULL,contributor_email=NULL,
-      reason='Upload not completed',updated_at=? WHERE status='receiving' AND created_at<?`,now,new Date(Date.now()-HOUR).toISOString()),
+      reason='Upload not completed',updated_at=? WHERE status='receiving' AND created_at<?
+      AND NOT EXISTS(SELECT 1 FROM file_revisions WHERE submission_id=submissions.id AND status='uploading' AND upload_deadline>?)`,now,new Date(Date.now()-HOUR).toISOString(),now),
     statement(env,`UPDATE file_revisions SET status='delete_pending',delete_after=? WHERE status='uploading' AND upload_deadline<=?`,now,now),
   ]);
   // A delayed/ambiguous R2 PUT can outlive the first delete attempt. Reconcile
@@ -483,6 +605,21 @@ export default {
       if(url.origin===adminOrigin) {
         const actor=await authorizeAdmin(request,env);
         if(url.pathname==='/admin/api/session' && request.method==='GET') return json({email:actor});
+        if(url.pathname==='/admin/api/import' && request.method==='POST') return await operatorImport(request,env,actor);
+        const importMatch=/^\/admin\/api\/import\/([^/]+)$/.exec(url.pathname);
+        if(importMatch && request.method==='GET') {
+          assertId(importMatch[1]);
+          const prior=await findImport(env,importMatch[1]);
+          if(!prior) {
+            const hash=url.searchParams.get('file_sha256');
+            if(hash && !SHA256.test(hash)) throw new WorkerHttpError(400,'Invalid SHA-256.');
+            const duplicate=hash ? await statement(env,`SELECT submission_id FROM operator_imports WHERE file_sha256=?
+              UNION ALL SELECT submission_id FROM contributor_authorizations WHERE file_sha256=? LIMIT 1`,hash,hash).first() : null;
+            if(duplicate) return json({success:false,code:'duplicate_content',error:'Content already recorded. Review the existing submission.',...duplicate},409);
+            return json({success:false,code:'import_not_found',error:'Import operation not found.'},404);
+          }
+          return importReceipt(prior);
+        }
         if(url.pathname==='/admin/api/courses' && request.method==='GET') return json({courses});
         if(url.pathname==='/admin/api/submissions' && request.method==='GET') return await listAdmin(url,env);
         if(url.pathname==='/admin/api/cleanup' && request.method==='POST') {await readJSON(request);return json(await runPrivateCleanup(env));}

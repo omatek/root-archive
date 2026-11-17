@@ -40,3 +40,5 @@ bindings; see the owner guide. Tests and dry-run builds do not deploy.
 
 This repository is independent of educational institutions. Coursework does not
 change project ownership or authorize collection of student data.
+
+Operator-only onboarding: see [the local bulk importer guide](docs/operator-import.md) for manifest review, optional chat classification, Access authentication and private moderation.

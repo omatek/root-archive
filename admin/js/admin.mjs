@@ -44,6 +44,7 @@ function paintEnabled() {
   $('save-edited').disabled ||= !$('editor-inspected').checked || !source;
   for (const control of $('metadata-form').elements) control.disabled = !writable;
   $('replacement-file').disabled = !writable;
+  $('meta-credit').disabled ||= !!detail?.operator_import;
   for (const id of ['refresh', 'load-more', 'retry-cleanup']) $(id).disabled = busy || !authorized;
   $('detail-dialog').setAttribute('aria-busy', String(busy));
 }
@@ -103,7 +104,10 @@ function paintDetail() {
   $('detail-state').textContent = statuses[item.status] || item.status;
   $('detail-reference').textContent = `Reference ${item.id} · Version ${item.version} · ${date(item.created_at)}`;
   $('contributor-info').replaceChildren();
-  $('contributor-info').append(element('p', item.contributor_email ? `Private contributor: ${item.contributor_email}` : 'Private contributor identity is not retained for this record.'));
+  if (detail.operator_import) {
+    const provenance = detail.operator_import;
+    $('contributor-info').append(element('p', `Operator import · ${provenance.operator_email} · ${date(provenance.attested_at)} · ${provenance.operation_id}`), element('p', provenance.attestation_text));
+  } else $('contributor-info').append(element('p', item.contributor_email ? `Private contributor: ${item.contributor_email}` : 'Private contributor identity is not retained for this record.'));
   if (item.reason) $('contributor-info').append(element('p', `Decision reason: ${item.reason}`));
   for (const [id, value] of Object.entries({'meta-title':item.title,'meta-course':item.course_id,'meta-type':item.type,'meta-semester':item.semester,'meta-credit':item.contributor})) $(id).value = value || '';
   $('file-list').replaceChildren();
