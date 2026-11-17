@@ -41,6 +41,10 @@ async function setup(options={}){
   let sessionNetworkFailures=options.sessionNetworkFailures||0,coursesFailures=options.coursesFailures||0;
   const calls=[],errors=[];
   if(options.title)record.submission.title=options.title;
+  if(options.operatorImport){
+    Object.assign(record.submission,{contributor:null,contributor_email:null,contributor_sub:null});
+    record.operator_import={operator_email:'operator@example.invalid',attested_at:'2026-11-17T10:00:00Z',operation_id:'44444444-4444-4444-8444-444444444444',attestation_text:'Operator-attested permission-based import; no public credit.'};
+  }
   page.on('pageerror',error=>errors.push(error.message));page.on('dialog',dialog=>dialog.accept());
   await context.route('**/*',async route=>{
     const req=route.request(),url=new URL(req.url());
@@ -211,4 +215,17 @@ test('desktop and mobile moderation controls pass automated accessibility checks
       }
     }finally{await s.close();}
   }
+});
+
+
+test('operator provenance is visible privately and public credit stays disabled across metadata edits',async()=>{
+  const s=await setup({operatorImport:true});try{
+    await open(s);const p=s.page;
+    assert.match(await p.locator('#contributor-info').innerText(),/Operator import.*operator@example.invalid/s);
+    assert.match(await p.locator('#contributor-info').innerText(),/permission-based/);
+    assert.equal(await p.locator('#meta-credit').isDisabled(),true);
+    await p.locator('#meta-title').fill('Reviewed operator fixture');await p.locator('#save-metadata').click();
+    await p.getByText('Candidate metadata saved. Inspect and approve it before publication.',{exact:true}).waitFor();
+    assert.equal(s.record().submission.contributor,null);assert.equal(await p.locator('#meta-credit').isDisabled(),true);
+  }finally{await s.close();}
 });

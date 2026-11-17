@@ -13,6 +13,7 @@ const stagingAUD = '0003d8d8ba905005bfed05fc441631de07c91985c3e2baab528bdb4bbb7a
 export const MIGRATIONS = [
   '0001_private_moderation.sql', '0002_catalog_generation.sql',
   '0003_contributor_authorizations.sql', '0004_contributor_privacy_consent.sql',
+  '0005_operator_imports.sql',
 ];
 
 export async function assertProductionPolicies(settings) {

@@ -20,3 +20,9 @@ analytics/output/
 __pycache__/
 *.pyc
 work/
+
+# Private operator import artifacts (use work/ for all documents and outputs)
+import-manifest*.json*
+import-classification*.json
+import-classification*.csv
+classification-packet*.json

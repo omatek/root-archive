@@ -3,7 +3,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test:frontend": "node --test tests/frontend/*.test.mjs"
+    "test:frontend": "node --test tests/frontend/*.test.mjs",
+    "import:prepare": "node scripts/bulk-import.mjs prepare",
+    "import:packet": "node scripts/bulk-import.mjs packet",
+    "import:merge": "node scripts/bulk-import.mjs merge",
+    "import:validate": "node scripts/bulk-import.mjs validate",
+    "import:upload": "node scripts/bulk-import.mjs upload"
   },
   "devDependencies": {
     "axe-core": "4.14.0",
