@@ -19,6 +19,8 @@ For privacy questions, requests or complaints, email [privacy@rootamman.com](mai
 | When you contact us | We use your contact details, correspondence and any necessary supporting information to respond to a request, report or dispute or to meet a legal duty. |
 | When a moderator signs in or acts on a submission | We use administrator identity, session information and a record of decisions, reasons and timestamps to control access and account for changes. |
 
+To understand which materials are used, root/archive keeps a total count of successful public download responses for each resource. Only authorized moderators can see these counts. The counters use no visitor identifiers, tracking cookies or individual download histories.
+
 The archive does not build advertising profiles or rank contributors by behaviour. Eligibility and abuse checks are automated, including Google account checks and Cloudflare Turnstile security signals; publication decisions are made by a moderator. These statements describe the archive application, not every independent use of information by its providers.
 
 We use the information needed to provide and secure the services you request under our [Terms of Use](root-archive-terms-of-use.md), including delivery, eligibility checks and restricted moderator access. We rely on your affirmative consent for the processing and transfer described below and on your separate choice to display public credit. We process information as necessary to fulfil privacy rights, comply with legal obligations or respond to valid orders under Jordanian law.

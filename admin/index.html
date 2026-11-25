@@ -9,24 +9,65 @@
   <script type="module" src="/js/admin.mjs"></script>
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to moderation queue</a>
+  <a class="skip-link" href="#main">Skip to workspace</a>
   <header class="masthead"><div class="shell masthead-inner">
     <a class="wordmark" href="/" aria-label="root archive moderation"><span class="wordmark-root">root</span><span class="wordmark-slash">/</span><span class="wordmark-product">archive</span></a>
     <span class="private-label">Private moderation</span>
   </div></header>
   <main class="shell" id="main">
-    <div class="intro"><div><p class="eyebrow">Administrator workspace</p><h1>Moderation queue</h1><p>Review and prepare materials before publication.</p></div><div class="session"><span id="identity">Verifying access…</span><a href="/cdn-cgi/access/logout">Sign out</a></div></div>
+    <div class="intro"><div><p class="eyebrow">Administrator workspace</p><h1 id="view-heading">Moderation queue</h1><p id="view-description">Review and prepare materials before publication.</p></div><div class="session"><span id="identity">Verifying access…</span><a href="/cdn-cgi/access/logout">Sign out</a></div></div>
     <div id="status" class="status" role="status" aria-live="polite">Loading moderation records…</div>
     <div id="session-recovery" class="notice session-recovery" hidden><p>Your draft remains in this tab. Complete Access sign-in in a new tab, then retry here.</p><div class="actions"><a href="/" target="_blank" rel="noopener" class="button secondary">Open sign-in in a new tab</a><button id="retry-session" class="button retry-session">Retry session</button></div></div>
     <nav class="view-tabs" aria-label="Moderation views">
       <button data-view="pending" aria-pressed="true">Pending &amp; re-review</button>
       <button data-view="published" aria-pressed="false">Published resources</button>
       <button data-view="history" aria-pressed="false">Rejected &amp; removed</button>
+      <button data-view="analytics" aria-pressed="false" disabled>Analytics</button>
     </nav>
+    <div id="queue-view">
     <form id="search-form" class="filters"><label for="search">Search title or course<input id="search" type="search" maxlength="120" placeholder="Title or course code"></label><button class="button secondary" type="submit">Search</button><button type="button" class="text-button" id="refresh">Refresh</button></form>
     <p class="help" id="view-help">Unpublished records remain private until approved again.</p>
     <div id="records" class="records" aria-label="Moderation records"></div>
     <div class="actions pagination"><button id="load-more" class="button secondary" hidden>Load more</button><button id="retry-cleanup" class="text-button">Retry pending file cleanup</button></div>
+    </div>
+    <div id="analytics-view" hidden>
+      <section class="section" aria-labelledby="analytics-overview-heading">
+        <h2 id="analytics-overview-heading">Overview</h2>
+        <p class="help">Each count represents a successful public download response initiated. Repeat requests count separately. Historical totals include unpublished and removed resources.</p>
+        <p id="analytics-baseline" class="help"></p>
+        <dl id="analytics-overview" class="analytics-overview"></dl>
+      </section>
+      <section class="section" aria-labelledby="resource-stats-heading">
+        <h2 id="resource-stats-heading">Resource statistics</h2>
+        <div class="filters">
+          <label for="analytics-search">Search resources<input id="analytics-search" type="search" maxlength="120" placeholder="Title, course, type or status"></label>
+          <button type="button" class="text-button" id="refresh-analytics">Refresh statistics</button>
+        </div>
+        <p class="help" id="analytics-resource-count" role="status"></p>
+        <div class="analytics-table" role="region" aria-labelledby="resource-stats-heading" tabindex="0">
+          <table aria-labelledby="resource-stats-heading">
+            <thead><tr>
+              <th scope="col"><button class="text-button" data-sort="title">Resource title</button></th>
+              <th scope="col"><button class="text-button" data-sort="course">Course</button></th>
+              <th scope="col"><button class="text-button" data-sort="type">Type</button></th>
+              <th scope="col" class="numeric" aria-sort="descending"><button class="text-button" data-sort="download_count">Downloads</button></th>
+              <th scope="col"><button class="text-button" data-sort="status">Publication status</button></th>
+            </tr></thead>
+            <tbody id="analytics-resources"></tbody>
+          </table>
+        </div>
+      </section>
+      <section class="section" aria-labelledby="course-stats-heading">
+        <h2 id="course-stats-heading">Course statistics</h2>
+        <p class="help">Downloads are grouped by each resource’s current course assignment.</p>
+        <div class="analytics-table" role="region" aria-labelledby="course-stats-heading" tabindex="0">
+          <table aria-labelledby="course-stats-heading">
+            <thead><tr><th scope="col">Course</th><th scope="col" class="numeric">Historical downloads</th><th scope="col" class="numeric">Downloads of currently published resources</th></tr></thead>
+            <tbody id="analytics-courses"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
   </main>
   <footer class="shell">root/archive · Independent, student-led. Private content stays within this workspace.</footer>
 
