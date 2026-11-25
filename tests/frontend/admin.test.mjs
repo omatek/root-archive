@@ -59,6 +59,7 @@ async function setup(options={}){
       return json(options.denySession?{error:'Forbidden'}:{email:'moderator@example.invalid'},options.denySession?403:200);
     }
     if(path==='/courses')return coursesFailures-->0?json({error:'Course service unavailable'},503):json({courses:[course]});
+    if(path==='/analytics')return json(options.analytics || {}, options.analytics ? 200 : 404);
     if(path==='/submissions')return json({submissions:[record.submission],next_cursor:null});
     if(path==='/cleanup')return json({success:true});
     if(path===`/submissions/${id}`)return json(record);
@@ -228,4 +229,39 @@ test('operator provenance is visible privately and public credit stays disabled 
     await p.getByText('Candidate metadata saved. Inspect and approve it before publication.',{exact:true}).waitFor();
     assert.equal(s.record().submission.contributor,null);assert.equal(await p.locator('#meta-credit').isDisabled(),true);
   }finally{await s.close();}
+});
+
+test('analytics shows historical and current counts, sorts resources and filters on mobile',async()=>{
+  const published={id,title:'Published fixture',course_id:course.id,type:'Summary',status:'published',download_count:2};
+  const removed={id:secondRevision,title:'Removed material',course_id:course.id,type:'Notes',status:'removed',download_count:4};
+  const courseStats={course_id:course.id,download_count:6,published_download_count:2};
+  const s=await setup({mobile:true,analytics:{
+    counter_baseline_at:'2026-11-25T09:15:00.000Z',
+    overview:{total_downloads:6,published_resources:1,downloaded_published_resources:1,top_course:courseStats,top_resource:removed},
+    resources:[published,removed],courses:[courseStats],
+  }});
+  const p=s.page;
+  try {
+    assert.equal(s.calls.filter(call=>call.path==='/admin/api/analytics').length,0);
+    await p.getByRole('button',{name:'Analytics',exact:true}).click();
+    await p.getByText('Download statistics loaded.',{exact:true}).waitFor();
+    assert.equal(await p.locator('#queue-view').isVisible(),false);
+    assert.match(await p.locator('#analytics-baseline').innerText(),/Counters initialized/);
+    assert.match(await p.locator('#analytics-overview').innerText(),/Most downloaded resource · historical\nRemoved material \(4\)/);
+    assert.deepEqual(await p.locator('#analytics-resources tr td:first-child').allTextContents(),['Removed material','Published fixture']);
+    assert.deepEqual(await p.locator('#analytics-courses td').allTextContents(),[`${course.id} · ${course.name}`,'6','2']);
+    assert.equal(await p.getByRole('columnheader',{name:'Downloads',exact:true}).getAttribute('aria-sort'),'descending');
+
+    await p.getByRole('button',{name:'Downloads',exact:true}).click();
+    assert.deepEqual(await p.locator('#analytics-resources tr td:first-child').allTextContents(),['Published fixture','Removed material']);
+    await p.getByRole('searchbox',{name:'Search resources'}).fill('notes');
+    assert.deepEqual(await p.locator('#analytics-resources tr td:first-child').allTextContents(),['Removed material']);
+    await p.getByRole('button',{name:'Refresh statistics'}).click();
+    await p.getByText('Download statistics loaded.',{exact:true}).waitFor();
+    assert.equal(s.calls.filter(call=>call.path==='/admin/api/analytics').length,2);
+    assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth),390);
+    await p.getByRole('button',{name:'Pending & re-review'}).click();
+    await p.getByText('1 record loaded.',{exact:true}).waitFor();
+    assert.equal(await p.locator('#analytics-view').isVisible(),false);
+  } finally {await s.close();}
 });

@@ -7,6 +7,8 @@ const statuses = {pending: 'Pending', under_review: 'Under review', published: '
 let authorized = false, busy = false, view = 'pending', nextCursor = null, listGeneration = 0;
 let courses = [], detail = null, metadataDirty = false, decision = null, previewURL = null;
 let source = null, editorOptions = null, editorDirty = false, pointerStart = null;
+let analytics = null, analyticsSort = 'download_count', analyticsDirection = -1;
+const number = new Intl.NumberFormat();
 
 function element(tag, text, className) {
   const node = document.createElement(tag); if (text !== undefined) node.textContent = text;
@@ -45,7 +47,8 @@ function paintEnabled() {
   for (const control of $('metadata-form').elements) control.disabled = !writable;
   $('replacement-file').disabled = !writable;
   $('meta-credit').disabled ||= !!detail?.operator_import;
-  for (const id of ['refresh', 'load-more', 'retry-cleanup']) $(id).disabled = busy || !authorized;
+  for (const id of ['refresh', 'load-more', 'retry-cleanup', 'refresh-analytics']) $(id).disabled = busy || !authorized;
+  document.querySelector('[data-view="analytics"]').disabled = busy || !authorized;
   $('detail-dialog').setAttribute('aria-busy', String(busy));
 }
 async function run(work, target = 'detail-status') {
@@ -71,6 +74,71 @@ async function fileBlob(revision) {
 function saveBlob(blob, filename) {
   const url = URL.createObjectURL(blob), link = element('a'); link.href = url; link.download = filename;
   document.body.append(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+function courseLabel(id) {
+  const course = courses.find(course => course.id === id);
+  return course ? `${id} · ${course.name}` : id;
+}
+function analyticsRow(body, values, numericColumns) {
+  const row = element('tr');
+  values.forEach((value, index) => row.append(element('td', value, numericColumns.includes(index) ? 'numeric' : undefined)));
+  body.append(row);
+}
+function paintAnalyticsResources() {
+  if (!analytics) return;
+  const search = $('analytics-search').value.trim().toLowerCase();
+  const rows = analytics.resources.map(resource => ({
+    ...resource, course: courseLabel(resource.course_id),
+    status: resource.status === 'unpublished' ? 'Unpublished' : statuses[resource.status],
+  })).filter(resource => [resource.title, resource.course, resource.type, resource.status]
+    .some(value => value.toLowerCase().includes(search)));
+  rows.sort((a, b) => {
+    const left = a[analyticsSort], right = b[analyticsSort];
+    const order = typeof left === 'number' ? left - right : left.localeCompare(right);
+    return analyticsDirection * order || a.title.localeCompare(b.title) || a.id.localeCompare(b.id);
+  });
+  const body = $('analytics-resources');
+  body.replaceChildren();
+  for (const row of rows) analyticsRow(body, [row.title, row.course, row.type, number.format(row.download_count), row.status], [3]);
+  $('analytics-resource-count').textContent = rows.length ? `${rows.length} of ${analytics.resources.length} resources shown.` : 'No matching resources.';
+  for (const button of document.querySelectorAll('[data-sort]')) {
+    if (button.dataset.sort === analyticsSort) button.parentElement.setAttribute('aria-sort', analyticsDirection === 1 ? 'ascending' : 'descending');
+    else button.parentElement.removeAttribute('aria-sort');
+  }
+}
+async function loadAnalytics() {
+  message('Loading download statistics…');
+  analytics = await api('/analytics');
+  const {overview, counter_baseline_at: baseline} = analytics;
+  $('analytics-baseline').textContent = baseline
+    ? `Counters initialized ${date(baseline)}. Counts cover downloads since analytics went live.`
+    : 'Counts cover downloads since analytics went live.';
+  const card = $('analytics-overview');
+  card.replaceChildren();
+  const topCourse = overview.top_course, topResource = overview.top_resource;
+  const metrics = [
+    ['Total recorded downloads', number.format(overview.total_downloads)],
+    ['Currently published resources', number.format(overview.published_resources)],
+    ['Published resources with downloads', number.format(overview.downloaded_published_resources)],
+    ['Most downloaded course · historical', topCourse ? `${courseLabel(topCourse.course_id)} (${number.format(topCourse.download_count)})` : 'No downloads yet'],
+    ['Most downloaded resource · historical', topResource ? `${topResource.title} (${number.format(topResource.download_count)})` : 'No downloads yet'],
+  ];
+  for (const [label, value] of metrics) {
+    const metric = element('div');
+    metric.append(element('dt', label), element('dd', value));
+    card.append(metric);
+  }
+  paintAnalyticsResources();
+  const courseBody = $('analytics-courses');
+  courseBody.replaceChildren();
+  for (const row of analytics.courses) analyticsRow(courseBody,
+    [courseLabel(row.course_id), number.format(row.download_count), number.format(row.published_download_count)], [1, 2]);
+  if (!analytics.courses.length) {
+    const row = courseBody.insertRow(), cell = row.insertCell();
+    cell.colSpan = 3;
+    cell.textContent = 'No courses with resources yet.';
+  }
+  message('Download statistics loaded.');
 }
 async function loadRecords(append = false) {
   const generation = ++listGeneration;
@@ -233,11 +301,25 @@ $('check-public').addEventListener('click', () => run(async () => {
 }));
 for (const tab of document.querySelectorAll('[data-view]')) tab.addEventListener('click', () => run(async () => {
   view = tab.dataset.view; for (const other of document.querySelectorAll('[data-view]')) other.setAttribute('aria-pressed',String(other===tab));
+  const showingAnalytics = view === 'analytics';
+  $('queue-view').hidden = showingAnalytics;
+  $('analytics-view').hidden = !showingAnalytics;
+  $('view-heading').textContent = showingAnalytics ? 'Download analytics' : 'Moderation queue';
+  $('view-description').textContent = showingAnalytics ? 'Track downloads by resource and course.' : 'Review and prepare materials before publication.';
+  if (showingAnalytics) return loadAnalytics();
   $('view-help').textContent = view === 'pending' ? 'Unpublished records remain private until approved again.' : view === 'published' ? 'Saved edits are private candidates until approved. Unpublish to fix a resource without keeping it publicly available.' : 'Minimal private decision records. Removed and rejected content cannot be restored.';
   await loadRecords();
 },'status'));
 $('search-form').addEventListener('submit',event => { event.preventDefault(); run(() => loadRecords(),'status'); });
 $('refresh').addEventListener('click',() => run(() => loadRecords(),'status'));
+$('refresh-analytics').addEventListener('click',() => run(loadAnalytics,'status'));
+$('analytics-search').addEventListener('input',paintAnalyticsResources);
+for (const button of document.querySelectorAll('[data-sort]')) button.addEventListener('click',() => {
+  const key = button.dataset.sort;
+  analyticsDirection = key === analyticsSort ? -analyticsDirection : key === 'download_count' ? -1 : 1;
+  analyticsSort = key;
+  paintAnalyticsResources();
+});
 $('load-more').addEventListener('click',() => run(() => loadRecords(true),'status'));
 $('retry-cleanup').addEventListener('click',() => run(async () => { await jsonPost('/cleanup',{}); message('Cleanup retry completed. Failed deletions remain queued for later retry.'); },'status'));
 async function session() {
@@ -259,7 +341,11 @@ async function initializeSession() {
 }
 for (const retry of document.querySelectorAll('.retry-session')) retry.addEventListener('click',() => {
   const target = $('editor-dialog').open ? 'editor-status' : $('detail-dialog').open ? 'detail-status' : 'status';
-  run(async () => { await initializeSession(); message('Session verified. Your draft is ready.', target); if (!detail) await loadRecords(); }, target);
+  run(async () => {
+    await initializeSession();
+    message('Session verified. Your draft is ready.', target);
+    if (!detail) await (view === 'analytics' ? loadAnalytics() : loadRecords());
+  }, target);
 });
 
 // Image controls use output pixel coordinates. The fresh PNG is the only upload.

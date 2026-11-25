@@ -202,7 +202,14 @@ async function listPublic(url: URL, env: ModerationEnv) {
     .replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'') : null;
   return json({resources:resources.slice(0,200).map(r => publicRecord(r,env)),next_cursor:next},200,{'Access-Control-Allow-Origin':'*'});
 }
-async function download(request: Request, env: ModerationEnv, id: string) {
+async function recordDownload(env: ModerationEnv, id: string) {
+  try {
+    await statement(env,'UPDATE resources SET download_count=download_count+1 WHERE id=?',id).run();
+  } catch {
+    console.error(JSON.stringify({event:'resource_download_count_failed'}));
+  }
+}
+async function download(request: Request, env: ModerationEnv, id: string, ctx: ExecutionContext) {
   assertId(id);
   // Deliberately use DB directly, never a read-replica session, KV, Cache API, or an R2 public URL.
   const live = await statement(env, `SELECT r.*, f.object_key,f.mime,f.size,f.etag FROM resources r
@@ -220,7 +227,43 @@ async function download(request: Request, env: ModerationEnv, id: string) {
   const headers = {...PRIVATE_HEADERS, 'Access-Control-Allow-Origin':'*', 'Content-Type':live.mime,
     'Content-Length':String(live.size), 'Content-Disposition':`attachment; filename="resource-${id}${extension}"`,
     'Content-Security-Policy':FILE_CSP, 'Cross-Origin-Resource-Policy':'cross-origin'};
-  return new Response(request.method === 'HEAD' ? null : (object as R2ObjectBody).body, {headers});
+  const response = new Response(request.method === 'HEAD' ? null : (object as R2ObjectBody).body, {headers});
+  if (request.method === 'GET') ctx.waitUntil(recordDownload(env,id));
+  return response;
+}
+async function downloadAnalytics(env: ModerationEnv) {
+  type AnalyticsResource = Pick<Resource,'id'|'course_id'|'title'|'type'|'status'> & {download_count:number};
+  const [rows, baseline] = await Promise.all([
+    statement(env,`SELECT id,course_id,title,type,status,download_count FROM resources
+      ORDER BY download_count DESC, title COLLATE NOCASE, id`).all<AnalyticsResource>(),
+    statement(env,"SELECT strftime('%Y-%m-%dT%H:%M:%fZ',applied_at) AS at FROM d1_migrations WHERE name='0006_resource_download_analytics.sql'")
+      .first<{at:string}>(),
+  ]);
+  const resources = rows.results;
+  const byCourse = new Map<string,{course_id:string; download_count:number; published_download_count:number}>();
+  let total_downloads = 0, published_resources = 0, downloaded_published_resources = 0;
+  for (const resource of resources) {
+    const {course_id, download_count, status} = resource;
+    const course = byCourse.get(course_id) ?? {course_id, download_count:0, published_download_count:0};
+    total_downloads += download_count;
+    course.download_count += download_count;
+    if (status === 'published') {
+      published_resources++;
+      if (download_count > 0) downloaded_published_resources++;
+      course.published_download_count += download_count;
+    }
+    byCourse.set(course_id,course);
+  }
+  const courses = [...byCourse.values()].sort((a,b) => b.download_count-a.download_count || a.course_id.localeCompare(b.course_id));
+  return json({
+    counter_baseline_at: baseline?.at ?? null,
+    overview: {
+      total_downloads, published_resources, downloaded_published_resources,
+      top_course: courses[0]?.download_count ? courses[0] : null,
+      top_resource: resources[0]?.download_count ? resources[0] : null,
+    },
+    resources, courses,
+  });
 }
 async function submission(request: Request, env: ModerationEnv) {
   const identity = await verifyContributor(request, env);
@@ -597,7 +640,7 @@ export default {
   async scheduled(_event: unknown, env: ModerationEnv) {
     if(env.CLEANUP_ENABLED==='true') await runPrivateCleanup(env);
   },
-  async fetch(request: Request, env: ModerationEnv): Promise<Response> {
+  async fetch(request: Request, env: ModerationEnv, ctx: ExecutionContext): Promise<Response> {
     let cors: Record<string,string>={};
     try {
       const url=new URL(request.url),adminOrigin=exactOrigin(env.ADMIN_ORIGIN),publicOrigin=exactOrigin(env.PUBLIC_API_ORIGIN);
@@ -621,6 +664,7 @@ export default {
           return importReceipt(prior);
         }
         if(url.pathname==='/admin/api/courses' && request.method==='GET') return json({courses});
+        if(url.pathname==='/admin/api/analytics' && request.method==='GET') return await downloadAnalytics(env);
         if(url.pathname==='/admin/api/submissions' && request.method==='GET') return await listAdmin(url,env);
         if(url.pathname==='/admin/api/cleanup' && request.method==='POST') {await readJSON(request);return json(await runPrivateCleanup(env));}
         const match=/^\/admin\/api\/submissions\/([^/]+)(?:\/(.*))?$/.exec(url.pathname);
@@ -643,7 +687,7 @@ export default {
       if(url.origin!==publicOrigin || url.pathname.startsWith('/admin')) throw new WorkerHttpError(404,'Endpoint not found.');
       if(request.method==='GET' && url.pathname==='/resources') {cors={'Access-Control-Allow-Origin':'*'};return await listPublic(url,env);}
       const fileMatch=/^\/download\/([^/]+)$/.exec(url.pathname);
-      if(fileMatch && ['GET','HEAD'].includes(request.method)) {cors={'Access-Control-Allow-Origin':'*'};return await download(request,env,fileMatch[1]);}
+      if(fileMatch && ['GET','HEAD'].includes(request.method)) {cors={'Access-Control-Allow-Origin':'*'};return await download(request,env,fileMatch[1],ctx);}
       if(!['/submit','/auth/verify'].includes(url.pathname)) throw new WorkerHttpError(404,'Endpoint not found.');
       const allowed=env.ALLOWED_ORIGIN.split(',').map(x=>exactOrigin(x.trim()));
       const origin=request.headers.get('Origin');

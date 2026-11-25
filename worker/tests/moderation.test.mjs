@@ -17,7 +17,7 @@ const studentOrigin = 'https://archive.example.invalid';
 const issuer = 'https://fixture.cloudflareaccess.com';
 const actor = 'root@example.invalid';
 const studentEmail = 'synthetic@std.aum.edu.jo';
-const course = JSON.parse(readFileSync(new URL('../../site/courses.json', import.meta.url)))[0];
+const [course, otherCourse] = JSON.parse(readFileSync(new URL('../../site/courses.json', import.meta.url)));
 const {privateKey, publicKey} = await generateKeyPair('RS256');
 const {privateKey: wrongKey} = await generateKeyPair('RS256');
 const jwks = {keys:[{...await exportJWK(publicKey), kid:'moderation-fixture', alg:'RS256', use:'sig'}]};
@@ -117,6 +117,9 @@ test.before(async () => {
     // Trigger bodies stay on one line; only statement-ending newlines split SQL.
     for(const sql of migration.split(/;\s*(?:\n|$)/).map(x=>x.trim()).filter(Boolean)) await db.prepare(sql).run();
   }
+  await db.prepare('CREATE TABLE d1_migrations (name TEXT PRIMARY KEY, applied_at TEXT NOT NULL)').run();
+  await db.prepare('INSERT INTO d1_migrations VALUES (?,?)')
+    .bind('0006_resource_download_analytics.sql','2026-11-25 09:15:00').run();
 });
 test.beforeEach(async () => {
   await db.batch(['DELETE FROM operator_imports','DELETE FROM contributor_authorizations','DELETE FROM moderation_audit','DELETE FROM resources','DELETE FROM file_revisions','DELETE FROM submissions'].map(sql=>db.prepare(sql)));
@@ -130,7 +133,7 @@ test.after(async () => {await mf?.dispose();});
 test('all admin API, static, file and alternate-host boundaries independently require Access and allowlist authorization',async () => {
   const paths=['/','/index.html','/styles.css','/js/admin.mjs','/js/image-editor.mjs',
     '/assets/fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2','/admin/api/session',
-    '/admin/api/courses','/admin/api/submissions','/admin/api/submissions/12345678-1234-4123-8123-123456789abc',
+    '/admin/api/courses','/admin/api/analytics','/admin/api/submissions','/admin/api/submissions/12345678-1234-4123-8123-123456789abc',
     '/admin/api/submissions/12345678-1234-4123-8123-123456789abc/files/12345678-1234-4123-8123-123456789abc'];
   for(const path of paths) for(const method of ['GET','HEAD']) {
     const response=await dispatch(new Request(adminOrigin+path,{method}));
@@ -571,7 +574,7 @@ test('a late R2 PUT after terminal cleanup is reconciled and deleted again witho
   assert.equal((await db.prepare('SELECT status FROM submissions WHERE id=?').bind(id).first()).status,'removed');
 });
 
-async function invokeNode(request, overrides={}, onSiteverify) {
+async function invokeNode(request, overrides={}, onSiteverify, ctx={waitUntil:()=>{}}) {
   const {default:worker}=await import('../.wrangler/moderation-dist/moderation.js');
   const originalFetch=globalThis.fetch;
   globalThis.fetch=async (input) => {
@@ -580,7 +583,7 @@ async function invokeNode(request, overrides={}, onSiteverify) {
     if(url.href==='https://challenges.cloudflare.com/turnstile/v0/siteverify') {onSiteverify?.();return Response.json({success:turnstileSuccess});}
     throw new Error('Unexpected Node fixture network request');
   };
-  try {return await worker.fetch(request,{...baseBindings,DB:db,PRIVATE_FILES:bucket,...overrides});}
+  try {return await worker.fetch(request,{...baseBindings,DB:db,PRIVATE_FILES:bucket,...overrides},ctx);}
   finally {globalThis.fetch=originalFetch;}
 }
 
@@ -884,4 +887,137 @@ test('local CLI and protected Worker cooperate through synthetic Access forwardi
     assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM submissions').first()).n,1);
     assert.equal((await publicDownload(entry.receipt.submission_id)).status,404);
   } finally {await rm(directory,{recursive:true,force:true});}
+});
+
+const readAnalytics = async () => read(await admin('/admin/api/analytics'));
+const downloadCount = async id => (await db.prepare('SELECT download_count FROM resources WHERE id=?').bind(id).first()).download_count;
+const catalogGeneration = async () => (await db.prepare('SELECT generation FROM catalog_state WHERE singleton=1').first()).generation;
+const approveResource = async record => read(await action(record,'approve',{revision_id:record.submission.candidate_revision_id}));
+async function expectDownloadCount(id, expected) {
+  const deadline = Date.now()+3000;
+  while (Date.now() < deadline) {
+    if (await downloadCount(id) === expected) return;
+    await new Promise(resolve => setTimeout(resolve,15));
+  }
+  assert.equal(await downloadCount(id),expected);
+}
+
+test('public GET counts once per response, including concurrent direct links, without changing catalog or publication metadata',async()=>{
+  const record=await approveResource(await create());
+  const id=record.submission.id;
+  const generation=await catalogGeneration();
+  const before=await db.prepare('SELECT published_at,updated_at FROM resources WHERE id=?').bind(id).first();
+  assert.equal(await downloadCount(id),0);
+
+  const response=await publicDownload(id);
+  assert.equal(response.status,200);
+  assert.equal(await response.text(),'%PDF-original');
+  await expectDownloadCount(id,1);
+
+  const downloads=await Promise.all(Array.from({length:12},()=>publicDownload(id)));
+  await Promise.all(downloads.map(async result=>{
+    assert.equal(result.status,200);
+    assert.equal(await result.text(),'%PDF-original');
+  }));
+  await expectDownloadCount(id,13);
+  assert.equal(await catalogGeneration(),generation);
+  assert.deepEqual(await db.prepare('SELECT published_at,updated_at FROM resources WHERE id=?').bind(id).first(),before);
+  assert.ok(!Object.hasOwn((await publicCatalog()).resources[0],'download_count'));
+});
+
+test('HEAD, administrative previews, missing files, bad integrity and unavailable resources do not schedule increments',async()=>{
+  let record=await approveResource(await create());
+  const id=record.submission.id, revision=record.submission.candidate_revision_id;
+  const waits=[];
+  const inspect=(target=id,method='GET')=>invokeNode(new Request(publicOrigin+'/download/'+target,{method}),{},undefined,{
+    waitUntil:task=>waits.push(task),
+  });
+  assert.equal((await inspect(id,'HEAD')).status,200);
+  const preview=await admin(`/admin/api/submissions/${id}/files/${revision}`);
+  assert.equal(preview.status,200);
+  await preview.arrayBuffer();
+  assert.equal((await inspect(crypto.randomUUID())).status,404);
+
+  const revisionRow=await db.prepare('SELECT object_key FROM file_revisions WHERE id=?').bind(revision).first();
+  await bucket.put(revisionRow.object_key,'%PDF-wrong-size-and-etag');
+  assert.equal((await inspect()).status,404);
+  await bucket.delete(revisionRow.object_key);
+  assert.equal((await inspect()).status,404);
+  record=await read(await action(record,'unpublish',{reason:'Fixture withdrawal'}));
+  assert.equal((await inspect()).status,404);
+  assert.equal(waits.length,0);
+  assert.equal(await downloadCount(id),0);
+});
+
+test('analytics write failure leaves the successful public download response available',async()=>{
+  const record=await approveResource(await create());
+  const id=record.submission.id;
+  await db.prepare("CREATE TRIGGER test_download_failure BEFORE UPDATE OF download_count ON resources BEGIN SELECT RAISE(ABORT, 'synthetic analytics failure'); END").run();
+  try {
+    const waits=[];
+    const response=await invokeNode(new Request(publicOrigin+'/download/'+id),{},undefined,{waitUntil:task=>waits.push(task)});
+    assert.equal(response.status,200);
+    assert.equal(await response.text(),'%PDF-original');
+    assert.equal(waits.length,1);
+    await Promise.all(waits);
+    assert.equal(await downloadCount(id),0);
+  } finally {await db.prepare('DROP TRIGGER test_download_failure').run();}
+});
+
+test('counts survive edits, replacement, unpublication, republication and permanent removal',async()=>{
+  let record=await approveResource(await create());
+  const id=record.submission.id;
+  assert.equal((await (await publicDownload(id)).text()),'%PDF-original');
+  await expectDownloadCount(id,1);
+  record=await read(await action(record,'metadata',{...record.submission,title:'Updated counting fixture'}));
+  assert.equal(await downloadCount(id),1);
+  record=await read(await replacement(record,'%PDF-replacement'));
+  record=await approveResource(record);
+  assert.equal(await downloadCount(id),1);
+  assert.equal((await (await publicDownload(id)).text()),'%PDF-replacement');
+  await expectDownloadCount(id,2);
+  record=await read(await action(record,'unpublish',{reason:'Fixture re-review'}));
+  assert.equal(await downloadCount(id),2);
+  assert.equal((await publicDownload(id)).status,404);
+  record=await approveResource(record);
+  assert.equal(await downloadCount(id),2);
+  record=await read(await action(record,'remove',{reason:'Fixture cleanup'}));
+  assert.equal(record.published.title,'Removed material');
+  assert.equal(await downloadCount(id),2);
+  assert.equal((await publicDownload(id)).status,404);
+});
+
+test('protected analytics reports historical and current aggregates, zero state and deterministic top results',async()=>{
+  const empty=await readAnalytics();
+  assert.equal(empty.counter_baseline_at,'2026-11-25T09:15:00.000Z');
+  assert.deepEqual(empty.overview,{total_downloads:0,published_resources:0,downloaded_published_resources:0,top_course:null,top_resource:null});
+  assert.deepEqual(empty.resources,[]);
+  const published=await approveResource(await create({title:'Published fixture'}));
+  const withdrawn=await approveResource(await create({title:'Withdrawn fixture'}));
+  const zero=await approveResource(await create({title:'Zero fixture',course_id:otherCourse.id}));
+  await Promise.all([[published,3],[withdrawn,5]].map(async ([record,count])=>{
+    const id=record.submission.id;
+    for(let i=0;i<count;i++) assert.equal(await (await publicDownload(id)).text(),'%PDF-original');
+    await expectDownloadCount(id,count);
+  }));
+  await read(await action(withdrawn,'unpublish',{reason:'Fixture withdrawal'}));
+  const response=await admin('/admin/api/analytics');
+  assert.match(response.headers.get('Cache-Control'),/no-store/);
+  assert.equal(response.headers.get('Access-Control-Allow-Origin'),null);
+  const result=await read(response);
+  assert.equal(result.overview.total_downloads,8);
+  assert.equal(result.overview.published_resources,2);
+  assert.equal(result.overview.downloaded_published_resources,1);
+  assert.equal(result.overview.top_course.course_id,course.id);
+  assert.equal(result.overview.top_resource.id,withdrawn.submission.id);
+  assert.deepEqual(result.resources.map(row=>[row.id,row.download_count,row.status]),[
+    [withdrawn.submission.id,5,'unpublished'],[published.submission.id,3,'published'],[zero.submission.id,0,'published'],
+  ]);
+  assert.deepEqual(result.courses,[
+    {course_id:course.id,download_count:8,published_download_count:3},
+    {course_id:otherCourse.id,download_count:0,published_download_count:0},
+  ]);
+  for(const jwt of [await studentToken(),await adminToken({email:studentEmail}),await adminToken({},wrongKey)]) {
+    assert.ok([401,403].includes((await admin('/admin/api/analytics',{jwt})).status));
+  }
 });
