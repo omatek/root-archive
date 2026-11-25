@@ -71,7 +71,12 @@ pagination is unchanged. Downloads independently check live publication state.
 Startup and session recovery share idempotent course initialization. An initial
 session/network/course-loading failure can be retried without reloading the
 page; later reauthentication leaves initialized options and in-memory drafts
-intact. Neither this change nor public pagination relaxes authorization.
+intact. If the Worker rejects the session on a top-level portal navigation, its
+401 page offers the Cloudflare Access logout link with a fixed return to the
+portal. Selecting it resets the shared Access session. The page has no automatic
+redirect and requires no protected assets. The in-portal sign-in links open that
+flow in another tab. Retry session verifies access without replaying a write.
+API requests continue to receive JSON errors from the Worker.
 
 The new migration must accompany any later approved deployment. It has been
 tested only in local emulation; no remote migration, activation or data change

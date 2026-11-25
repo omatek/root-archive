@@ -242,9 +242,14 @@ async function openRecord(id) {
   detail = await api(`/submissions/${encodeURIComponent(id)}`); paintDetail(); message('', 'detail-status');
   $('detail-dialog').showModal(); $('detail-heading').focus();
 }
+async function refreshQueueAfterWrite() {
+  // A confirmed write stays successful even if the subsequent queue read fails.
+  try { await loadRecords(); }
+  catch { message('The change was saved. Refresh the queue after reconnecting.'); }
+}
 async function mutate(action, fields = {}) {
   detail = await jsonPost(recordPath() + '/' + action, {version: detail.submission.version, ...fields});
-  paintDetail(); await loadRecords();
+  paintDetail(); await refreshQueueAfterWrite();
 }
 function requireSavedMetadata() { if (metadataDirty) throw new Error('Save the candidate metadata before preparing a replacement or making a decision.'); }
 function decisionDialog(action) {
@@ -256,6 +261,7 @@ function decisionDialog(action) {
     remove: ['Permanently remove resource', 'Public access is revoked immediately. All associated original and edited files are queued for deletion, including any approved version. This cannot be undone. Previously downloaded copies cannot be recalled.']
   };
   decision = action; $('decision-title').textContent = descriptions[action][0]; $('decision-explanation').textContent = descriptions[action][1];
+  message('', 'decision-status');
   $('confirm-decision').textContent = descriptions[action][0]; $('decision-reason').value = ''; $('decision-dialog').showModal(); $('decision-reason').focus();
 }
 
@@ -273,7 +279,7 @@ for (const action of ['reject','unpublish','remove']) $(action).addEventListener
 $('decision-form').addEventListener('submit', event => { event.preventDefault(); run(async () => {
   await mutate(decision,{reason:$('decision-reason').value}); $('decision-dialog').close();
   message(decision === 'unpublish' ? 'Public access revoked. The file is retained privately for re-review.' : 'Public access revoked. File cleanup is queued and will retry after failures.', 'detail-status');
-}); });
+}, 'decision-status'); });
 $('cancel-decision').addEventListener('click', () => $('decision-dialog').close());
 $('review-check').addEventListener('change', paintEnabled);
 $('replacement-form').addEventListener('submit', event => { event.preventDefault(); run(async () => {
@@ -283,7 +289,7 @@ $('replacement-form').addEventListener('submit', event => { event.preventDefault
 }); });
 async function uploadRevision(file) {
   const data = new FormData(); data.set('version', String(detail.submission.version)); data.set('file',file,file.name);
-  detail = await api(recordPath() + '/revisions', {method:'POST',body:data}); paintDetail(); await loadRecords();
+  detail = await api(recordPath() + '/revisions', {method:'POST',body:data}); paintDetail(); await refreshQueueAfterWrite();
 }
 $('close-preview').addEventListener('click',closePreview);
 function closeDetail() {
@@ -340,7 +346,7 @@ async function initializeSession() {
   } catch (error) { expired(); throw error; }
 }
 for (const retry of document.querySelectorAll('.retry-session')) retry.addEventListener('click',() => {
-  const target = $('editor-dialog').open ? 'editor-status' : $('detail-dialog').open ? 'detail-status' : 'status';
+  const target = retry.closest('dialog')?.querySelector('.status').id ?? 'status';
   run(async () => {
     await initializeSession();
     message('Session verified. Your draft is ready.', target);
