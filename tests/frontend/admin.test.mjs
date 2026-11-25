@@ -50,6 +50,15 @@ async function setup(options={}){
     const req=route.request(),url=new URL(req.url());
     if(url.origin==='https://downloads.example.invalid')return route.fulfill({status:record.submission.status==='published'?200:404,headers:{'Access-Control-Allow-Origin':'*','Cache-Control':'no-store'},body:''});
     if(url.origin!==origin)return route.abort();
+    if(options.mockAccess && req.isNavigationRequest()) {
+      const resetPath='/cdn-cgi/access/logout?returnTo='+encodeURIComponent(origin+'/');
+      if(url.pathname+url.search===resetPath) {
+        options.denySession=false;options.denyWrites=false;
+        return route.fulfill({contentType:'text/html',body:'Mock Access sign-in complete'});
+      }
+      if(url.pathname==='/' && options.denySession)return route.fulfill({status:401,contentType:'text/html',
+        body:`<a href="${resetPath}">Sign in again with Cloudflare Access</a>`});
+    }
     if(!url.pathname.startsWith('/admin/api'))return route.continue();
     calls.push({path:url.pathname,method:req.method(),headers:req.headers(),body:req.postData()});
     const json=(body,status=200)=>route.fulfill({status,json:body});
@@ -60,7 +69,7 @@ async function setup(options={}){
     }
     if(path==='/courses')return coursesFailures-->0?json({error:'Course service unavailable'},503):json({courses:[course]});
     if(path==='/analytics')return json(options.analytics || {}, options.analytics ? 200 : 404);
-    if(path==='/submissions')return json({submissions:[record.submission],next_cursor:null});
+    if(path==='/submissions')return options.denyQueue?json({error:'Session expired'},401):json({submissions:[record.submission],next_cursor:null});
     if(path==='/cleanup')return json({success:true});
     if(path===`/submissions/${id}`)return json(record);
     if(path.startsWith(`/submissions/${id}/files/`))return route.fulfill({contentType:'image/png',body:image});
@@ -145,7 +154,7 @@ test('F-03 initial session or course-load failures recover full editing without 
 });
 
 test('F-03 later reauthentication keeps course options and unsaved metadata/file/image drafts',async()=>{
-  const options={};const s=await setup(options);try{
+  const options={mockAccess:true};const s=await setup(options);try{
     const p=s.page;await open(s);
     await p.getByRole('button',{name:'Edit image',exact:true}).click();await p.locator('#rotate-right').click();
     const dimensions=await p.locator('#image-dimensions').innerText();
@@ -155,7 +164,14 @@ test('F-03 later reauthentication keeps course options and unsaved metadata/file
     options.denySession=true;options.denyWrites=true;
     await p.locator('#save-metadata').click();await p.locator('#detail-dialog .session-recovery').waitFor({state:'visible'});
     assert.equal(await p.locator('#meta-title').inputValue(),'Unsaved draft across expiry');
-    options.denySession=false;options.denyWrites=false;
+    const popupPromise=s.context.waitForEvent('page',{timeout:10000});
+    await p.locator('#detail-dialog').getByRole('link',{name:'Open sign-in in a new tab'}).click();
+    const popup=await popupPromise;
+    await popup.getByRole('link',{name:'Sign in again with Cloudflare Access'}).click();
+    await popup.getByText('Mock Access sign-in complete').waitFor();
+    assert.equal(await popup.evaluate(()=>window.opener),null);
+    await popup.close();
+    assert.equal(await p.locator('#save-metadata').isDisabled(),true);
     await p.locator('#detail-dialog .retry-session').click();await p.getByText('Session verified. Your draft is ready.',{exact:true}).waitFor();
     assert.equal(await p.locator('#meta-course option').count(),1);
     assert.equal(await p.locator('#meta-course').inputValue(),course.id);
@@ -163,8 +179,40 @@ test('F-03 later reauthentication keeps course options and unsaved metadata/file
     assert.equal(await p.locator('#replacement-file').evaluate(e=>e.files[0].name),'retained.png');
     assert.equal(await p.locator('#image-dimensions').innerText(),dimensions);
     assert.equal(s.calls.filter(c=>c.path==='/admin/api/courses').length,1,'already initialized courses are not reloaded');
+    assert.equal(s.calls.filter(c=>c.method==='POST').length,1,'reauthentication and session retry do not replay the denied write');
     await p.locator('#save-metadata').click();await p.getByText('Candidate metadata saved. Inspect and approve it before publication.',{exact:true}).waitFor();
     assert.equal(s.record().submission.title,'Unsaved draft across expiry');
+    assert.equal(s.calls.filter(c=>c.method==='POST').length,2);
+  }finally{await s.close();}
+});
+
+test('an expired confirmation keeps its reason and retries only on explicit resubmission',async()=>{
+  const options={};const s=await setup(options);try{
+    const p=s.page;await open(s);
+    await p.locator('#reject').click();
+    await p.locator('#decision-reason').fill('Synthetic decision reason');
+    options.denySession=true;options.denyWrites=true;
+    await p.locator('#confirm-decision').click();
+    const dialog=p.locator('#decision-dialog');
+    await dialog.getByText(/Your Access session is unavailable/).waitFor();
+    assert.equal(await dialog.getByRole('link',{name:'Open sign-in in a new tab'}).getAttribute('target'),'_blank');
+    assert.equal(await p.locator('#confirm-decision').isDisabled(),true);
+    options.denySession=false;options.denyWrites=false;
+    await dialog.getByRole('button',{name:'Retry session'}).click();
+    await dialog.getByText('Session verified. Your draft is ready.',{exact:true}).waitFor();
+    assert.equal(await p.locator('#decision-reason').inputValue(),'Synthetic decision reason');
+    assert.equal(s.calls.filter(c=>c.method==='POST').length,1);
+
+    // The write succeeds, then the separate queue read loses authorization.
+    options.denyQueue=true;
+    await p.locator('#confirm-decision').click();
+    await dialog.waitFor({state:'hidden'});
+    assert.equal(s.record().submission.reason,'Synthetic decision reason');
+    options.denyQueue=false;
+    await p.locator('#detail-dialog .retry-session').click();
+    await p.locator('#detail-dialog').getByText('Session verified. Your draft is ready.',{exact:true}).waitFor();
+    assert.equal(s.calls.filter(c=>c.method==='POST').length,2);
+    assert.equal(s.record().audit.filter(entry=>entry.action==='reject').length,1);
   }finally{await s.close();}
 });
 

@@ -130,6 +130,75 @@ test.beforeEach(async () => {
 });
 test.after(async () => {await mf?.dispose();});
 
+const documentNavigation = {'Sec-Fetch-Mode':'navigate','Sec-Fetch-Dest':'document','Accept':'text/html'};
+// Miniflare's fetch transport rewrites Sec-Fetch-Mode. Use the bundled Worker
+// directly for Fetch Metadata cases so it receives the browser headers verbatim.
+const requestPortal = (path, headers, method='GET') => invokeNode(new Request(adminOrigin+path,{headers,method}), {
+  ASSETS:{fetch:() => new Response('<!doctype html><title>Private portal fixture</title>')},
+});
+
+test('rejected portal navigations offer an explicit Access reset with a fixed return to the portal',async () => {
+  const now=Math.floor(Date.now()/1000);
+  const cases=[
+    ['/?returnTo=https://untrusted.invalid/', {}],
+    ['/index.html?returnTo=%22%3E%3Cscript%3E&redirect=//untrusted.invalid', {'Cf-Access-Jwt-Assertion':await adminToken({exp:now-60})}],
+    ['/', {'Cf-Access-Jwt-Assertion':await adminToken({iat:now-90000})}],
+  ];
+  for(const [path,headers] of cases) {
+    const response=await requestPortal(path,{...documentNavigation,...headers});
+    assert.equal(response.status,401);
+    assert.equal(response.headers.get('Location'),null);
+    assert.equal(response.headers.get('Refresh'),null);
+    assert.match(response.headers.get('Content-Type'),/^text\/html/);
+    assert.match(response.headers.get('Cache-Control'),/no-store/);
+    assert.match(response.headers.get('Content-Security-Policy'),/default-src 'none'; frame-ancestors 'none'/);
+    assert.equal(response.headers.get('Referrer-Policy'),'no-referrer');
+    const html=await response.text();
+    assert.doesNotMatch(html,/untrusted\.invalid|Private portal fixture|<script|http-equiv|\bsrc=/i);
+    const links=[...html.matchAll(/href="([^"]+)"/g)];
+    assert.equal(links.length,1);
+    const reset=new URL(links[0][1],adminOrigin);
+    assert.equal(reset.origin,adminOrigin);
+    assert.equal(reset.pathname,'/cdn-cgi/access/logout');
+    assert.deepEqual([...reset.searchParams],[['returnTo',adminOrigin+'/']]);
+  }
+  for(const path of ['/','/index.html']) {
+    const valid=await requestPortal(path,{...documentNavigation,'Cf-Access-Jwt-Assertion':await adminToken()});
+    assert.equal(valid.status,200);
+    assert.match(await valid.text(),/Private portal fixture/);
+  }
+  const denied=await requestPortal('/',{...documentNavigation,'Cf-Access-Jwt-Assertion':await adminToken({email:studentEmail})});
+  assert.equal(denied.status,403);
+  assert.deepEqual(await denied.json(),{success:false,error:'This identity is not an administrator.'});
+});
+
+test('only top-level portal GET navigations receive the recovery page',async () => {
+  const cases=[
+    ['/', 'GET', {Accept:'text/html'}],
+    ['/', 'GET', {...documentNavigation,'Sec-Fetch-Mode':'same-origin'}],
+    ['/', 'GET', {...documentNavigation,'Sec-Fetch-Dest':'iframe'}],
+    ['/', 'HEAD', documentNavigation],
+    ['/', 'POST', documentNavigation],
+    ['/js/admin.mjs', 'GET', documentNavigation],
+    ['/admin/api/session', 'GET', documentNavigation],
+    ['/admin/api/submissions/12345678-1234-4123-8123-123456789abc/files/12345678-1234-4123-8123-123456789abc', 'GET', documentNavigation],
+    ['/admin/api/cleanup', 'POST', documentNavigation],
+  ];
+  for(const [path,method,headers] of cases) {
+    const response=await requestPortal(path,headers,method);
+    assert.equal(response.status,401,path);
+    assert.equal(response.headers.get('Location'),null);
+    assert.match(response.headers.get('Content-Type'),/^application\/json/);
+    if(method!=='HEAD') assert.deepEqual(await response.json(),{success:false,error:'Administrator sign-in is required.'});
+  }
+  const invalid=await requestPortal('/admin/api/session',{'Cf-Access-Jwt-Assertion':await adminToken({exp:Math.floor(Date.now()/1000)-60})});
+  assert.equal(invalid.status,401);
+  assert.deepEqual(await invalid.json(),{success:false,error:'Administrator session is invalid or expired. Sign in again.'});
+  const unauthorized=await requestPortal('/admin/api/session',{'Cf-Access-Jwt-Assertion':await adminToken({email:studentEmail})});
+  assert.equal(unauthorized.status,403);
+  assert.deepEqual(await unauthorized.json(),{success:false,error:'This identity is not an administrator.'});
+});
+
 test('all admin API, static, file and alternate-host boundaries independently require Access and allowlist authorization',async () => {
   const paths=['/','/index.html','/styles.css','/js/admin.mjs','/js/image-editor.mjs',
     '/assets/fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2','/admin/api/session',

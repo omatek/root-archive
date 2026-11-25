@@ -88,6 +88,24 @@ function requireSubmissionWindow(env: ModerationEnv) {
 function json(value: unknown, status = 200, headers: Record<string, string> = {}) {
   return new Response(JSON.stringify(value), {status, headers: {...PRIVATE_HEADERS, 'Content-Type': 'application/json; charset=utf-8', ...headers}});
 }
+function adminSessionRecovery(adminOrigin: string) {
+  // Access accepts returnTo on its application-domain logout endpoint.
+  const returnTo = encodeURIComponent(`${adminOrigin}/`);
+  return new Response(`<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in again</title>
+<main>
+  <h1>Sign in again</h1>
+  <p>Your session is unavailable. Reset your Cloudflare Access session to continue.</p>
+  <p><a href="/cdn-cgi/access/logout?returnTo=${returnTo}">Sign in again with Cloudflare Access</a></p>
+</main>
+</html>`, {status: 401, headers: {
+    ...PRIVATE_HEADERS, 'Content-Type': 'text/html; charset=utf-8',
+    'Content-Security-Policy': "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'",
+  }});
+}
 function assertId(id: string) {if (!UUID.test(id)) throw new WorkerHttpError(404, 'Record not found.');}
 function requireVersion(value: unknown): number {
   const n = typeof value === 'string' && /^\d+$/.test(value) ? Number(value) : value;
@@ -646,7 +664,17 @@ export default {
       const url=new URL(request.url),adminOrigin=exactOrigin(env.ADMIN_ORIGIN),publicOrigin=exactOrigin(env.PUBLIC_API_ORIGIN);
       if(adminOrigin===publicOrigin) throw new WorkerHttpError(503,'Server origins must be distinct.');
       if(url.origin===adminOrigin) {
-        const actor=await authorizeAdmin(request,env);
+        let actor: string;
+        try {
+          actor=await authorizeAdmin(request,env);
+        } catch(error) {
+          if(error instanceof WorkerHttpError && error.status===401 && request.method==='GET' &&
+            (url.pathname==='/' || url.pathname==='/index.html') &&
+            request.headers.get('Sec-Fetch-Mode')==='navigate' && request.headers.get('Sec-Fetch-Dest')==='document') {
+            return adminSessionRecovery(adminOrigin);
+          }
+          throw error;
+        }
         if(url.pathname==='/admin/api/session' && request.method==='GET') return json({email:actor});
         if(url.pathname==='/admin/api/import' && request.method==='POST') return await operatorImport(request,env,actor);
         const importMatch=/^\/admin\/api\/import\/([^/]+)$/.exec(url.pathname);
